@@ -4,13 +4,35 @@
 *.iws
 *.ipr
 out/
+*.swp
+*.swo
+*~
 
-# Maven 编译文件
+# Maven 相关
 target/
+.mvn/
+mvnw
+mvnw.cmd
+
+# 编译输出
+build/
+classes/
 
 # 系统文件
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # 日志文件
 *.log
+*.logs
+
+# 数据库本地配置（很重要！）
+jdbc.properties
+db.properties
+application-local.properties
+
+# 其他临时文件
+*.tmp
+*.temp
