@@ -1,30 +1,50 @@
 package com.camplus.login.controller;
 
+import com.camplus.login.pojo.User;
+import com.camplus.login.service.UserService;
+import com.camplus.login.service.serviceImpl.UserServiceImpl;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 public class RegisterController {
 
+    private final UserService userService = new UserServiceImpl();
+
     @PostMapping("/register")
     public Map<String, Object> register(
-            @RequestParam String password,
+            @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) String username) {
-
-        System.out.println("===== 注册接口 =====");
-        System.out.println("邮箱：" + email);
-        System.out.println("手机号：" + phone);
-        System.out.println("用户名：" + username);
-        System.out.println("密码：" + password);
+            @RequestParam String password) {
 
         Map<String, Object> result = new HashMap<>();
-        result.put("success", true);
-        result.put("msg", "注册接口连通成功");
+        User user = new User();
+        user.setPasswordHash(password);
+
+        // 根据前端传值赋值
+        if (username != null && !"".equals(username)) {
+            user.setUsername(username);
+        }
+        if (email != null && !"".equals(email)) {
+            user.setEmail(email);
+        }
+        if (phone != null && !"".equals(phone)) {
+            user.setPhone(phone);
+        }
+
+        boolean success = userService.register(user);
+        if (success) {
+            result.put("success", true);
+            result.put("msg", "注册成功！");
+        } else {
+            result.put("success", false);
+            result.put("msg", "账号信息已存在，注册失败");
+        }
         return result;
     }
 }

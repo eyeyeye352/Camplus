@@ -3,6 +3,7 @@ package com.camplus.login.service.serviceImpl;
 import com.camplus.login.mappers.UserMapper;
 import com.camplus.login.pojo.User;
 import com.camplus.login.service.UserService;
+import com.camplus.login.util.MD5Util;
 import com.camplus.login.util.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
         try (SqlSession session = MyBatisUtil.getSqlSession()) {
             UserMapper userMapper = session.getMapper(UserMapper.class);
 
-            // 1. 校验用户名、邮箱、手机号是否已存在
+            // 校验用户名、邮箱、手机号是否已存在
             User existUser = userMapper.selectByUsername(user.getUsername());
             if (existUser != null) {
                 return false;
@@ -35,15 +36,31 @@ public class UserServiceImpl implements UserService {
                 return false;
             }
 
-            // 2. 初始化新用户默认参数
+            // 初始化新用户默认参数
             user.setRole(0);
             user.setStatus(1);
             user.setLoginErrorCount(0);
             user.setLockTime(null);
             user.setLastLoginTime(null);
 
-            // 3. 插入数据
+            // 密码加密
+            String encryptPwd = MD5Util.md5Encrypt(user.getPasswordHash());
+            user.setPasswordHash(encryptPwd);
+
+            // 使用其它注册方式时，确保username不为null
+            if (user.getUsername() == null || "".equals(user.getUsername())) {
+                if (user.getEmail() != null && !"".equals(user.getEmail())) {
+                    // 邮箱注册：用邮箱作为用户名
+                    user.setUsername(user.getEmail());
+                } else if (user.getPhone() != null && !"".equals(user.getPhone())) {
+                    // 手机号注册：用手机号作为用户名
+                    user.setUsername(user.getPhone());
+                }
+            }
+
+            // 插入数据
             int rows = userMapper.insertUser(user);
+            session.commit();
             return rows > 0;
         }
     }
@@ -76,8 +93,9 @@ public class UserServiceImpl implements UserService {
                 return null;
             }
 
-            // 密码校验
-            if (!password.equals(user.getPasswordHash())) {
+            // 密码校验：明文加密后比对
+            String inputEncryptPwd = MD5Util.md5Encrypt(password);
+            if (!inputEncryptPwd.equals(user.getPasswordHash())) {
                 // 密码错误，错误次数+1
                 int newCount = user.getLoginErrorCount() + 1;
                 userMapper.updateLoginErrorCount(user.getUserId(), newCount);
@@ -86,11 +104,13 @@ public class UserServiceImpl implements UserService {
                 if (newCount >= MAX_ERROR_COUNT) {
                     userMapper.updateLockTime(user.getUserId(), LocalDateTime.now());
                 }
+                session.commit();
                 return null;
             }
 
-            // 5. 登录成功：更新最后登录时间 + 重置错误次数
+            // 登录成功：更新最后登录时间 + 重置错误次数
             userMapper.updateLoginSuccessInfo(user.getUserId(), LocalDateTime.now());
+            session.commit();
             return user;
         }
     }
