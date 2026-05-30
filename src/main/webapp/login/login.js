@@ -25,7 +25,7 @@ let currentRegisterType = '';
 
 // 跳转到首页
 function goToHome() {
-    window.location.href = '../home/index.html';
+    window.location.href = '/home/index.html';
 }
 
 // 显示登录界面
@@ -149,7 +149,7 @@ usernameRegisterBtn.addEventListener('click', () => {
 });
 
 
-// 登录表单提交
+// ========== 登录表单提交【已修改】 ==========
 const loginForm = document.getElementById('loginForm');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -164,7 +164,11 @@ loginForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const params = `loginAccount=${loginAccount}&password=${password}&rememberMe=${rememberMe}`;
+        // 标准参数构造，自动编码中文/特殊字符
+        const params = new URLSearchParams();
+        params.append('loginAccount', loginAccount);
+        params.append('password', password);
+        params.append('rememberMe', rememberMe);
 
         const res = await fetch('/login', {
             method: 'POST',
@@ -178,17 +182,17 @@ loginForm.addEventListener('submit', async (e) => {
         const result = await res.json();
         if (result.success) {
             alert(result.msg);
-            window.location.href = '../home/index.html';
+            window.location.href = '/home/index.html'; // 绝对路径
         } else {
             alert(result.msg);
         }
     } catch (err) {
         console.error(err);
-        alert('请求异常，请检查Tomcat是否启动、是否用localhost访问');
+        alert('请求异常，请稍后重试');
     }
 });
 
-// 注册表单提交
+// ========== 注册表单提交【已修改】 ==========
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -201,16 +205,16 @@ registerForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        // 拼接普通键值对 适配原生Servlet getParameter
-        let params = "password=" + password;
+        const params = new URLSearchParams();
+        params.append('password', password);
 
         // 根据注册类型动态追加字段
         if (currentRegisterType === 'email') {
-            params += "&email=" + inputValue;
+            params.append("email", inputValue);
         } else if (currentRegisterType === 'phone') {
-            params += "&phone=" + inputValue;
+            params.append("phone", inputValue);
         } else if (currentRegisterType === 'username') {
-            params += "&username=" + inputValue;
+            params.append("username", inputValue);
         }
 
         const response = await fetch('/register', {
@@ -225,7 +229,6 @@ registerForm.addEventListener('submit', async (e) => {
         const result = await response.json();
         if (result.success) {
             alert(result.msg);
-            // 注册成功切回登录页
             showLogin();
             registerForm.reset();
         } else {

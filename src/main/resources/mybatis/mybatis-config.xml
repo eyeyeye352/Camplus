@@ -6,7 +6,7 @@
 <configuration>
 
     <!-- 引入外部属性文件 -->
-    <properties resource="db.properties"/>
+    <properties resource="mybatis/db.properties"/>
 
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
@@ -33,6 +33,6 @@
 
 
     <mappers>
-        <package name="com.camplus.login.mappers"/>
+        <mapper resource="mybatis/mappers/UserMapper.xml"/>
     </mappers>
 </configuration>

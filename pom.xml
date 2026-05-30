@@ -79,6 +79,11 @@
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-starter-web</artifactId>
       </dependency>
+      <!-- Spring 事务支持 -->
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
+      </dependency>
       <!-- 热部署工具（可选，强烈推荐） -->
       <dependency>
           <groupId>org.springframework.boot</groupId>

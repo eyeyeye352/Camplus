@@ -37,14 +37,14 @@
         SELECT * FROM users WHERE username = #{username}
     </select>
 
-    <!-- 3. 根据Phone查询用户 -->
+    <!-- 根据手机号查询 -->
     <select id="selectByPhone" parameterType="string" resultMap="UserResultMap">
-        SELECT * FROM users WHERE username = #{phone}
+        SELECT * FROM users WHERE phone = #{phone}
     </select>
 
-    <!-- 4. 根据Email查询用户 -->
+    <!-- 根据邮箱查询 -->
     <select id="selectByEmail" parameterType="string" resultMap="UserResultMap">
-        SELECT * FROM users WHERE username = #{email}
+        SELECT * FROM users WHERE email = #{email}
     </select>
 
     <!-- 5. 更新登录错误次数 -->
