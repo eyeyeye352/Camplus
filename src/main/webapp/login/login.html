@@ -7,17 +7,21 @@
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-<!-- 用户头像 -->
-<div class="user-avatar" id="userAvatar">
-    <svg class="avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-    </svg>
-</div>
-
-<!-- 固定标题容器 -->
-<div class="fixed-title">
-    <h1>Camplus</h1>
+<!-- 动态背景 -->
+<div class="background-container">
+    <!-- 12个浮动圆点 -->
+    <div class="dot dot1"></div>
+    <div class="dot dot2"></div>
+    <div class="dot dot3"></div>
+    <div class="dot dot4"></div>
+    <div class="dot dot5"></div>
+    <div class="dot dot6"></div>
+    <div class="dot dot7"></div>
+    <div class="dot dot8"></div>
+    <div class="dot dot9"></div>
+    <div class="dot dot10"></div>
+    <div class="dot dot11"></div>
+    <div class="dot dot12"></div>
 </div>
 
 <!-- 音乐控制按钮 -->
@@ -27,14 +31,6 @@
         <circle cx="6" cy="18" r="3"/>
         <circle cx="18" cy="16" r="3"/>
         <line class="music-slash" x1="4" y1="4" x2="20" y2="20" stroke-width="3" style="display: none;"/>
-    </svg>
-</div>
-
-<!-- 用户按钮 -->
-<div class="user-button" id="userButton">
-    <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
     </svg>
 </div>
 
@@ -76,20 +72,13 @@
 
 <!-- 登录弹窗 -->
 <div class="login-modal">
-    <!-- 边框容器 -->
-    <div class="border-container">
-        <!-- 彩色渐变边框 -->
-        <div class="border-gradient"></div>
-        <!-- 内部黑色背景 -->
-        <div class="border-inner"></div>
-    </div>
     <!-- 登录内容 -->
-    <div class="login-content">
-        <h1>登入</h1>
+    <div class="login-content" id="loginContent">
+        <h1>Camplus</h1>
 
         <form id="loginForm">
             <div class="input-group">
-                <input type="text" id="email" placeholder="邮箱" required>
+                <input type="text" id="loginAccount" placeholder="邮箱/用户名/手机号" required>
             </div>
 
             <div class="input-group">
@@ -98,7 +87,7 @@
 
             <div class="row">
                 <label class="remember-me">
-                    <input type="checkbox"> 记住我
+                    <input type="checkbox" name="rememberMe"> 记住我
                 </label>
                 <a href="#" class="forgot-link">忘记密码</a>
             </div>
@@ -106,9 +95,66 @@
             <button type="submit" class="login-btn">登入！</button>
         </form>
 
+
         <p class="register-tip">
-            Don't have an account? <a href="register.html">注册</a>
+            没有账号？<a href="#" id="registerLink">注册</a>
         </p>
+    </div>
+
+    <!-- 注册选择内容 -->
+    <div class="register-select-content" id="registerSelectContent" style="display: none;">
+        <h1>注册</h1>
+        
+        <div class="register-buttons">
+            <button class="register-type-btn" id="emailRegisterBtn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                邮箱注册
+            </button>
+            
+            <button class="register-type-btn" id="phoneRegisterBtn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                手机号注册
+            </button>
+            
+            <button class="register-type-btn" id="usernameRegisterBtn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                用户名注册
+            </button>
+        </div>
+        
+        <div class="back-buttons">
+            <p class="back-to-login" id="backToLoginFromSelect">← 返回登录</p>
+        </div>
+    </div>
+
+    <!-- 注册表单内容 -->
+    <div class="register-form-content" id="registerFormContent" style="display: none;">
+        <h1 id="registerTitle">注册</h1>
+        
+        <form id="registerForm">
+            <div class="input-group">
+                <input type="text" id="registerInput" placeholder="" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="registerPassword" placeholder="密码" required>
+            </div>
+
+            <button type="submit" class="login-btn">注册并登入</button>
+        </form>
+        
+        <div class="back-buttons">
+            <p class="back-to-login" id="backToLoginFromForm">← 返回登录</p>
+            <p class="back-to-select" id="backToSelect">← 选择注册方式</p>
+        </div>
     </div>
 </div>
 

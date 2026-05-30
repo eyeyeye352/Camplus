@@ -1,17 +1,57 @@
-const fixedTitle = document.querySelector('.fixed-title');
 const menuButton = document.getElementById('menuButton');
 const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
 const musicButton = document.getElementById('musicButton');
 const bgMusic = document.getElementById('bgMusic');
-const userAvatar = document.getElementById('userAvatar');
-const userButton = document.getElementById('userButton');
 const menuLoginBtn = document.getElementById('menuLoginBtn');
-const activationZone = 200;
+
+// 注册相关元素
+const loginContent = document.getElementById('loginContent');
+const registerSelectContent = document.getElementById('registerSelectContent');
+const registerFormContent = document.getElementById('registerFormContent');
+const registerLink = document.getElementById('registerLink');
+const backToLoginFromSelect = document.getElementById('backToLoginFromSelect');
+const backToLoginFromForm = document.getElementById('backToLoginFromForm');
+const backToSelect = document.getElementById('backToSelect');
+const emailRegisterBtn = document.getElementById('emailRegisterBtn');
+const phoneRegisterBtn = document.getElementById('phoneRegisterBtn');
+const usernameRegisterBtn = document.getElementById('usernameRegisterBtn');
+const registerForm = document.getElementById('registerForm');
+const registerInput = document.getElementById('registerInput');
+const registerTitle = document.getElementById('registerTitle');
+
+// 当前注册类型
+let currentRegisterType = '';
 
 // 跳转到首页
 function goToHome() {
     window.location.href = '../home/index.html';
+}
+
+// 显示登录界面
+function showLogin() {
+    loginContent.style.display = 'block';
+    registerSelectContent.style.display = 'none';
+    registerFormContent.style.display = 'none';
+}
+
+// 显示注册选择界面
+function showRegisterSelect() {
+    loginContent.style.display = 'none';
+    registerSelectContent.style.display = 'block';
+    registerFormContent.style.display = 'none';
+}
+
+// 显示注册表单界面
+function showRegisterForm(type, placeholder, title) {
+    currentRegisterType = type;
+    registerInput.placeholder = placeholder;
+    registerTitle.textContent = title;
+    registerInput.value = '';
+    document.getElementById('registerPassword').value = '';
+    loginContent.style.display = 'none';
+    registerSelectContent.style.display = 'none';
+    registerFormContent.style.display = 'block';
 }
 
 // 音乐控制
@@ -59,19 +99,6 @@ musicButton.addEventListener('click', (e) => {
     toggleMusic();
 });
 
-document.addEventListener('mousemove', (e) => {
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-
-    if (mouseX <= activationZone && mouseY >= windowHeight - activationZone) {
-        fixedTitle.classList.add('active');
-    } else {
-        fixedTitle.classList.remove('active');
-    }
-});
-
 menuButton.addEventListener('click', () => {
     sideMenu.classList.toggle('active');
     menuOverlay.classList.toggle('active');
@@ -93,57 +120,116 @@ menuItems.forEach(item => {
 });
 
 // 登录相关按钮点击事件
-userAvatar.addEventListener('click', () => {
-    // 已经在登录页面了
-});
-
-userButton.addEventListener('click', () => {
-    // 已经在登录页面了
-});
-
 menuLoginBtn.addEventListener('click', () => {
-    // 已经在登录页面了
+    // 已在登录页，无需操作
 });
 
-// 原有登录表单逻辑
-const form = document.getElementById('loginForm');
+// 注册链接点击事件
+registerLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showRegisterSelect();
+});
 
-// 表单提交（对接后端接口）
-form.addEventListener('submit', async (e) => {
+// 返回登录点击事件
+backToLoginFromSelect.addEventListener('click', showLogin);
+backToLoginFromForm.addEventListener('click', showLogin);
+backToSelect.addEventListener('click', showRegisterSelect);
+
+// 注册类型选择
+emailRegisterBtn.addEventListener('click', () => {
+    showRegisterForm('email', '请输入邮箱', '邮箱注册');
+});
+
+phoneRegisterBtn.addEventListener('click', () => {
+    showRegisterForm('phone', '请输入手机号', '手机号注册');
+});
+
+usernameRegisterBtn.addEventListener('click', () => {
+    showRegisterForm('username', '请输入用户名', '用户名注册');
+});
+
+
+// 登录表单提交
+const loginForm = document.getElementById('loginForm');
+loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
+    const loginAccount = document.getElementById('loginAccount').value.trim();
     const password = document.getElementById('password').value.trim();
+    const rememberMe = document.querySelector('input[name="rememberMe"]')?.checked ? 'on' : 'off';
 
-    // 简单前端校验
-    if (!email || !password) {
-        alert('请填写邮箱和密码');
+    if (!loginAccount || !password) {
+        alert('请填写账号和密码');
         return;
     }
 
-    // TODO: 这里替换成你后端的登录接口地址
-    const apiUrl = '/login/loginApi';
-
     try {
-        const response = await fetch(apiUrl, {
+        const params = `loginAccount=${loginAccount}&password=${password}&rememberMe=${rememberMe}`;
+
+        const res = await fetch('/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/x-www-form-urlencoded"
             },
-            credentials: 'include', // 带 Cookie，维持 Session
-            body: JSON.stringify({
-                username: email,
-                password: password
-            })
+            body: params,
+            credentials: 'include'
+        });
+
+        const result = await res.json();
+        if (result.success) {
+            alert(result.msg);
+            window.location.href = '../home/index.html';
+        } else {
+            alert(result.msg);
+        }
+    } catch (err) {
+        console.error(err);
+        alert('请求异常，请检查Tomcat是否启动、是否用localhost访问');
+    }
+});
+
+// 注册表单提交
+registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const inputValue = registerInput.value.trim();
+    const password = document.getElementById('registerPassword').value.trim();
+
+    if (!inputValue || !password) {
+        alert('请填写完整信息');
+        return;
+    }
+
+    try {
+        // 拼接普通键值对 适配原生Servlet getParameter
+        let params = "password=" + password;
+
+        // 根据注册类型动态追加字段
+        if (currentRegisterType === 'email') {
+            params += "&email=" + inputValue;
+        } else if (currentRegisterType === 'phone') {
+            params += "&phone=" + inputValue;
+        } else if (currentRegisterType === 'username') {
+            params += "&username=" + inputValue;
+        }
+
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params,
+            credentials: 'include'
         });
 
         const result = await response.json();
-        if (result.code === 200) {
-            alert('登录成功');
-            // 登录成功后跳转到首页
-            window.location.href = '../home/index.html';
+        if (result.success) {
+            alert(result.msg);
+            // 注册成功切回登录页
+            showLogin();
+            registerForm.reset();
         } else {
-            alert(result.msg || '登录失败');
+            alert(result.msg);
         }
     } catch (err) {
         console.error(err);

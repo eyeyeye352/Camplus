@@ -46,32 +46,114 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background-color: #2a2a2a;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
 }
 
-.fixed-title {
+/* 动态背景容器 */
+.background-container {
     position: fixed;
-    left: 30px;
-    bottom: 30px;
-    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
     pointer-events: none;
-    transform: translateY(20px);
+}
+
+/* 圆点样式 */
+.dot {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
     opacity: 0.6;
-    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
 }
 
-.fixed-title.active {
-    transform: translateY(0);
-    opacity: 1;
-}
+/* 更多圆点 */
+.dot1 { width: 8px; height: 8px; top: 15%; left: 10%; animation: float1 15s ease-in-out infinite; }
+.dot2 { width: 12px; height: 12px; top: 25%; left: 25%; animation: float2 12s ease-in-out infinite; }
+.dot3 { width: 6px; height: 6px; top: 35%; left: 40%; animation: float3 18s ease-in-out infinite; }
+.dot4 { width: 10px; height: 10px; top: 20%; left: 55%; animation: float4 14s ease-in-out infinite; }
+.dot5 { width: 7px; height: 7px; top: 45%; left: 20%; animation: float5 16s ease-in-out infinite; }
+.dot6 { width: 9px; height: 9px; top: 55%; left: 35%; animation: float6 13s ease-in-out infinite; }
+.dot7 { width: 11px; height: 11px; bottom: 20%; right: 15%; animation: float7 17s ease-in-out infinite; }
+.dot8 { width: 8px; height: 8px; bottom: 35%; right: 30%; animation: float8 11s ease-in-out infinite; }
+.dot9 { width: 13px; height: 13px; bottom: 25%; right: 45%; animation: float9 19s ease-in-out infinite; }
+.dot10 { width: 7px; height: 7px; bottom: 50%; right: 20%; animation: float10 15s ease-in-out infinite; }
+.dot11 { width: 10px; height: 10px; bottom: 40%; right: 55%; animation: float11 14s ease-in-out infinite; }
+.dot12 { width: 6px; height: 6px; bottom: 60%; right: 35%; animation: float12 16s ease-in-out infinite; }
 
-.fixed-title h1 {
-    font-family: 'Camplus_title', sans-serif;
-    font-size: 56px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+/* 圆点浮动动画 */
+@keyframes float1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, 20px) scale(1.1); }
+    50% { transform: translate(0, 40px) scale(0.9); }
+    75% { transform: translate(-30px, 20px) scale(1.05); }
+}
+@keyframes float2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-25px, 30px) scale(0.9); }
+    50% { transform: translate(-40px, 0) scale(1.1); }
+    75% { transform: translate(-20px, -25px) scale(0.95); }
+}
+@keyframes float3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(20px, -25px) scale(1.05); }
+    50% { transform: translate(40px, 0) scale(0.9); }
+    75% { transform: translate(20px, 30px) scale(1.1); }
+}
+@keyframes float4 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-35px, 15px) scale(0.95); }
+    50% { transform: translate(0, -30px) scale(1.05); }
+    75% { transform: translate(35px, 10px) scale(1); }
+}
+@keyframes float5 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(25px, -20px) scale(1.1); }
+    50% { transform: translate(10px, -40px) scale(0.9); }
+    75% { transform: translate(-15px, -15px) scale(1.05); }
+}
+@keyframes float6 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-20px, 25px) scale(0.9); }
+    50% { transform: translate(-35px, 10px) scale(1.1); }
+    75% { transform: translate(-10px, -15px) scale(0.95); }
+}
+@keyframes float7 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-30px, -20px) scale(1.1); }
+    50% { transform: translate(0, -40px) scale(0.9); }
+    75% { transform: translate(30px, -25px) scale(1.05); }
+}
+@keyframes float8 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(40px, -30px) scale(0.95); }
+    50% { transform: translate(20px, 0) scale(1.05); }
+    75% { transform: translate(0, 25px) scale(1); }
+}
+@keyframes float9 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-20px, 30px) scale(1.1); }
+    50% { transform: translate(-40px, 10px) scale(0.9); }
+    75% { transform: translate(-25px, -20px) scale(1.05); }
+}
+@keyframes float10 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, 25px) scale(0.9); }
+    50% { transform: translate(15px, 40px) scale(1.1); }
+    75% { transform: translate(-10px, 20px) scale(0.95); }
+}
+@keyframes float11 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-25px, -20px) scale(1.05); }
+    50% { transform: translate(-10px, -35px) scale(0.9); }
+    75% { transform: translate(15px, -15px) scale(1.1); }
+}
+@keyframes float12 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(20px, 20px) scale(0.95); }
+    50% { transform: translate(35px, 5px) scale(1.05); }
+    75% { transform: translate(20px, -10px) scale(1); }
 }
 
 .menu-button {
@@ -102,7 +184,7 @@ body {
 .music-button {
     position: fixed;
     top: 20px;
-    right: 180px;
+    right: 100px;
     z-index: 99997;
     cursor: pointer;
     opacity: 0.5;
@@ -273,7 +355,7 @@ body {
     text-decoration: underline;
 }
 
-/* 登录弹窗原有样式 */
+/* 登录弹窗样式 */
 .login-modal {
     position: absolute;
     top: 50%;
@@ -284,62 +366,11 @@ body {
     border-radius: 16px;
     opacity: 0;
     animation: fadeIn 0.4s ease forwards;
-}
-
-/* 边框容器 */
-.border-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-/* 彩色渐变边框 */
-.border-gradient {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        45deg,
-        #ff0080,
-        #ff8c00,
-        #40e0d0,
-        #8a2be2,
-        #ff0080
-    );
-    background-size: 400% 400%;
-    animation: gradientRotate 4s ease infinite;
-    opacity: 0.8;
-    filter: blur(3px);
-}
-
-@keyframes gradientRotate {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* 内部黑色背景 */
-.border-inner {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
-    background-color: #0a0a0a;
-    border-radius: 14px;
+    z-index: 1;
+    background: #0a0a0a;
+    /* 边缘渐变到背景色 */
+    box-shadow: 0 0 30px 15px rgba(26, 26, 26, 0.8),
+                0 0 60px 30px rgba(26, 26, 26, 0.4);
 }
 
 /* 登录内容 */
@@ -365,42 +396,44 @@ body {
 
 /* 标题文字 */
 .login-content h1 {
-    font-size: 36px;
-    margin-bottom: 35px;
-    font-weight: 600;
+    font-family: 'Camplus_title', sans-serif;
+    font-size: 42px;
+    margin-bottom: 50px;
+    font-weight: 700;
+    letter-spacing: 2px;
 }
 
+/* 输入框组 - 细底线样式 */
 .input-group {
-    margin-bottom: 28px;
+    margin-bottom: 35px;
     position: relative;
 }
 
 .input-group input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    padding: 12px 15px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 10px 0;
     color: #fff;
     font-size: 16px;
     outline: none;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s;
 }
 
 .input-group input:focus {
-    border-color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.15);
+    border-bottom-color: rgba(255, 255, 255, 1);
 }
 
 .input-group input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 35px;
+    margin-bottom: 40px;
     font-size: 14px;
 }
 
@@ -463,4 +496,78 @@ body {
 
 .register-tip a:hover {
     color: #ff0080;
+}
+
+/* 注册选择内容 */
+.register-select-content, .register-form-content {
+    position: relative;
+    z-index: 1;
+    padding: 45px 35px;
+    color: #fff;
+    text-align: center;
+}
+
+.register-select-content h1, .register-form-content h1 {
+    font-family: 'Camplus_title', sans-serif;
+    font-size: 42px;
+    margin-bottom: 50px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.register-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.register-type-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex: 1;
+    padding: 20px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    flex-direction: column;
+}
+
+.register-type-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
+}
+
+.register-type-btn:active {
+    transform: scale(0.98);
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.back-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.back-to-login, .back-to-select {
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    font-size: 14px;
+    transition: color 0.2s;
+    margin: 0;
+}
+
+.back-to-login:hover, .back-to-select:hover {
+    color: #fff;
 }
