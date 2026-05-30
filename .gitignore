@@ -30,7 +30,7 @@ Desktop.ini
 
 # 数据库本地配置（很重要！）
 jdbc.properties
-db.properties
+src/main/resources/mybatis/db.properties
 application-local.properties
 
 # 其他临时文件

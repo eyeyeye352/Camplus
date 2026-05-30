@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camplus</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<!-- 用户头像 -->
+<div class="user-avatar" id="userAvatar">
+    <svg class="avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+    </svg>
+</div>
+
+<!-- 固定标题容器 -->
+<div class="fixed-title">
+    <h1>Camplus</h1>
+</div>
+
+<!-- 音乐控制按钮 -->
+<div class="music-button" id="musicButton">
+    <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3"/>
+        <circle cx="18" cy="16" r="3"/>
+        <line class="music-slash" x1="4" y1="4" x2="20" y2="20" stroke-width="3" style="display: none;"/>
+    </svg>
+</div>
+
+<!-- 用户按钮 -->
+<div class="user-button" id="userButton">
+    <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+    </svg>
+</div>
+
+<!-- 菜单按钮 -->
+<div class="menu-button" id="menuButton">
+    <img src="../assets/icons/menuIcon.svg" alt="菜单" class="menu-icon">
+</div>
+
+<!-- 背景音乐 -->
+<audio id="bgMusic" loop>
+    <source src="../assets/musics/webbgm.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 菜单遮罩层 -->
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- 侧边菜单 -->
+<div class="side-menu" id="sideMenu">
+    <!-- 边框容器 -->
+    <div class="border-container">
+        <!-- 彩色渐变边框 -->
+        <div class="border-gradient"></div>
+        <!-- 内部黑色背景 -->
+        <div class="border-inner"></div>
+    </div>
+    <!-- 菜单内容 -->
+    <div class="menu-content">
+        <div class="menu-item">问答平台</div>
+        <div class="menu-item">首页</div>
+        <div class="menu-item">用户</div>
+        <div class="menu-item">反馈</div>
+        <div class="menu-item">帮助</div>
+    </div>
+    <!-- 底部登录按钮 -->
+    <div class="menu-footer">
+        <button class="menu-login-btn" id="menuLoginBtn">登入/注册</button>
+    </div>
+</div>
+
+<!-- 功能按钮容器 -->
+
+<script src="index.js"></script>
+</body>
+</html>

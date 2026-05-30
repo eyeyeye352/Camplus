@@ -1,0 +1,24 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- 发光滤镜 -->
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 旋转成菱形的四格图标 -->
+  <g transform="rotate(45 32 32)" filter="url(#glow)">
+    <!-- 左上格 -->
+    <rect x="14" y="14" width="14" height="14" rx="2" fill="#ffffff"/>
+    <!-- 右上格 -->
+    <rect x="36" y="14" width="14" height="14" rx="2" fill="#ffffff"/>
+    <!-- 左下格 -->
+    <rect x="14" y="36" width="14" height="14" rx="2" fill="#ffffff"/>
+    <!-- 右下格 -->
+    <rect x="36" y="36" width="14" height="14" rx="2" fill="#ffffff"/>
+  </g>
+</svg>
