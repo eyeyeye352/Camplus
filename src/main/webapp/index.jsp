@@ -71,9 +71,9 @@
 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
 <iconify-icon class="text-slate-400 text-2xl group-focus-within:text-academic-blue transition-colors" icon="solar:magnifer-linear"></iconify-icon>
 </div>
-<input class="block w-full pl-14 pr-32 py-5 bg-white border-0 rounded-2xl search-shadow text-lg focus:ring-2 focus:ring-academic-blue/20 outline-none transition-all placeholder:text-slate-400" placeholder="输入你的问题，如「食堂几点关门？」" type="text"/>
+<input class="block w-full pl-14 pr-32 py-5 bg-white border-0 rounded-2xl search-shadow text-lg focus:ring-2 focus:ring-academic-blue/20 outline-none transition-all placeholder:text-slate-400" placeholder="输入你的问题，如「食堂几点关门？」" type="text" id="searchInput"/>
 <div class="absolute inset-y-2 right-2 flex">
-<button class="bg-academic-blue text-white px-8 rounded-xl font-semibold hover:bg-blue-800 transition-all shadow-lg">
+<button class="bg-academic-blue text-white px-8 rounded-xl font-semibold hover:bg-blue-800 transition-all shadow-lg" onclick="handleSearch()">
                         搜索
                     </button>
 </div>
@@ -152,121 +152,15 @@
                 </h2>
 <p class="text-slate-500 mt-1">基于全校同学的高频查询实时生成</p>
 </div>
-<a class="text-academic-blue font-medium flex items-center gap-1 hover:underline" href="#">
+<a class="text-academic-blue font-medium flex items-center gap-1 hover:underline" href="ranking.jsp">
                 查看完整榜单 <iconify-icon icon="solar:alt-arrow-right-linear"></iconify-icon>
 </a>
 </div>
-<div class="grid md:grid-cols-2 gap-6">
+<div class="grid md:grid-cols-2 gap-6" id="hotFaqsContainer">
 <!-- 左侧榜单 -->
-<div class="space-y-3">
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-red-500 italic">01</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">如何查询本学期课表？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 12,840 次查询
-                            </span>
-<span class="text-xs text-vibrant-green bg-green-50 px-2 py-0.5 rounded">教务服务</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-orange-500 italic">02</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">校园卡丢失如何补办？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 9,320 次查询
-                            </span>
-<span class="text-xs text-orange-500 bg-orange-50 px-2 py-0.5 rounded">校园卡</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-yellow-500 italic">03</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">图书馆周末开放时间？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 8,105 次查询
-                            </span>
-<span class="text-xs text-vibrant-green bg-green-50 px-2 py-0.5 rounded">图书馆</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-slate-300 italic">04</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">宿舍报修流程是什么？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 6,420 次查询
-                            </span>
-<span class="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded">报修服务</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-</div>
+<div class="space-y-3" id="leftFaqs"></div>
 <!-- 右侧榜单 -->
-<div class="space-y-3">
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-slate-300 italic">05</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">四六级考试报名时间？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 5,880 次查询
-                            </span>
-<span class="text-xs text-vibrant-green bg-green-50 px-2 py-0.5 rounded">教务服务</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-slate-300 italic">06</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">校车时刻表在哪里查？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 4,920 次查询
-                            </span>
-<span class="text-xs text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded">校车查询</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-slate-300 italic">07</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">奖学金评定标准？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 4,560 次查询
-                            </span>
-<span class="text-xs text-vibrant-green bg-green-50 px-2 py-0.5 rounded">教务服务</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-<div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer">
-<span class="w-8 text-xl font-bold text-slate-300 italic">08</span>
-<div class="flex-1 ml-2">
-<h3 class="font-semibold text-slate-800">校园网如何登录与续费？</h3>
-<div class="flex items-center gap-4 mt-1">
-<span class="text-xs text-slate-400 flex items-center gap-1">
-<iconify-icon icon="solar:eye-linear"></iconify-icon> 3,890 次查询
-                            </span>
-<span class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded">生活服务</span>
-</div>
-</div>
-<iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
-</div>
-</div>
+<div class="space-y-3" id="rightFaqs"></div>
 </div>
 </section>
 <!-- 5. 用户众包贡献模块 -->
@@ -373,7 +267,7 @@
 </footer>
 <script>
         // 搜索框交互增强
-        const searchInput = document.querySelector('input[type="text"]');
+        const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('focus', () => {
             searchInput.parentElement.classList.add('scale-[1.02]');
         });
@@ -381,12 +275,92 @@
             searchInput.parentElement.classList.remove('scale-[1.02]');
         });
 
-        // 模拟搜索推荐逻辑
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                alert('正在为您识别意图并检索知识库...');
+                handleSearch();
             }
         });
+
+        function handleSearch() {
+            const query = searchInput.value;
+            if (query.trim()) {
+                alert('正在为您识别意图并检索知识库：' + query);
+            }
+        }
+
+        // 加载热门问题
+        async function loadHotFaqs() {
+            try {
+                const response = await fetch('/api/faq/hot?limit=8');
+                const result = await response.json();
+                if (result.success && result.data) {
+                    renderFaqs(result.data);
+                }
+            } catch (error) {
+                console.error('加载热门问题失败:', error);
+            }
+        }
+
+        function renderFaqs(faqs) {
+            const leftContainer = document.getElementById('leftFaqs');
+            const rightContainer = document.getElementById('rightFaqs');
+            
+            const rankColors = ['text-red-500', 'text-orange-500', 'text-yellow-500', 'text-slate-300'];
+            
+            faqs.forEach((faq, index) => {
+                const container = index < 4 ? leftContainer : rightContainer;
+                const displayIndex = index + 1;
+                const colorClass = rankColors[index] || 'text-slate-300';
+                
+                const faqHtml = `
+                    <div class="flex items-center p-4 bg-white rounded-xl border border-slate-100 card-hover transition-all cursor-pointer" 
+                         onclick="handleFaqClick(${faq.faqId}, '${escapeHtml(faq.question)}')">
+                        <span class="w-8 text-xl font-bold ${colorClass} italic">${String(displayIndex).padStart(2, '0')}</span>
+                        <div class="flex-1 ml-2">
+                            <h3 class="font-semibold text-slate-800">${escapeHtml(faq.question)}</h3>
+                            <div class="flex items-center gap-4 mt-1">
+                                <span class="text-xs text-slate-400 flex items-center gap-1">
+                                    <iconify-icon icon="solar:eye-linear"></iconify-icon> ${faq.questionCount} 次查询
+                                </span>
+                            </div>
+                        </div>
+                        <iconify-icon class="text-slate-300" icon="solar:alt-arrow-right-linear"></iconify-icon>
+                    </div>
+                `;
+                container.innerHTML += faqHtml;
+            });
+        }
+
+        async function handleFaqClick(faqId, question) {
+            try {
+                await fetch('/api/faq/click', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'faqId=' + faqId
+                });
+                
+                const forwardResponse = await fetch('/api/faq/qa/forward', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'faqId=' + faqId + '&question=' + encodeURIComponent(question)
+                });
+                const result = await forwardResponse.json();
+                
+                if (result.success && result.data) {
+                    alert('问答系统回复：' + result.data.qaResult);
+                }
+            } catch (error) {
+                console.error('处理点击失败:', error);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadHotFaqs);
     </script>
 </body>
 </html>
