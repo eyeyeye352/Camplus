@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camplus.faq.mappers.FaqMapper">
+
+    <resultMap id="FaqResultMap" type="com.camplus.faq.pojo.Faq">
+        <id column="faq_id" property="faqId"/>
+        <result column="question_count" property="questionCount"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="hot_score" property="hotScore"/>
+        <result column="display_status" property="displayStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="question" property="question"/>
+        <result column="answer" property="answer"/>
+    </resultMap>
+
+    <select id="selectHotFaqs" resultMap="FaqResultMap">
+        SELECT * FROM faq_items
+        WHERE display_status = 1
+        ORDER BY hot_score DESC, question_count DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectById" resultMap="FaqResultMap">
+        SELECT * FROM faq_items WHERE faq_id = #{faqId}
+    </select>
+
+    <update id="incrementQuestionCount">
+        UPDATE faq_items
+        SET question_count = question_count + 1
+        WHERE faq_id = #{faqId}
+    </update>
+
+    <update id="updateHotScore">
+        UPDATE faq_items
+        SET hot_score = #{hotScore}
+        WHERE faq_id = #{faqId}
+    </update>
+
+    <select id="selectAllDisplayed" resultMap="FaqResultMap">
+        SELECT * FROM faq_items WHERE display_status = 1
+    </select>
+
+</mapper>
