@@ -1,0 +1,409 @@
+/* ==========================================================================
+   Camplus 管理员后台核心样式表 - 赛博朋克/暗黑流光玻璃态 (修复排版版)
+   ========================================================================== */
+
+/* 1. 引入全局基础样式 */
+@import url('../login/login.css');
+
+/* ⚡ 核心修复：彻底粉碎并重置从 login.css 继承来的 flex 居中与高度锁定 */
+body {
+    display: block !important;         /* 强制改回标准块级布局，阻止内容居中堆叠 */
+    height: auto !important;          /* 允许页面高度随内容自适应伸展 */
+    min-height: 100vh;
+    overflow-y: auto !important;      /* 恢复纵向滚动条 */
+    background-color: #0a0a0a;        /* 保持赛博暗黑底色 */
+    box-sizing: border-box;
+
+    /* 使用 body 的 padding 直接为顶栏(100px)和左侧常驻边栏(280px)撑开安全区域 */
+    padding: 100px 40px 40px 280px !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. 顶栏样式 (Header)
+   -------------------------------------------------------------------------- */
+.admin-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 10, 10, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 9999; /* 确保顶栏永远在最顶层 */
+    box-sizing: border-box;
+}
+
+.admin-title {
+    font-family: 'Camplus_title', sans-serif;
+    font-size: 22px;
+    color: #fff;
+    letter-spacing: 4px;
+}
+
+.header-right {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   3. 左侧常驻边栏精细控制 (独立类名，无样式污染)
+   -------------------------------------------------------------------------- */
+.admin-sidebar {
+    position: fixed;
+    top: 70px; /* 避开顶栏高度 */
+    left: 0;
+    width: 240px;
+    height: calc(100vh - 70px);
+
+    /* 毛玻璃风格，与右侧主体数据表一致 */
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+
+    /* 🔑 核心层级同步：设为 2，与右侧主界面处于同级。
+       弹窗 modal-overlay (10000) 出现时，会将侧边栏一并虚化并阻挡所有点击 */
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* 独立重写流光边框组件 */
+.admin-border-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none; /* 必须有，防止吃掉鼠标点击 */
+    overflow: hidden;
+}
+
+.admin-border-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #8a2be2, #ff0080);
+    background-size: 400% 400%;
+    animation: gradientRotate 4s ease infinite;
+    opacity: 0.8;
+    filter: blur(4px);
+}
+
+.admin-border-inner {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 0;
+    bottom: 3px;
+    background-color: #0a0a0a; /* 内部暗色填补 */
+}
+
+/* 专属菜单项控制 */
+.admin-menu-content {
+    position: relative;
+    z-index: 5; /* 在流光背景之上 */
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin-menu-item {
+    padding: 14px 20px;
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 15px;
+    border: 1px solid transparent;
+    position: relative;
+    z-index: 2;
+}
+
+.admin-menu-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #40e0d0;
+}
+
+/* 当前激活状态 */
+.admin-menu-item.active {
+    background: rgba(64, 224, 208, 0.08);
+    color: #40e0d0;
+    border: 1px solid rgba(64, 224, 208, 0.2);
+    font-weight: 600;
+}
+
+/* 底部功能按钮样式 */
+.admin-menu-item.logout-item {
+    margin-top: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-menu-item.logout-item:hover {
+    background: rgba(255, 65, 108, 0.08);
+    color: #ff4b2b;
+    border-color: rgba(255, 75, 43, 0.25);
+}
+
+/* 🚀 善后处理：隐藏后台页面中完全不需要的抽屉开关按钮及废弃的遮罩层 */
+#menuButton, .menu-overlay, #menuOverlay {
+    display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. 主体内容展示区 (Main Content)
+   -------------------------------------------------------------------------- */
+.main-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    box-sizing: border-box; /* 依靠 body 的 padding-left 实现天然对齐，绝不重叠 */
+}
+
+/* 智能毛玻璃卡片面板 */
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    color: #fff;
+}
+
+.card-header h2 {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.refresh-btn {
+    padding: 10px 24px;
+    background: linear-gradient(45deg, #40e0d0, #8a2be2);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.refresh-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(64, 224, 208, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   5. 数据表格渲染样式 (Data Table)
+   -------------------------------------------------------------------------- */
+.table-wrapper {
+    overflow-x: auto; /* 若表格太宽允许内部横向滚动，不撑破外层卡片 */
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: left;
+}
+
+th, td {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 14px;
+}
+
+th {
+    background: rgba(255, 255, 255, 0.01);
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.action-btns {
+    display: flex;
+    gap: 10px;
+}
+
+/* 列表操作触发按钮 */
+.btn-review-trigger {
+    padding: 8px 16px;
+    background: rgba(64, 224, 208, 0.06);
+    border: 1px solid rgba(64, 224, 208, 0.25);
+    border-radius: 6px;
+    color: #40e0d0;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-review-trigger:hover {
+    background: linear-gradient(45deg, #40e0d0, #8a2be2);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(64, 224, 208, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   6. 审核详情多功能模态框 (Modal Window) 【已修复类名】
+   -------------------------------------------------------------------------- */
+/* ⚡ 修复：类名必须是 .modal-overlay 才能匹配 HTML */
+.modal-overlay {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000; /* 层级最高，确保弹窗时能盖住所有元素 */
+    justify-content: center;
+    align-items: center;
+}
+
+/* ⚡ 修复：激活时改为 flex 居中显示 */
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 30px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
+    animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 18px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #fff;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.form-control {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
+}
+
+.form-control:focus {
+    border-color: #40e0d0;
+    box-shadow: 0 0 10px rgba(64, 224, 208, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+select.form-control option {
+    background: #111;
+    color: #fff;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.btn-approve, .btn-reject {
+    padding: 12px 26px;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-approve {
+    background: linear-gradient(45deg, #00b4db, #00ff87);
+    box-shadow: 0 4px 12px rgba(0, 255, 135, 0.15);
+}
+
+.btn-reject {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    box-shadow: 0 4px 12px rgba(255, 75, 43, 0.15);
+}
+
+.btn-approve:hover, .btn-reject:hover {
+    transform: translateY(-2px);
+}

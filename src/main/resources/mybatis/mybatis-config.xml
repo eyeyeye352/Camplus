@@ -34,5 +34,6 @@
 
     <mappers>
         <mapper resource="mybatis/mappers/UserMapper.xml"/>
+        <package name="com.camplus.admin.Mappers"/>
     </mappers>
 </configuration>
