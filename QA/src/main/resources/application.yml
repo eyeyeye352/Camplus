@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+langchain4j:
+  open-ai:
+    chat-model:
+      # 【重要】请去智谱或DeepSeek官网免费申请一个API Key填在这里
+      api-key: sk-rffxhncencqyeehwvkylxgddvrhxrbqiqrvyukqlyumhozqv
+      # 这里以 DeepSeek 为例，如果是智谱请换成智谱的 baseUrl
+      base-url: https://api.siliconflow.cn/v1
+      model-name: Qwen/Qwen2.5-72B-Instruct
+      temperature: 0.1
+      log-requests: true
+      log-responses: true
