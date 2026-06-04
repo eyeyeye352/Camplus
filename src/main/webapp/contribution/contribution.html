@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户贡献 - Camplus</title>
+    <link rel="stylesheet" href="./css/contribution.css">
+</head>
+<body>
+    <!--用户贡献页面标题栏-->
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Camplus</p>
+            <h1>用户贡献中心</h1>
+        </div>
+        <div class="status-pill" id="loginStatus">未登录</div>
+    </header>
+
+    <!--核心区域-->
+    <main class="layout">
+        <!--侧边拦-->
+        <aside class="sidebar">
+            <button class="nav-item active" data-panel="submitPanel">提交贡献</button>
+            <button class="nav-item" data-panel="myPanel">我的贡献</button>
+        </aside>
+
+        <!--内容区域-->
+        <section class="content">
+            <!--提交贡献区域-->
+            <section class="panel active" id="submitPanel">
+                <!--标题-->
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Submit</p>
+                        <h2>提交一条校园知识贡献</h2>
+                    </div>
+                    <span class="hint">提交后默认进入待审核</span>
+                </div>
+
+                <!--提交贡献表单-->
+                <form id="contributionForm" class="form-grid">
+                    <!--贡献类型-->
+                    <label>
+                        贡献类型
+                        <select name="contribution_type" required>
+                            <option value="0">新增问题</option>
+                            <option value="1">答案纠错</option>
+                        </select>
+                    </label>
+                    <!--贡献标题-->
+                    <label>
+                        标题
+                        <input name="title" maxlength="128" placeholder="例如：图书馆假期开放时间补充" required>
+                    </label>
+                    <!--贡献内容-->
+                    <label class="wide">
+                        贡献内容
+                        <textarea name="content" rows="8" placeholder="填写新问题描述，或说明已有答案需要纠错的地方" required></textarea>
+                    </label>
+
+                    <!--操作选项栏-->
+                    <div class="actions wide">
+                        <button type="reset" class="secondary">清空</button>
+                        <button type="submit">提交审核</button>
+                    </div>
+                </form>
+            </section>
+
+            <!--我的贡献区域-->
+            <section class="panel" id="myPanel">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Mine</p>
+                        <h2>我的贡献记录</h2>
+                    </div>
+                    <select id="statusFilter">
+                        <option value="">全部状态</option>
+                        <option value="0">待审核</option>
+                        <option value="1">已通过</option>
+                        <option value="2">已拒绝</option>
+                    </select>
+                </div>
+                <div class="list" id="contributionList">
+                    <div class="empty">点击“我的贡献”后会自动加载记录。</div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+    <script src="./js/contribution.js"></script>
+</body>
+</html>
