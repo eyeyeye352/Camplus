@@ -315,20 +315,31 @@ body {
 .menu-content {
     position: relative;
     z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 20px;
 }
 
 .menu-item {
-    padding: 18px 30px;
+    display: block;
+    padding: 20px 10px;
     font-family: sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.2s ease;
 }
 
 .menu-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 0, 128, 0.2);
+    border-color: rgba(255, 0, 128, 0.5);
     color: #ff0080;
+    transform: translateY(-2px);
 }
 
 .menu-footer {
