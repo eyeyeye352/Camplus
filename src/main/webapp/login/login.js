@@ -109,15 +109,7 @@ menuOverlay.addEventListener('click', () => {
     menuOverlay.classList.remove('active');
 });
 
-// 菜单点击事件
-const menuItems = document.querySelectorAll('.menu-item');
-menuItems.forEach(item => {
-    if (item.textContent === '首页') {
-        item.addEventListener('click', () => {
-            goToHome();
-        });
-    }
-});
+
 
 // 登录相关按钮点击事件
 menuLoginBtn.addEventListener('click', () => {
