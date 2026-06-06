@@ -7,17 +7,22 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ContributionService {
+//    表示待审核状态
     private static final int STATUS_PENDING = 0;
     private final ContributionDao contributionDao = new ContributionDao();
 
+//     创建用户贡献
     public int create(UserContribution contribution, Integer currentUserId) throws SQLException {
+//        确认登录状态
         ensureLoggedIn(currentUserId);
         contribution.setUserId(currentUserId);
         contribution.setStatus(STATUS_PENDING);
+//        检查贡献内容是否合法
         validate(contribution);
         return contributionDao.insert(contribution);
     }
 
+//    查询用户贡献
     public List<UserContribution> listMine(Integer currentUserId, Integer status, int page, int pageSize)
             throws SQLException {
         ensureLoggedIn(currentUserId);
@@ -30,6 +35,7 @@ public class ContributionService {
         return contributionDao.findByUserId(currentUserId, status, offset, safeSize);
     }
 
+//    查询执行用户贡献详情
     public UserContribution detail(Integer contributionId, Integer currentUserId) throws SQLException {
         ensureLoggedIn(currentUserId);
         requireId(contributionId, "贡献ID不能为空");
@@ -40,16 +46,18 @@ public class ContributionService {
         return contribution;
     }
 
+//    更新自己的贡献
     public void update(UserContribution contribution, Integer currentUserId) throws SQLException {
         ensureLoggedIn(currentUserId);
         requireId(contribution.getContributionId(), "贡献ID不能为空");
         contribution.setUserId(currentUserId);
         validate(contribution);
         if (!contributionDao.updatePending(contribution)) {
-            throw new IllegalArgumentException("只能修改自己的待审核贡献");
+            throw new IllegalArgumentException("只能修改自己的待审核贡献或者已拒绝贡献");
         }
     }
 
+//    撤回自己的待审核贡献
     public void delete(Integer contributionId, Integer currentUserId) throws SQLException {
         ensureLoggedIn(currentUserId);
         requireId(contributionId, "贡献ID不能为空");
@@ -58,6 +66,7 @@ public class ContributionService {
         }
     }
 
+//    检验贡献内容是否合法
     private void validate(UserContribution contribution) {
         Integer type = contribution.getContributionType();
         if (type == null || type < 0 || type > 1) {
@@ -74,7 +83,9 @@ public class ContributionService {
         }
     }
 
+//    检验当前用户是否是登录状态
     private void ensureLoggedIn(Integer currentUserId) {
+//        根据session检验...
         if (currentUserId == null) {
             throw new SecurityException("请先登录");
         }
@@ -86,6 +97,7 @@ public class ContributionService {
         }
     }
 
+//    判断字符串是否为空
     private boolean blank(String value) {
         return value == null || value.trim().isEmpty();
     }
