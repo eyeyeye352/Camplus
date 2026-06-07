@@ -1,7 +1,10 @@
 package com.camplus.contribution.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
+//用于管理数据库获取到的用户贡献数据
 public class UserContribution {
     private Integer contributionId;
     private Integer userId;
@@ -10,7 +13,9 @@ public class UserContribution {
     private String content;
     private Integer status;
     private String reviewComment;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     public Integer getContributionId() {

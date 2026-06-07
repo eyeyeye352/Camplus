@@ -13,10 +13,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+//操作数据库
 public class ContributionDao {
     private static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/camplus_db"
             + "?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false";
 
+//    加载MySQL驱动(类第一次被加载，自动执行一次，只执行这一次)
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -25,6 +27,7 @@ public class ContributionDao {
         }
     }
 
+//    获取数据库的连接
     private Connection getConnection() throws SQLException {
         String url = value("CAMPLUS_DB_URL", "camplus.db.url", DEFAULT_URL);
         String user = value("CAMPLUS_DB_USER", "camplus.db.user", "root");
@@ -32,25 +35,32 @@ public class ContributionDao {
         return DriverManager.getConnection(url, user, password);
     }
 
+
+//    插入数据
     public int insert(UserContribution contribution) throws SQLException {
         String sql = """
                 INSERT INTO user_contributions (
                     user_id, contribution_type, title, content, status, create_time, update_time
                 ) VALUES (?, ?, ?, ?, 0, NOW(), NOW())
                 """;
+//        try-with-resources写法，代码块执行完后，无论成功语法，括号中的资源都会被释放
         try (Connection connection = getConnection();
+//             执行完sql语句后获取数据库自增的主键
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, contribution.getUserId());
             statement.setInt(2, contribution.getContributionType());
             statement.setString(3, contribution.getTitle());
             statement.setString(4, contribution.getContent());
+//            执行sql语句
             statement.executeUpdate();
             try (ResultSet keys = statement.getGeneratedKeys()) {
+//                如果拿到主键就返回主键，否则返回0
                 return keys.next() ? keys.getInt(1) : 0;
             }
         }
     }
 
+//    查询指定用户的贡献列表，可使用贡献status筛选
     public List<UserContribution> findByUserId(Integer userId, Integer status, int offset, int size)
             throws SQLException {
         StringBuilder sql = new StringBuilder("""
@@ -82,6 +92,7 @@ public class ContributionDao {
         }
     }
 
+//    根据贡献id和用户id查询贡献详情
     public UserContribution findByIdAndUserId(Integer contributionId, Integer userId) throws SQLException {
         String sql = "SELECT * FROM user_contributions WHERE contribution_id = ? AND user_id = ?";
         try (Connection connection = getConnection();
@@ -94,11 +105,12 @@ public class ContributionDao {
         }
     }
 
+//    更新贡献内容(只能更新待审核和被拒绝的贡献)
     public boolean updatePending(UserContribution contribution) throws SQLException {
         String sql = """
                 UPDATE user_contributions
-                SET title = ?, content = ?, update_time = NOW()
-                WHERE contribution_id = ? AND user_id = ? AND status = 0
+                SET title = ?, content = ?, status = 0, update_time = NOW()
+                WHERE contribution_id = ? AND user_id = ? AND status IN (0,2)
                 """;
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -110,6 +122,7 @@ public class ContributionDao {
         }
     }
 
+//   撤回待审核贡献
     public boolean deletePending(Integer contributionId, Integer userId) throws SQLException {
         String sql = "DELETE FROM user_contributions WHERE contribution_id = ? AND user_id = ? AND status = 0";
         try (Connection connection = getConnection();
@@ -120,6 +133,7 @@ public class ContributionDao {
         }
     }
 
+//    将数据库一行数据转换成UserContribution对象
     private UserContribution map(ResultSet resultSet) throws SQLException {
         UserContribution contribution = new UserContribution();
         contribution.setContributionId(resultSet.getInt("contribution_id"));
@@ -134,6 +148,7 @@ public class ContributionDao {
         return contribution;
     }
 
+//    将数据库获取的时间转换成LocalDateTime
     private static LocalDateTime nullableDateTime(ResultSet resultSet, String column) throws SQLException {
         Timestamp value = resultSet.getTimestamp(column);
         return value == null ? null : value.toLocalDateTime();
