@@ -1,6 +1,6 @@
 package com.camplus.admin.pojo;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class UserContribution {
     private Long contributionId;
@@ -19,9 +19,9 @@ public class UserContribution {
 
     private Integer status;
     private String reviewComment;
-    private Date reviewTime;
-    private Date createTime;
-    private Date updateTime;
+    private LocalDateTime reviewTime;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
     private String username;
 
     public Long getFaqId() {
@@ -128,27 +128,27 @@ public class UserContribution {
         this.reviewComment = reviewComment;
     }
 
-    public Date getReviewTime() {
+    public LocalDateTime getReviewTime() {
         return reviewTime;
     }
 
-    public void setReviewTime(Date reviewTime) {
+    public void setReviewTime(LocalDateTime reviewTime) {
         this.reviewTime = reviewTime;
     }
 
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 
