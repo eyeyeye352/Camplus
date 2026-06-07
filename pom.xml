@@ -25,7 +25,17 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <langchain4j.version>0.30.0</langchain4j.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>aliyunmaven</id>
+      <url>https://maven.aliyun.com/repository/public</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
 
   <dependencies>
 
@@ -90,6 +100,28 @@
           <artifactId>spring-boot-devtools</artifactId>
           <scope>runtime</scope>
           <optional>true</optional>
+      </dependency>
+
+      <!-- langchain4j 核心依赖 -->
+      <dependency>
+          <groupId>dev.langchain4j</groupId>
+          <artifactId>langchain4j-spring-boot-starter</artifactId>
+          <version>${langchain4j.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>dev.langchain4j</groupId>
+          <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
+          <version>${langchain4j.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>dev.langchain4j</groupId>
+          <artifactId>langchain4j-document-parser-apache-pdfbox</artifactId>
+          <version>${langchain4j.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>dev.langchain4j</groupId>
+          <artifactId>langchain4j-document-parser-apache-poi</artifactId>
+          <version>${langchain4j.version}</version>
       </dependency>
 
   </dependencies>

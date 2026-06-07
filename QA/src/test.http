@@ -1,6 +1,0 @@
-POST http://localhost:8080/api/qa/ask
-Content-Type: application/json
-
-{
-  "question": "学长好，请问东区食堂周末晚上几点关门？"
-}
