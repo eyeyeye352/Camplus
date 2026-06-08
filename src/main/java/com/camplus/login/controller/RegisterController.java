@@ -1,8 +1,8 @@
 package com.camplus.login.controller;
 
-import com.camplus.login.pojo.User;
+import com.camplus.login.entity.User;
 import com.camplus.login.service.UserService;
-import com.camplus.login.service.serviceImpl.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +13,8 @@ import java.util.Map;
 @RestController
 public class RegisterController {
 
-    private final UserService userService = new UserServiceImpl();
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/register")
     public Map<String, Object> register(

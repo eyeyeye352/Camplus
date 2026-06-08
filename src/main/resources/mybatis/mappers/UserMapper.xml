@@ -4,7 +4,7 @@
 <mapper namespace="com.camplus.login.mappers.UserMapper">
 
     <!-- 通用结果映射，解决数据库下划线到Java驼峰的映射 -->
-    <resultMap id="UserResultMap" type="com.camplus.login.pojo.User">
+    <resultMap id="UserResultMap" type="com.camplus.login.entity.User">
         <id column="user_id" property="userId"/>
         <result column="username" property="username"/>
         <result column="password_hash" property="passwordHash"/>
@@ -22,7 +22,7 @@
     </resultMap>
 
     <!-- 1. 新增用户 -->
-    <insert id="insertUser" parameterType="com.camplus.login.pojo.User">
+    <insert id="insertUser" parameterType="com.camplus.login.entity.User">
         INSERT INTO users (
         username, password_hash, nickname, email, phone,
         avatar_url, role, status, create_time, update_time

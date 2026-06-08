@@ -1,6 +1,6 @@
 package com.camplus.login.service;
 
-import com.camplus.login.pojo.*;
+import com.camplus.login.entity.*;
 
 /**
  * 用户业务接口

@@ -1,4 +1,4 @@
-package com.camplus.login.pojo;
+package com.camplus.login.entity;
 
 import java.time.LocalDateTime;
 
