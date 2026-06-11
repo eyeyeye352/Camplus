@@ -33,17 +33,17 @@
     </insert>
 
     <!-- 2. 根据用户名查询用户 -->
-    <select id="selectByUsername" parameterType="string" resultMap="UserResultMap">
+    <select id="selectByUsername" resultMap="UserResultMap">
         SELECT * FROM users WHERE username = #{username}
     </select>
 
     <!-- 根据手机号查询 -->
-    <select id="selectByPhone" parameterType="string" resultMap="UserResultMap">
+    <select id="selectByPhone" resultMap="UserResultMap">
         SELECT * FROM users WHERE phone = #{phone}
     </select>
 
     <!-- 根据邮箱查询 -->
-    <select id="selectByEmail" parameterType="string" resultMap="UserResultMap">
+    <select id="selectByEmail" resultMap="UserResultMap">
         SELECT * FROM users WHERE email = #{email}
     </select>
 

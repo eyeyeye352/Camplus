@@ -34,6 +34,8 @@
 
     <mappers>
         <mapper resource="mybatis/mappers/UserMapper.xml"/>
+        <mapper resource="mybatis/mappers/FaqMapper.xml"/>
+        <mapper resource="mybatis/mappers/ContributionMapper.xml"/>
         <package name="com.camplus.admin.Mappers"/>
     </mappers>
 </configuration>
