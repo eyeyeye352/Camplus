@@ -4,6 +4,7 @@ import com.camplus.contribution.pojo.UserContribution;
 import com.camplus.contribution.service.ContributionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -90,6 +91,11 @@ public class ContributionController {
 
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<Map<String, Object>> handleSQLException() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error("数据库操作失败"));
+    }
+
+    @ExceptionHandler(PersistenceException.class)
+    public ResponseEntity<Map<String, Object>> handlePersistenceException() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error("数据库操作失败"));
     }
 

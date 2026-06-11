@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camplus.contribution.mappers.ContributionMapper">
+
+    <resultMap id="ContributionResultMap" type="com.camplus.contribution.pojo.UserContribution">
+        <id column="contribution_id" property="contributionId"/>
+        <result column="user_id" property="userId"/>
+        <result column="contribution_type" property="contributionType"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="status" property="status"/>
+        <result column="review_comment" property="reviewComment"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.camplus.contribution.pojo.UserContribution"
+            useGeneratedKeys="true" keyProperty="contributionId" keyColumn="contribution_id">
+        INSERT INTO user_contributions (
+            user_id, contribution_type, title, content, status, create_time, update_time
+        ) VALUES (
+            #{userId}, #{contributionType}, #{title}, #{content}, 0, NOW(), NOW()
+        )
+    </insert>
+
+    <select id="findByUserId" resultMap="ContributionResultMap">
+        SELECT *
+        FROM user_contributions
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="findByIdAndUserId" resultMap="ContributionResultMap">
+        SELECT *
+        FROM user_contributions
+        WHERE contribution_id = #{contributionId}
+          AND user_id = #{userId}
+    </select>
+
+    <update id="updatePending" parameterType="com.camplus.contribution.pojo.UserContribution">
+        UPDATE user_contributions
+        SET title = #{title},
+            content = #{content},
+            status = 0,
+            update_time = NOW()
+        WHERE contribution_id = #{contributionId}
+          AND user_id = #{userId}
+          AND status IN (0, 2)
+    </update>
+
+    <delete id="deletePending">
+        DELETE FROM user_contributions
+        WHERE contribution_id = #{contributionId}
+          AND user_id = #{userId}
+          AND status = 0
+    </delete>
+</mapper>
