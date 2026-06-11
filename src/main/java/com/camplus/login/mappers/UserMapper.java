@@ -1,8 +1,10 @@
 package com.camplus.login.mappers;
 
-import com.camplus.login.pojo.User;
+import com.camplus.login.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface UserMapper {
 
     /**

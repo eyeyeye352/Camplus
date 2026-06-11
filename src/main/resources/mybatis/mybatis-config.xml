@@ -14,7 +14,7 @@
     </settings>
 
     <typeAliases>
-        <package name="com.camplus.login.pojo"/>
+        <package name="com.camplus.login.entity"/>
     </typeAliases>
 
     <environments default="development">
