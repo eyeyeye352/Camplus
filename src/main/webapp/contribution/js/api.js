@@ -17,8 +17,9 @@ export function createContribution(formData) {
     });
 }
 
-export function fetchContributions(status) {
+export function fetchContributions(userId, status) {
     const url = new URL(`${apiBase}/list`);
+    url.searchParams.set('userId', userId);
     if (status !== '') {
         url.searchParams.set('status', status);
     }
