@@ -36,35 +36,76 @@
         <div class="admin-border-inner"></div>
     </div>
     <div class="admin-menu-content">
-        <div class="admin-menu-item active">贡献审核</div>
+        <div class="admin-menu-item active" id="menuReview" onclick="switchView('review')">贡献审核</div>
+        <div class="admin-menu-item" id="menuImport" onclick="switchView('import')">知识导入</div>
         <div class="admin-menu-item logout-item" onclick="window.location.href='/home/index.html'">返回首页</div>
         <div class="admin-menu-item logout-item" onclick="window.location.href='/login/login.html'">退出登录</div>
     </div>
 </div>
 
 <div class="main-container">
-    <div class="glass-card">
-        <div class="card-header">
-            <h2>待审核用户贡献</h2>
-            <button class="refresh-btn" onclick="fetchContributions()">刷新数据</button>
-        </div>
-        <div class="table-wrapper">
-            <table id="contributionTable">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>贡献者</th>
-                    <th>类型</th>
-                    <th>标题</th>
-                    <th>提交时间</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody id="contributionBody">
-                </tbody>
-            </table>
+
+    <div id="panelReview" class="admin-panel">
+        <div class="glass-card">
+            <div class="card-header">
+                <h2>待审核用户贡献</h2>
+                <button class="refresh-btn" onclick="fetchContributions()">刷新数据</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="contributionTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>贡献者</th>
+                        <th>类型</th>
+                        <th>标题</th>
+                        <th>提交时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="contributionBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <div id="panelImport" class="admin-panel" style="display: none;">
+        <div class="glass-card">
+            <div class="card-header" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                <h2>多源知识批量导入</h2>
+                <p style="color: rgba(255,255,255,0.4); font-size: 13px; margin: 0;">支持拖拽本地标准校务问答（.csv格式）直接解析入库</p>
+            </div>
+
+            <div class="import-container" style="margin-top: 20px; padding: 0; background: transparent; border: none; backdrop-filter: none;">
+                <div id="dropZone" class="drop-zone">
+                    <div class="drop-icon">📤</div>
+                    <p class="drop-text">将你的知识库 .csv 文件拖拽到此处，或 <span>点击选择文件</span></p>
+                    <input type="file" id="fileInput" accept=".csv" style="display: none;">
+                </div>
+
+                <div id="uploadResult" class="upload-result" style="display: none;">
+                    <h3 style="color: #40e0d0; margin-bottom: 15px; font-size: 15px;">📊 成功解析数据预览</h3>
+                    <div class="preview-table-wrapper">
+                        <table style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>标准问题 (Question)</th>
+                                <th>标准答案 (Answer)</th>
+                            </tr>
+                            </thead>
+                            <tbody id="previewBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn-approve" id="btnSubmitImport" style="margin-top: 20px; float: right;">
+                        确认无误，批量导入数据库
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="modal-overlay" id="reviewModal">
