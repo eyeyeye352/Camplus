@@ -5,6 +5,7 @@ import { renderList, renderLoadError, renderLoading, setLoginStatus, showToast }
 export function bindEvents() {
     bindNavigation();
     bindSubmitForm();
+    bindBackHomeButton();
     elements.statusFilter.addEventListener('change', loadContributions);
 }
 
@@ -91,4 +92,15 @@ async function loadContributions() {
 
 function displayName(user) {
     return user?.nickname || user?.username || user?.email || user?.phone || '用户';
+}
+
+// 绑定返回首页按钮功能
+function bindBackHomeButton(){
+    const backButton=document.querySelector("#backHomeBut");
+    backButton.addEventListener("click",(ev)=>{
+        ev.preventDefault()
+        ev.stopPropagation()
+
+        window.location.href="/home/index.html";
+    })
 }
