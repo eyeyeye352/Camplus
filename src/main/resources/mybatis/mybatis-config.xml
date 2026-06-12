@@ -5,8 +5,6 @@
 
 <configuration>
 
-    <!-- 引入外部属性文件 -->
-    <properties resource="mybatis/db.properties"/>
 
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
@@ -17,25 +15,4 @@
         <package name="com.camplus.login.entity"/>
     </typeAliases>
 
-    <environments default="development">
-
-        <environment id="development">
-            <transactionManager type="JDBC"/>
-            <dataSource type="POOLED">
-                <property name="driver" value="${jdbc.driver}"/>
-                <property name="url" value="${jdbc.url}"/>
-                <property name="username" value="${jdbc.username}"/>
-                <property name="password" value="${jdbc.password}"/>
-            </dataSource>
-        </environment>
-
-    </environments>
-
-
-    <mappers>
-        <mapper resource="mybatis/mappers/UserMapper.xml"/>
-        <mapper resource="mybatis/mappers/FaqMapper.xml"/>
-        <mapper resource="mybatis/mappers/ContributionMapper.xml"/>
-        <package name="com.camplus.admin.Mappers"/>
-    </mappers>
 </configuration>
