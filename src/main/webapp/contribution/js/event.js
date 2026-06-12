@@ -30,9 +30,14 @@ function bindSubmitForm() {
         event.stopPropagation();
 
         const formData = new FormData(elements.form);
+        const userId = formData.get('userId')?.trim();
         const title = formData.get('title')?.trim();
         const content = formData.get('content')?.trim();
 
+        if (!userId) {
+            showToast('请填写临时用户ID');
+            return;
+        }
         if (!title) {
             showToast('请填写标题');
             return;
@@ -45,6 +50,7 @@ function bindSubmitForm() {
         try {
             await createContribution(formData);
             elements.form.reset();
+            elements.userIdInput.value = userId;
             showToast('提交成功，已进入待审核');
         } catch (error) {
             showToast(error.message || '提交失败，请稍后重试');
@@ -56,11 +62,15 @@ async function loadContributions() {
     renderLoading();
 
     try {
-        const data = await fetchContributions(elements.statusFilter.value);
+        const userId = elements.userIdInput.value.trim();
+        if (!userId) {
+            throw new Error('请先填写临时用户ID');
+        }
+        const data = await fetchContributions(userId, elements.statusFilter.value);
         renderList(data || []);
-        setLoginStatus('已连接用户贡献接口');
+        setLoginStatus(`当前用户ID：${userId}`);
     } catch (error) {
         renderLoadError(error.message);
-        setLoginStatus('需要登录后使用');
+        setLoginStatus('需要用户ID后使用');
     }
 }
