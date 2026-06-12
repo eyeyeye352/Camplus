@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class User {
 
     // 主键ID，自增
-    private Integer userId;
+    private Long userId;
 
     private String username;
     private String passwordHash;
@@ -42,7 +42,7 @@ public class User {
     public User() {}
 
     // 方便创建对象用
-    public User(Integer userId, String username, String passwordHash, String nickname, String email, String phone, String avatarUrl, Integer role, Integer status, LocalDateTime lastLoginTime, Integer loginErrorCount, LocalDateTime lockTime, LocalDateTime createTime, LocalDateTime updateTime) {
+    public User(Long userId, String username, String passwordHash, String nickname, String email, String phone, String avatarUrl, Integer role, Integer status, LocalDateTime lastLoginTime, Integer loginErrorCount, LocalDateTime lockTime, LocalDateTime createTime, LocalDateTime updateTime) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;

@@ -25,10 +25,10 @@
     <insert id="insertUser" parameterType="com.camplus.login.entity.User">
         INSERT INTO users (
         username, password_hash, nickname, email, phone,
-        avatar_url, role, status, create_time, update_time
+        avatar_url, role, status, login_error_count, create_time, update_time
         ) VALUES (
         #{username}, #{passwordHash}, #{nickname}, #{email}, #{phone},
-        #{avatarUrl}, #{role}, #{status}, NOW(), NOW()
+        #{avatarUrl}, #{role}, #{status}, 0, NOW(), NOW()
         )
     </insert>
 

@@ -18,6 +18,8 @@ public class UserServiceImpl implements UserService {
 
     // 密码错误最大次数，超过则锁定账号
     private static final int MAX_ERROR_COUNT = 5;
+    // 账号锁定时长（分钟）
+    private static final int LOCK_DURATION_MINUTES = 30;
 
     @Override
     @Transactional
@@ -81,9 +83,18 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return null;
         }
-        // 账号已被锁定
+        // 账号已被锁定：检查是否已满30分钟
         if (user.getLockTime() != null) {
-            return null;
+            LocalDateTime unlockTime = user.getLockTime().plusMinutes(LOCK_DURATION_MINUTES);
+            if (LocalDateTime.now().isBefore(unlockTime)) {
+                // 锁定未到期，拒绝登录
+                return null;
+            }
+            // 锁定已到期，自动解锁：清除锁定时间并重置错误次数
+            userMapper.updateLockTime(user.getUserId(), null);
+            userMapper.updateLoginErrorCount(user.getUserId(), 0);
+            user.setLockTime(null);
+            user.setLoginErrorCount(0);
         }
         // 账号已禁用
         if (user.getStatus() != 1) {

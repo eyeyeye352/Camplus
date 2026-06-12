@@ -10,22 +10,22 @@
 
 #### 3.1 users 用户表
 
-| 字段名             | 类型             | 约束                                          | 默认值                        | 注释          |
-| --------------- | -------------- | ------------------------------------------- | -------------------------- |-------------|
-| user_id         | BIGINT         | PRIMARY KEY, AUTO_INCREMENT                | -                          | 用户ID        |
-| username        | VARCHAR(32)    | NOT NULL                                    | -                          | 用户名         |
-| password_hash   | VARCHAR(255)   | NOT NULL                                    | -                          | 密码哈希值       |
-| email           | VARCHAR(64)    | DEFAULT                                     | NULL                       | 邮箱          |
-| phone           | VARCHAR(20)    | DEFAULT                                     | NULL                       | 手机号         |
-| nickname        | VARCHAR(32)    | DEFAULT                                     | NULL                       | 昵称          |
-| avatar_url      | VARCHAR(255)   | DEFAULT                                     | NULL                       | 头像URL       |
+| 字段名             | 类型             | 约束                                          | 默认值                        | 注释         |
+| --------------- | -------------- | ------------------------------------------- | -------------------------- |------------|
+| user_id         | BIGINT         | PRIMARY KEY, AUTO_INCREMENT                | -                          | 用户ID       |
+| username        | VARCHAR(32)    | NOT NULL                                    | -                          | 用户名        |
+| password_hash   | VARCHAR(255)   | NOT NULL                                    | -                          | 密码哈希值      |
+| email           | VARCHAR(64)    | DEFAULT                                     | NULL                       | 邮箱         |
+| phone           | VARCHAR(20)    | DEFAULT                                     | NULL                       | 手机号        |
+| nickname        | VARCHAR(32)    | DEFAULT                                     | NULL                       | 昵称         |
+| avatar_url      | VARCHAR(255)   | DEFAULT                                     | NULL                       | 头像URL      |
 | role            | TINYINT        | NOT NULL                                    | 0                          | 角色，0普通用户，1管理员 |
 | status          | TINYINT        | NOT NULL                                    | 1                          | 账号状态，0禁用，1正常 |
-| last_login_time | DATETIME       | DEFAULT                                     | NULL                       | 最后登录时间      |
-| login_error_count | INT          | NOT NULL                                    | 0                          | 登录错误次数      |
-| lock_time       | DATETIME       | DEFAULT                                     | NULL                       | 账号锁定截止时间    |
-| create_time     | DATETIME       | NOT NULL                                    | CURRENT_TIMESTAMP          | 创建时间        |
-| update_time     | DATETIME       | NOT NULL                                    | CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新时间        |
+| last_login_time | DATETIME       | DEFAULT                                     | NULL                       | 最后登录时间     |
+| login_error_count | INT          | NOT NULL                                    | 0                          | 登录错误次数     |
+| lock_time       | DATETIME       | DEFAULT                                     | NULL                       | 账号锁定截止时间   |
+| create_time     | DATETIME       | NOT NULL                                    | CURRENT_TIMESTAMP          | 创建时间       |
+| update_time     | DATETIME       | NOT NULL                                    | CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新时间       |
 
 
 #### 3.2 faq\_items 固定问题表
