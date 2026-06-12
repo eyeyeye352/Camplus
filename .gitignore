@@ -86,3 +86,11 @@ Thumbs.db
 # IDE配置
 .vscode/
 .idea/
+
+# Java/Maven/Gradle
+target/
+build/
+.gradle/
+*.class
+*.jar
+*.war
