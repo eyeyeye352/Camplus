@@ -1,12 +1,25 @@
 server:
   port: 8080
 
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/camplus_db?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  web:
+    resources:
+      static-locations: classpath:/static/,file:src/main/webapp/
+
+mybatis:
+  mapper-locations: classpath:mybatis/mappers/*.xml
+  config-location: classpath:mybatis/mybatis-config.xml
+  type-aliases-package: com.camplus.login.entity
+
 langchain4j:
   open-ai:
     chat-model:
-      # 【重要】请去智谱或DeepSeek官网免费申请一个API Key填在这里
       api-key: sk-rffxhncencqyeehwvkylxgddvrhxrbqiqrvyukqlyumhozqv
-      # 这里以 DeepSeek 为例，如果是智谱请换成智谱的 baseUrl
       base-url: https://api.siliconflow.cn/v1
       model-name: Qwen/Qwen2.5-72B-Instruct
       temperature: 0.1
