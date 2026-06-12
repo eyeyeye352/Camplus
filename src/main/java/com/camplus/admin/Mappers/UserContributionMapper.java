@@ -2,11 +2,13 @@ package com.camplus.admin.Mappers;
 
 import com.camplus.admin.pojo.UserContribution;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
+@Mapper
 public interface UserContributionMapper {
 
     // 1. 联表查询所有待审核记录

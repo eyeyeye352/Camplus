@@ -1,10 +1,12 @@
 package com.camplus.contribution.mappers;
 
 import com.camplus.contribution.pojo.UserContribution;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+@Mapper
 public interface ContributionMapper {
 
     int insert(UserContribution contribution);

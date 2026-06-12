@@ -1,3 +1,4 @@
-import { bindEvents } from './event.js';
+import { bindEvents, initCurrentUser } from './event.js';
 
+initCurrentUser();
 bindEvents();

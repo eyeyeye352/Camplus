@@ -2,11 +2,14 @@ export const elements = {
     navItems: document.querySelectorAll('.nav-item'),
     panels: document.querySelectorAll('.panel'),
     form: document.querySelector('#contributionForm'),
-    userIdInput: document.querySelector('#userIdInput'),
     list: document.querySelector('#contributionList'),
     statusFilter: document.querySelector('#statusFilter'),
     toast: document.querySelector('#toast'),
     loginStatus: document.querySelector('#loginStatus')
+};
+
+export const pageState = {
+    currentUser: null
 };
 
 export const statusMap = {
