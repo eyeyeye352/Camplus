@@ -16,8 +16,8 @@ namespace Camplus.Desktop
         private readonly string _baseUrl = "http://localhost:8080";
         private readonly HttpClient _httpClient;
         private CancellationTokenSource? _cancellationTokenSource;
-        private string _dbUsername = "root";
-        private string _dbPassword = "123456";
+        private string _dbUsername = "";
+        private string _dbPassword = "";
 
         public MainWindow()
         {
@@ -66,16 +66,86 @@ namespace Camplus.Desktop
 
         private void ShowDbCredentialsDialog()
         {
-            var usernameDialog = new InputDialog("MySQL配置", "请输入MySQL用户名:", _dbUsername);
-            if (usernameDialog.ShowDialog() == true && !string.IsNullOrEmpty(usernameDialog.InputText))
+            bool isValid = false;
+            while (!isValid)
             {
-                _dbUsername = usernameDialog.InputText;
-            }
+                var usernameDialog = new InputDialog("MySQL配置", "请输入MySQL用户名:", _dbUsername);
+                if (usernameDialog.ShowDialog() == true && !string.IsNullOrEmpty(usernameDialog.InputText))
+                {
+                    _dbUsername = usernameDialog.InputText;
+                }
+                else
+                {
+                    Environment.Exit(0);
+                    return;
+                }
 
-            var passwordDialog = new PasswordDialog("MySQL配置", "请输入MySQL密码:");
-            if (passwordDialog.ShowDialog() == true)
+                var passwordDialog = new PasswordDialog("MySQL配置", "请输入MySQL密码:");
+                if (passwordDialog.ShowDialog() == true)
+                {
+                    _dbPassword = passwordDialog.Password;
+                }
+                else
+                {
+                    Environment.Exit(0);
+                    return;
+                }
+
+                UpdateStatus("正在验证MySQL连接...");
+                isValid = TestMySqlConnection(_dbUsername, _dbPassword);
+                if (!isValid)
+                {
+                    MessageBox.Show("MySQL连接失败，请检查用户名和密码是否正确", "连接失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    UpdateStatus("MySQL连接验证成功");
+                }
+            }
+        }
+
+        private bool TestMySqlConnection(string username, string password)
+        {
+            try
             {
-                _dbPassword = passwordDialog.Password;
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "mysql",
+                    Arguments = $"-u{username} -p{password} -e \"SELECT 1\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+
+                using var process = Process.Start(startInfo);
+                if (process == null) return false;
+                process.WaitForExit(5000);
+                return process.ExitCode == 0;
+            }
+            catch
+            {
+                try
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = $"/c mysql -u{username} -p{password} -e \"SELECT 1\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
+
+                    using var process = Process.Start(startInfo);
+                    if (process == null) return false;
+                    process.WaitForExit(5000);
+                    return process.ExitCode == 0;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
 
@@ -251,6 +321,8 @@ namespace Camplus.Desktop
             var textBox = new TextBox { Text = defaultValue, Margin = new Thickness(0, 0, 0, 10) };
             Grid.SetRow(textBox, 1);
             grid.Children.Add(textBox);
+            textBox.KeyDown += (s, e) => { if (e.Key == System.Windows.Input.Key.Enter) { InputText = textBox.Text; DialogResult = true; Close(); } };
+            textBox.Focus();
 
             var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
             Grid.SetRow(buttonPanel, 2);
@@ -299,6 +371,8 @@ namespace Camplus.Desktop
             var passwordBox = new PasswordBox { Margin = new Thickness(0, 0, 0, 10) };
             Grid.SetRow(passwordBox, 1);
             grid.Children.Add(passwordBox);
+            passwordBox.KeyDown += (s, e) => { if (e.Key == System.Windows.Input.Key.Enter) { Password = passwordBox.Password; DialogResult = true; Close(); } };
+            passwordBox.Focus();
 
             var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
             Grid.SetRow(buttonPanel, 2);

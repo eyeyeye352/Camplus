@@ -23,5 +23,18 @@ langchain4j:
       base-url: https://api.siliconflow.cn/v1
       model-name: Qwen/Qwen2.5-72B-Instruct
       temperature: 0.1
-      log-requests: true
-      log-responses: true
+      log-requests: false
+      log-responses: false
+
+logging:
+  level:
+    root: WARN
+    com.camplus: INFO
+    org.springframework: WARN
+    org.mybatis: WARN
+    com.zaxxer.hikari: WARN
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  charset:
+    console: UTF-8
