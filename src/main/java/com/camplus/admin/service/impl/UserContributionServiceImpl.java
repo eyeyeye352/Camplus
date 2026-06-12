@@ -5,11 +5,20 @@ import com.camplus.admin.Mappers.UserContributionMapper;
 import com.camplus.admin.pojo.ReviewRequestDTO;
 import com.camplus.admin.pojo.UserContribution;
 import com.camplus.admin.service.UserContributionService;
-import com.camplus.login.util.MyBatisUtil;
-import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
+@Service
 public class UserContributionServiceImpl implements UserContributionService {
+    private final UserContributionMapper contributionMapper;
+    private final FaqItemMapper faqMapper;
+
+    public UserContributionServiceImpl(UserContributionMapper contributionMapper, FaqItemMapper faqMapper) {
+        this.contributionMapper = contributionMapper;
+        this.faqMapper = faqMapper;
+    }
 
     /**
      * 1. 实现接口中的 getPendingList 方法
@@ -17,11 +26,7 @@ public class UserContributionServiceImpl implements UserContributionService {
      */
     @Override
     public List<UserContribution> getPendingList() {
-        // 采用 try-with-resources 语法，执行完毕后会自动关闭 session
-        try (SqlSession session = MyBatisUtil.getSqlSession()) {
-            UserContributionMapper mapper = session.getMapper(UserContributionMapper.class);
-            return mapper.selectPendingContributions();
-        }
+        return contributionMapper.selectPendingContributions();
     }
 
     /**
@@ -29,14 +34,9 @@ public class UserContributionServiceImpl implements UserContributionService {
      * 处理管理员的审核操作，包含：修改内容、变更状态、数据入库、记录日志、事务回滚
      */
     @Override
+    @Transactional
     public boolean reviewContribution(ReviewRequestDTO dto, Long adminId, String ip) {
-        SqlSession session = null;
         try {
-            // 🌟 注意：这里不要使用 try-with-resources 自动关闭，因为我们需要在 catch 块中手动控制 rollback()
-            session = MyBatisUtil.getSqlSession();
-            UserContributionMapper contributionMapper = session.getMapper(UserContributionMapper.class);
-            FaqItemMapper faqMapper = session.getMapper(FaqItemMapper.class);
-
             // 1. 获取原始贡献记录，校验是否存在以及是否为待审核状态
             // (请确保你的 UserContributionMapper 接口中已经声明了 selectById 方法)
             UserContribution originalRecord = contributionMapper.selectById(dto.getContributionId());
@@ -66,23 +66,13 @@ public class UserContributionServiceImpl implements UserContributionService {
                 String detail = "操作结果: " + (dto.getStatus() == 1 ? "通过入库" : "驳回") + " | 审批意见: " + dto.getComment();
                 contributionMapper.insertAdminLog(adminId, "审核贡献", "user_contributions", dto.getContributionId(), detail, ip);
 
-                // 🌟 核心：确保以上所有数据库操作（写状态、写FAQ、写日志）都成功无误，才统一提交事务
-                session.commit();
                 return true;
             }
             return false;
 
         } catch (Exception e) {
-            // 🌟 核心：一旦中途发生任何异常（如数据库连接断开、字段超长等），立刻回滚所有操作，避免产生脏数据
-            if (session != null) {
-                session.rollback();
-            }
             e.printStackTrace();
             return false;
-        } finally {
-            if (session != null) {
-                session.close(); // 最终确保数据库连接被关闭并释放
-            }
         }
     }
 }

@@ -3,7 +3,6 @@ package com.camplus.admin.controller;
 import com.camplus.admin.pojo.ReviewRequestDTO;
 import com.camplus.admin.pojo.UserContribution;
 import com.camplus.admin.service.UserContributionService;
-import com.camplus.admin.service.impl.UserContributionServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,9 +13,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/contribution")
 public class ContributionReviewController {
+    private final UserContributionService contributionService;
 
-    // 仿照组员不依赖注入、直接实例化的标准写法
-    private UserContributionService contributionService = new UserContributionServiceImpl();
+    public ContributionReviewController(UserContributionService contributionService) {
+        this.contributionService = contributionService;
+    }
 
     // 前端发送 GET 请求到 /admin/contribution/list 加载未审核数据
     @GetMapping("/list")

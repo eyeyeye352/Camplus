@@ -1,11 +1,22 @@
-import { createContribution, fetchContributions } from './api.js';
-import { elements } from './state.js';
+import { createContribution, fetchContributions, fetchCurrentUser } from './api.js';
+import { elements, pageState } from './state.js';
 import { renderList, renderLoadError, renderLoading, setLoginStatus, showToast } from './render.js';
 
 export function bindEvents() {
     bindNavigation();
     bindSubmitForm();
     elements.statusFilter.addEventListener('change', loadContributions);
+}
+
+export async function initCurrentUser() {
+    try {
+        const user = await fetchCurrentUser();
+        pageState.currentUser = user;
+        setLoginStatus(displayName(user));
+    } catch (error) {
+        pageState.currentUser = null;
+        setLoginStatus('未登录');
+    }
 }
 
 function bindNavigation() {
@@ -30,12 +41,11 @@ function bindSubmitForm() {
         event.stopPropagation();
 
         const formData = new FormData(elements.form);
-        const userId = formData.get('userId')?.trim();
         const title = formData.get('title')?.trim();
         const content = formData.get('content')?.trim();
 
-        if (!userId) {
-            showToast('请填写临时用户ID');
+        if (!pageState.currentUser) {
+            showToast('请先登录后再提交贡献');
             return;
         }
         if (!title) {
@@ -50,7 +60,6 @@ function bindSubmitForm() {
         try {
             await createContribution(formData);
             elements.form.reset();
-            elements.userIdInput.value = userId;
             showToast('提交成功，已进入待审核');
         } catch (error) {
             showToast(error.message || '提交失败，请稍后重试');
@@ -62,15 +71,24 @@ async function loadContributions() {
     renderLoading();
 
     try {
-        const userId = elements.userIdInput.value.trim();
-        if (!userId) {
-            throw new Error('请先填写临时用户ID');
+        if (!pageState.currentUser) {
+            await initCurrentUser();
         }
-        const data = await fetchContributions(userId, elements.statusFilter.value);
+        if (!pageState.currentUser) {
+            throw new Error('请先登录后查看我的贡献');
+        }
+
+        const data = await fetchContributions(elements.statusFilter.value);
         renderList(data || []);
-        setLoginStatus(`当前用户ID：${userId}`);
+        setLoginStatus(displayName(pageState.currentUser));
     } catch (error) {
         renderLoadError(error.message);
-        setLoginStatus('需要用户ID后使用');
+        if (!pageState.currentUser) {
+            setLoginStatus('未登录');
+        }
     }
+}
+
+function displayName(user) {
+    return user?.nickname || user?.username || user?.email || user?.phone || '用户';
 }

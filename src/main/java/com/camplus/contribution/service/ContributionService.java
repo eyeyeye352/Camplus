@@ -2,13 +2,19 @@ package com.camplus.contribution.service;
 
 import com.camplus.contribution.dao.ContributionDao;
 import com.camplus.contribution.pojo.UserContribution;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Service
 public class ContributionService {
     private static final int STATUS_PENDING = 0;
-    private final ContributionDao contributionDao = new ContributionDao();
+    private final ContributionDao contributionDao;
+
+    public ContributionService(ContributionDao contributionDao) {
+        this.contributionDao = contributionDao;
+    }
 
     public int create(UserContribution contribution, Integer userId) throws SQLException {
         ensureUserId(userId);
