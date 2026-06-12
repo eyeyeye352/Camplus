@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Camplus - 桌面版")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ceffc02750a4ec4be6aef2fa05e50b519ef63253")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5fce8584d9163cd8af0a3d9f720199c34ac3d9c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Camplus")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Camplus")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
