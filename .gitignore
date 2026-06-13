@@ -94,3 +94,7 @@ build/
 *.class
 *.jar
 *.war
+
+# 原始数据文件夹
+RawData/*
+!RawData/.gitkeep
