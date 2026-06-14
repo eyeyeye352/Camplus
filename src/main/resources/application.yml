@@ -1,40 +1,9 @@
+spring:
+  profiles:
+    active: local
+
+
 server:
   port: 8080
 
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/camplus_db?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:123456}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  web:
-    resources:
-      static-locations: classpath:/static/,file:src/main/webapp/
 
-mybatis:
-  mapper-locations: classpath:mybatis/mappers/*.xml
-  config-location: classpath:mybatis/mybatis-config.xml
-  type-aliases-package: com.camplus.login.entity
-
-langchain4j:
-  open-ai:
-    chat-model:
-      api-key: sk-rffxhncencqyeehwvkylxgddvrhxrbqiqrvyukqlyumhozqv
-      base-url: https://api.siliconflow.cn/v1
-      model-name: Qwen/Qwen2.5-72B-Instruct
-      temperature: 0.1
-      log-requests: false
-      log-responses: false
-
-logging:
-  level:
-    root: WARN
-    com.camplus: INFO
-    org.springframework: WARN
-    org.mybatis: WARN
-    com.zaxxer.hikari: WARN
-    org.hibernate: WARN
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-  charset:
-    console: UTF-8
