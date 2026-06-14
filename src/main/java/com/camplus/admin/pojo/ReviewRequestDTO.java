@@ -1,7 +1,7 @@
 package com.camplus.admin.pojo;
 
 public class ReviewRequestDTO {
-    private Long contributionId;
+    private Integer contributionId;
     private Integer status; // 1: 通过, 2: 拒绝
     private String comment; // 拒绝理由或审核备注
 
@@ -10,11 +10,11 @@ public class ReviewRequestDTO {
     private String finalQuestion;
     private String finalAnswer;
 
-    public Long getContributionId() {
+    public Integer getContributionId() {
         return contributionId;
     }
 
-    public void setContributionId(Long contributionId) {
+    public void setContributionId(Integer contributionId) {
         this.contributionId = contributionId;
     }
 

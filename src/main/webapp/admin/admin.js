@@ -138,35 +138,42 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================================================
 // 1. 侧边栏菜单点击切换视图控制
 // ==========================================================================
-function switchView(viewName) {
+// ==========================================================================
+// 核心修复：将 switchView 显式绑定到 window 全局，彻底粉碎作用域隔离问题
+// ==========================================================================
+window.switchView = function(viewName) {
     const panelReview = document.getElementById('panelReview');
     const panelImport = document.getElementById('panelImport');
     const menuReview = document.getElementById('menuReview');
     const menuImport = document.getElementById('menuImport');
 
-    if (viewName === 'import') {
-        // 切换到知识导入：隐藏审核，显示导入
-        if (panelReview) panelReview.style.display = 'none';
-        if (panelImport) panelImport.style.display = 'block';
+    if (!panelReview || !panelImport) {
+        console.error("【Camplus 调试错误】: 切换失败！...");
+        return;
+    }
 
-        // 菜单高亮切换
+    if (viewName === 'import') {
+        panelReview.style.display = 'none';
+        panelImport.style.display = 'block';
+
         if (menuReview) menuReview.classList.remove('active');
         if (menuImport) menuImport.classList.add('active');
-    } else if (viewName === 'review') {
-        // 切换回贡献审核：显示审核，隐藏导入
-        if (panelReview) panelReview.style.display = 'block';
-        if (panelImport) panelImport.style.display = 'none';
 
-        // 菜单高亮切换
+        console.log("已成功切换至：知识导入界面");
+    } else if (viewName === 'review') {
+        // 切换回贡献审核
+        panelReview.style.display = 'block'; // ✅ 修复：直接设置为 block 即可
+        panelImport.style.display = 'none';
+
         if (menuReview) menuReview.classList.add('active');
         if (menuImport) menuImport.classList.remove('active');
 
-        // 顺便刷新一下原有的审核列表数据
         if (typeof fetchContributions === 'function') {
             fetchContributions();
         }
+        console.log("已成功切换至：贡献审核界面");
     }
-}
+};
 
 // ==========================================================================
 // 2. 知识导入模块：拖拽与前端 CSV 数据解析

@@ -3,8 +3,8 @@ package com.camplus.admin.pojo;
 import java.time.LocalDateTime;
 
 public class UserContribution {
-    private Long contributionId;
-    private Long userId;
+    private Integer contributionId;
+    private Integer userId;
     private Integer contributionType;
     private String title;
     private String content;
@@ -13,19 +13,19 @@ public class UserContribution {
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
-    public Long getContributionId() {
+    public Integer getContributionId() {
         return contributionId;
     }
 
-    public void setContributionId(Long contributionId) {
+    public void setContributionId(Integer contributionId) {
         this.contributionId = contributionId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
