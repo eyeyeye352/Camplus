@@ -20,10 +20,10 @@ public interface UserContributionMapper {
     @Update("UPDATE user_contributions SET status = #{status}, " +
             "review_comment = #{reviewComment} " +
             "WHERE contribution_id = #{contributionId}")
-    int updateReviewData(@Param("contributionId") Long contributionId,
+    int updateReviewData(@Param("contributionId") Integer contributionId,
                          @Param("status") Integer status,
                          @Param("reviewComment") String reviewComment);
 
     @Select("SELECT * FROM user_contributions WHERE contribution_id = #{contributionId}")
-    UserContribution selectById(@Param("contributionId") Long contributionId);
+    UserContribution selectById(@Param("contributionId") Integer contributionId);
 }
