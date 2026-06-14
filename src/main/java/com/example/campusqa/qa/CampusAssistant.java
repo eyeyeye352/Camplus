@@ -2,15 +2,13 @@ package com.example.campusqa.qa;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
-import dev.langchain4j.service.spring.AiService;
 
-@AiService
 public interface CampusAssistant {
 
-    @SystemMessage("""
-            你是我们学校的“校园生活百事通”智能助手。
-            请根据我提供的校园知识库信息，用友善、亲切的学长口吻回答学生的问题。
-            如果知识库中没有相关信息，请直接回答“抱歉，我目前还没有掌握关于这个问题的校园信息，建议您咨询辅导员。”，切勿自行编造。
-            """)
-    String chat(@UserMessage String userMessage);
+    @SystemMessage({
+            "你是一个幽默、专业的校园生活助手。",
+            "请严格根据检索到的校园规章制度片段来回答问题。",
+            "如果提供的片段中找不到答案，请委婉地回答不知道，绝对不要自己编造（防止大模型幻觉）。"
+    })
+    String answer(@UserMessage String userMessage);
 }
