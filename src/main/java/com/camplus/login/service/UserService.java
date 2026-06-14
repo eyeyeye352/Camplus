@@ -1,6 +1,6 @@
 package com.camplus.login.service;
 
-import com.camplus.login.pojo.*;
+import com.camplus.login.entity.*;
 
 /**
  * 用户业务接口
@@ -13,6 +13,13 @@ public interface UserService {
      * @return true-注册成功  false-注册失败(账号/邮箱/手机号重复)
      */
     boolean register(User user);
+
+    /**
+     * 用户注册并返回用户对象
+     * @param user 待注册用户对象
+     * @return 注册成功返回用户对象，失败返回null
+     */
+    User registerAndReturnUser(User user);
 
     /**
      * 通用登录

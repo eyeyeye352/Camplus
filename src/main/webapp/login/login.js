@@ -1,3 +1,8 @@
+// 已登录则直接跳转首页
+if (sessionStorage.getItem('username')) {
+    window.location.href = '/home/index.html';
+}
+
 const menuButton = document.getElementById('menuButton');
 const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
@@ -173,8 +178,17 @@ loginForm.addEventListener('submit', async (e) => {
 
         const result = await res.json();
         if (result.success) {
+            // 存储完整用户信息到前端sessionStorage
+            sessionStorage.setItem('userId', result.userId);
+            sessionStorage.setItem('username', result.username);
+            sessionStorage.setItem('email', result.email || '');
+            sessionStorage.setItem('phone', result.phone || '');
+            sessionStorage.setItem('nickname', result.nickname || '');
+            sessionStorage.setItem('avatarUrl', result.avatarUrl || '');
+            sessionStorage.setItem('role', result.role || '0');
+            sessionStorage.setItem('status', result.status || '1');
             alert(result.msg);
-            window.location.href = '/home/index.html'; // 绝对路径
+            window.location.href = '/home/index.html';
         } else {
             alert(result.msg);
         }
@@ -220,9 +234,17 @@ registerForm.addEventListener('submit', async (e) => {
 
         const result = await response.json();
         if (result.success) {
+            // 存储完整用户信息到前端sessionStorage
+            sessionStorage.setItem('userId', result.userId);
+            sessionStorage.setItem('username', result.username);
+            sessionStorage.setItem('email', result.email || '');
+            sessionStorage.setItem('phone', result.phone || '');
+            sessionStorage.setItem('nickname', result.nickname || '');
+            sessionStorage.setItem('avatarUrl', result.avatarUrl || '');
+            sessionStorage.setItem('role', result.role || '0');
+            sessionStorage.setItem('status', result.status || '1');
             alert(result.msg);
-            showLogin();
-            registerForm.reset();
+            window.location.href = '/home/index.html';
         } else {
             alert(result.msg);
         }

@@ -1,11 +1,23 @@
-import { createContribution, fetchContributions } from './api.js';
-import { elements } from './state.js';
+import { createContribution, fetchContributions, fetchCurrentUser } from './api.js';
+import { elements, pageState } from './state.js';
 import { renderList, renderLoadError, renderLoading, setLoginStatus, showToast } from './render.js';
 
 export function bindEvents() {
     bindNavigation();
     bindSubmitForm();
+    bindBackHomeButton();
     elements.statusFilter.addEventListener('change', loadContributions);
+}
+
+export async function initCurrentUser() {
+    try {
+        const user = await fetchCurrentUser();
+        pageState.currentUser = user;
+        setLoginStatus(displayName(user));
+    } catch (error) {
+        pageState.currentUser = null;
+        setLoginStatus('未登录');
+    }
 }
 
 function bindNavigation() {
@@ -33,6 +45,10 @@ function bindSubmitForm() {
         const title = formData.get('title')?.trim();
         const content = formData.get('content')?.trim();
 
+        if (!pageState.currentUser) {
+            showToast('请先登录后再提交贡献');
+            return;
+        }
         if (!title) {
             showToast('请填写标题');
             return;
@@ -56,11 +72,35 @@ async function loadContributions() {
     renderLoading();
 
     try {
+        if (!pageState.currentUser) {
+            await initCurrentUser();
+        }
+        if (!pageState.currentUser) {
+            throw new Error('请先登录后查看我的贡献');
+        }
+
         const data = await fetchContributions(elements.statusFilter.value);
         renderList(data || []);
-        setLoginStatus('已连接用户贡献接口');
+        setLoginStatus(displayName(pageState.currentUser));
     } catch (error) {
         renderLoadError(error.message);
-        setLoginStatus('需要登录后使用');
+        if (!pageState.currentUser) {
+            setLoginStatus('未登录');
+        }
     }
+}
+
+function displayName(user) {
+    return user?.nickname || user?.username || user?.email || user?.phone || '用户';
+}
+
+// 绑定返回首页按钮功能
+function bindBackHomeButton(){
+    const backButton=document.querySelector("#backHomeBut");
+    backButton.addEventListener("click",(ev)=>{
+        ev.preventDefault()
+        ev.stopPropagation()
+
+        window.location.href="/home/index.html";
+    })
 }

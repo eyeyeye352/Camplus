@@ -1,8 +1,10 @@
 package com.camplus.login.mappers;
 
-import com.camplus.login.pojo.User;
+import com.camplus.login.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface UserMapper {
 
     /**
@@ -28,15 +30,15 @@ public interface UserMapper {
     /**
      * 5. 更新登录错误次数（登录失败时调用）
      */
-    int updateLoginErrorCount(@Param("userId") Integer userId, @Param("errorCount") Integer errorCount);
+    int updateLoginErrorCount(@Param("userId") Long userId, @Param("errorCount") Integer errorCount);
 
     /**
      * 6. 更新账号锁定时间（锁定账号时调用）
      */
-    int updateLockTime(@Param("userId") Integer userId, @Param("lockTime") java.time.LocalDateTime lockTime);
+    int updateLockTime(@Param("userId") Long userId, @Param("lockTime") java.time.LocalDateTime lockTime);
 
     /**
      * 7. 更新最后登录时间并重置错误次数（登录成功时调用）
      */
-    int updateLoginSuccessInfo(@Param("userId") Integer userId, @Param("loginTime") java.time.LocalDateTime loginTime);
+    int updateLoginSuccessInfo(@Param("userId") Long userId, @Param("loginTime") java.time.LocalDateTime loginTime);
 }

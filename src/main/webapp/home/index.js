@@ -4,14 +4,32 @@ const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
 const musicButton = document.getElementById('musicButton');
 const bgMusic = document.getElementById('bgMusic');
-const userAvatar = document.getElementById('userAvatar');
 const userButton = document.getElementById('userButton');
 const menuLoginBtn = document.getElementById('menuLoginBtn');
+const adminMenuItem = document.getElementById('adminMenuItem');
 const activationZone = 200;
 
 // 跳转到登录页面
 function goToLogin() {
     window.location.href = '../login/login.html';
+}
+
+// 根据登录态更新UI
+function updateLoginUI() {
+    const username = sessionStorage.getItem('username');
+    if (username) {
+        // 已登录：显示用户名，不可点击
+        menuLoginBtn.textContent = username;
+        menuLoginBtn.style.pointerEvents = 'none';
+        menuLoginBtn.style.opacity = '1';
+        menuLoginBtn.style.cursor = 'default';
+    } else {
+        // 未登录：显示"登入/注册"
+        menuLoginBtn.textContent = '登入/注册';
+        menuLoginBtn.style.pointerEvents = 'auto';
+        menuLoginBtn.style.opacity = '0.8';
+        menuLoginBtn.style.cursor = 'pointer';
+    }
 }
 
 // 音乐控制
@@ -82,15 +100,25 @@ menuOverlay.addEventListener('click', () => {
     menuOverlay.classList.remove('active');
 });
 
-// 登录相关按钮点击事件
-userAvatar.addEventListener('click', () => {
-    goToLogin();
+// 页面加载时初始化登录UI
+updateLoginUI();
+
+// 登录按钮/用户名点击事件
+menuLoginBtn.addEventListener('click', () => {
+    if (!sessionStorage.getItem('username')) {
+        goToLogin();
+    }
 });
 
+// 用户按钮点击：未登录则跳转登录页
 userButton.addEventListener('click', () => {
     goToLogin();
 });
 
-menuLoginBtn.addEventListener('click', () => {
-    goToLogin();
+// admin链接点击：未登录跳转登录页
+adminMenuItem.addEventListener('click', (e) => {
+    if (!sessionStorage.getItem('username')) {
+        e.preventDefault();
+        goToLogin();
+    }
 });

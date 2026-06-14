@@ -4,7 +4,7 @@
 <mapper namespace="com.camplus.login.mappers.UserMapper">
 
     <!-- 通用结果映射，解决数据库下划线到Java驼峰的映射 -->
-    <resultMap id="UserResultMap" type="com.camplus.login.pojo.User">
+    <resultMap id="UserResultMap" type="com.camplus.login.entity.User">
         <id column="user_id" property="userId"/>
         <result column="username" property="username"/>
         <result column="password_hash" property="passwordHash"/>
@@ -22,28 +22,28 @@
     </resultMap>
 
     <!-- 1. 新增用户 -->
-    <insert id="insertUser" parameterType="com.camplus.login.pojo.User">
+    <insert id="insertUser" parameterType="com.camplus.login.entity.User">
         INSERT INTO users (
         username, password_hash, nickname, email, phone,
-        avatar_url, role, status, create_time, update_time
+        avatar_url, role, status, login_error_count, create_time, update_time
         ) VALUES (
         #{username}, #{passwordHash}, #{nickname}, #{email}, #{phone},
-        #{avatarUrl}, #{role}, #{status}, NOW(), NOW()
+        #{avatarUrl}, #{role}, #{status}, 0, NOW(), NOW()
         )
     </insert>
 
     <!-- 2. 根据用户名查询用户 -->
-    <select id="selectByUsername" parameterType="string" resultMap="UserResultMap">
+    <select id="selectByUsername" resultMap="UserResultMap">
         SELECT * FROM users WHERE username = #{username}
     </select>
 
     <!-- 根据手机号查询 -->
-    <select id="selectByPhone" parameterType="string" resultMap="UserResultMap">
+    <select id="selectByPhone" resultMap="UserResultMap">
         SELECT * FROM users WHERE phone = #{phone}
     </select>
 
     <!-- 根据邮箱查询 -->
-    <select id="selectByEmail" parameterType="string" resultMap="UserResultMap">
+    <select id="selectByEmail" resultMap="UserResultMap">
         SELECT * FROM users WHERE email = #{email}
     </select>
 

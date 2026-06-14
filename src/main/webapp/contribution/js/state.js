@@ -8,6 +8,10 @@ export const elements = {
     loginStatus: document.querySelector('#loginStatus')
 };
 
+export const pageState = {
+    currentUser: null
+};
+
 export const statusMap = {
     0: ['待审核', 'pending'],
     1: ['已通过', 'approved'],

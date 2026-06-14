@@ -287,6 +287,12 @@ body {
     cursor: pointer;
     opacity: 0.8;
     transition: opacity 0.2s ease;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    text-align: center;
 }
 
 .menu-login-btn:hover {

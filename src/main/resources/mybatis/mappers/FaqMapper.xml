@@ -15,10 +15,7 @@
     </resultMap>
 
     <select id="selectHotFaqs" resultMap="FaqResultMap">
-        SELECT * FROM faq_items
-        WHERE display_status = 1
-        ORDER BY hot_score DESC, question_count DESC
-        LIMIT #{limit}
+        SELECT * FROM faq_items ORDER BY hot_score DESC LIMIT #{limit}
     </select>
 
     <select id="selectById" resultMap="FaqResultMap">
@@ -26,15 +23,11 @@
     </select>
 
     <update id="incrementQuestionCount">
-        UPDATE faq_items
-        SET question_count = question_count + 1
-        WHERE faq_id = #{faqId}
+        UPDATE faq_items SET question_count = question_count + 1 WHERE faq_id = #{faqId}
     </update>
 
     <update id="updateHotScore">
-        UPDATE faq_items
-        SET hot_score = #{hotScore}
-        WHERE faq_id = #{faqId}
+        UPDATE faq_items SET hot_score = #{hotScore} WHERE faq_id = #{faqId}
     </update>
 
     <select id="selectAllDisplayed" resultMap="FaqResultMap">
