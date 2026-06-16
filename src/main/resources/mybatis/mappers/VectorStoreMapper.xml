@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camplus.vector.mappers.VectorStoreMapper">
+
+    <select id="searchFaqVectors" resultType="map">
+        SELECT id, faq_id, question, answer, question_embedding, 
+               answer_embedding, combined_embedding
+        FROM faq_vector_store
+    </select>
+
+    <select id="searchKnowledgeVectors" resultType="map">
+        SELECT id, doc_id, chunk_index, chunk_content, 
+               chunk_embedding, chunk_metadata
+        FROM knowledge_vector_store
+    </select>
+
+    <select id="getAllVectorsFromTable" resultType="map">
+        SELECT * FROM ${tableName}
+    </select>
+
+    <insert id="insertFaqVector">
+        INSERT INTO faq_vector_store (faq_id, question, answer, 
+                                     question_embedding, answer_embedding, combined_embedding)
+        VALUES (#{faqId}, #{question}, #{answer}, 
+                #{questionEmbedding}, #{answerEmbedding}, #{combinedEmbedding})
+    </insert>
+
+    <insert id="insertKnowledgeVector">
+        INSERT INTO knowledge_vector_store (doc_id, chunk_index, chunk_content, 
+                                           chunk_embedding, chunk_metadata)
+        VALUES (#{docId}, #{chunkIndex}, #{chunkContent}, 
+                #{chunkEmbedding}, #{chunkMetadata})
+    </insert>
+
+    <delete id="deleteFaqVector">
+        DELETE FROM faq_vector_store WHERE faq_id = #{faqId}
+    </delete>
+
+    <delete id="deleteKnowledgeVector">
+        DELETE FROM knowledge_vector_store WHERE doc_id = #{docId}
+    </delete>
+
+</mapper>

@@ -8,7 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         "com.camplus.login.mappers",
         "com.camplus.admin.Mappers",
         "com.camplus.faq.mappers",
-        "com.camplus.contribution.mappers"
+        "com.camplus.contribution.mappers",
+        "com.camplus.vector.mappers"
 })
 @SpringBootApplication
 public class CamplusApplication {
