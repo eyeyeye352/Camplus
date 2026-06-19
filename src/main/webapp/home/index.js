@@ -110,11 +110,6 @@ menuLoginBtn.addEventListener('click', () => {
     }
 });
 
-// 用户按钮点击：未登录则跳转登录页
-userButton.addEventListener('click', () => {
-    goToLogin();
-});
-
 // admin链接点击：未登录跳转登录页
 adminMenuItem.addEventListener('click', (e) => {
     if (!sessionStorage.getItem('username')) {

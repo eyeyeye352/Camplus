@@ -8,7 +8,6 @@ const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
 const musicButton = document.getElementById('musicButton');
 const bgMusic = document.getElementById('bgMusic');
-const menuLoginBtn = document.getElementById('menuLoginBtn');
 
 // 注册相关元素
 const loginContent = document.getElementById('loginContent');
@@ -27,11 +26,6 @@ const registerTitle = document.getElementById('registerTitle');
 
 // 当前注册类型
 let currentRegisterType = '';
-
-// 跳转到首页
-function goToHome() {
-    window.location.href = '/home/index.html';
-}
 
 // 显示登录界面
 function showLogin() {
@@ -116,11 +110,6 @@ menuOverlay.addEventListener('click', () => {
 
 
 
-// 登录相关按钮点击事件
-menuLoginBtn.addEventListener('click', () => {
-    // 已在登录页，无需操作
-});
-
 // 注册链接点击事件
 registerLink.addEventListener('click', (e) => {
     e.preventDefault();
@@ -146,7 +135,7 @@ usernameRegisterBtn.addEventListener('click', () => {
 });
 
 
-// ========== 登录表单提交【已修改】 ==========
+// ========== 登录表单提交 ==========
 const loginForm = document.getElementById('loginForm');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -161,24 +150,11 @@ loginForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        // 标准参数构造，自动编码中文/特殊字符
-        const params = new URLSearchParams();
-        params.append('loginAccount', loginAccount);
-        params.append('password', password);
-        params.append('rememberMe', rememberMe);
+        const { data: result } = await axios.post('/login',
+            new URLSearchParams({ loginAccount, password, rememberMe }),
+            { withCredentials: true });
 
-        const res = await fetch('/login', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: params,
-            credentials: 'include'
-        });
-
-        const result = await res.json();
         if (result.success) {
-            // 存储完整用户信息到前端sessionStorage
             const user = result.data;
             sessionStorage.setItem('userId', user.userId);
             sessionStorage.setItem('username', user.username);
@@ -199,7 +175,7 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
-// ========== 注册表单提交【已修改】 ==========
+// ========== 注册表单提交 ==========
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -211,31 +187,15 @@ registerForm.addEventListener('submit', async (e) => {
         return;
     }
 
+    const params = new URLSearchParams({ password });
+    if (currentRegisterType === 'email') params.set('email', inputValue);
+    else if (currentRegisterType === 'phone') params.set('phone', inputValue);
+    else if (currentRegisterType === 'username') params.set('username', inputValue);
+
     try {
-        const params = new URLSearchParams();
-        params.append('password', password);
+        const { data: result } = await axios.post('/register', params, { withCredentials: true });
 
-        // 根据注册类型动态追加字段
-        if (currentRegisterType === 'email') {
-            params.append("email", inputValue);
-        } else if (currentRegisterType === 'phone') {
-            params.append("phone", inputValue);
-        } else if (currentRegisterType === 'username') {
-            params.append("username", inputValue);
-        }
-
-        const response = await fetch('/register', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: params,
-            credentials: 'include'
-        });
-
-        const result = await response.json();
         if (result.success) {
-            // 存储完整用户信息到前端sessionStorage
             const user = result.data;
             sessionStorage.setItem('userId', user.userId);
             sessionStorage.setItem('username', user.username);
