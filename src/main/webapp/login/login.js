@@ -179,14 +179,15 @@ loginForm.addEventListener('submit', async (e) => {
         const result = await res.json();
         if (result.success) {
             // 存储完整用户信息到前端sessionStorage
-            sessionStorage.setItem('userId', result.userId);
-            sessionStorage.setItem('username', result.username);
-            sessionStorage.setItem('email', result.email || '');
-            sessionStorage.setItem('phone', result.phone || '');
-            sessionStorage.setItem('nickname', result.nickname || '');
-            sessionStorage.setItem('avatarUrl', result.avatarUrl || '');
-            sessionStorage.setItem('role', result.role || '0');
-            sessionStorage.setItem('status', result.status || '1');
+            const user = result.data;
+            sessionStorage.setItem('userId', user.userId);
+            sessionStorage.setItem('username', user.username);
+            sessionStorage.setItem('email', user.email || '');
+            sessionStorage.setItem('phone', user.phone || '');
+            sessionStorage.setItem('nickname', user.nickname || '');
+            sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
+            sessionStorage.setItem('role', user.role || '0');
+            sessionStorage.setItem('status', user.status || '1');
             alert(result.msg);
             window.location.href = '/home/index.html';
         } else {
@@ -235,14 +236,15 @@ registerForm.addEventListener('submit', async (e) => {
         const result = await response.json();
         if (result.success) {
             // 存储完整用户信息到前端sessionStorage
-            sessionStorage.setItem('userId', result.userId);
-            sessionStorage.setItem('username', result.username);
-            sessionStorage.setItem('email', result.email || '');
-            sessionStorage.setItem('phone', result.phone || '');
-            sessionStorage.setItem('nickname', result.nickname || '');
-            sessionStorage.setItem('avatarUrl', result.avatarUrl || '');
-            sessionStorage.setItem('role', result.role || '0');
-            sessionStorage.setItem('status', result.status || '1');
+            const user = result.data;
+            sessionStorage.setItem('userId', user.userId);
+            sessionStorage.setItem('username', user.username);
+            sessionStorage.setItem('email', user.email || '');
+            sessionStorage.setItem('phone', user.phone || '');
+            sessionStorage.setItem('nickname', user.nickname || '');
+            sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
+            sessionStorage.setItem('role', user.role || '0');
+            sessionStorage.setItem('status', user.status || '1');
             alert(result.msg);
             window.location.href = '/home/index.html';
         } else {
