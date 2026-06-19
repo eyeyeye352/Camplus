@@ -21,10 +21,10 @@ public class RegisterController {
 
     @PostMapping("/register")
     public Result<User> register(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String phone,
-            @RequestParam String password) {
+            @RequestParam(name = "username", required = false) String username,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "phone", required = false) String phone,
+            @RequestParam(name = "password") String password) {
 
         User user = new User();
         user.setPasswordHash(password);

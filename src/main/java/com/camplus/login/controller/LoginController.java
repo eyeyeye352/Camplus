@@ -21,10 +21,9 @@ public class LoginController {
 
     @PostMapping("/login")
     public Result<User> login(
-            @RequestParam String loginAccount,
-            @RequestParam String password,
-            @RequestParam(required = false) String rememberMe
-    ) {
+            @RequestParam(name = "loginAccount") String loginAccount,
+            @RequestParam(name = "password") String password,
+            @RequestParam(name = "rememberMe", required = false) String rememberMe) {
 
         User user = userService.login(loginAccount, password);
 
