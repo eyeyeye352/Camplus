@@ -3,7 +3,6 @@ package com.camplus.faq.service.serviceImpl;
 import com.camplus.faq.mappers.FaqMapper;
 import com.camplus.faq.pojo.Faq;
 import com.camplus.faq.service.FaqService;
-import com.camplus.login.util.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 
 import java.time.LocalDateTime;

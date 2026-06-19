@@ -3,7 +3,7 @@
 
 <mapper namespace="com.camplus.login.mappers.UserMapper">
 
-    <!-- 通用结果映射，解决数据库下划线到Java驼峰的映射 -->
+    <!-- 驼峰映射 -->
     <resultMap id="UserResultMap" type="com.camplus.login.entity.User">
         <id column="user_id" property="userId"/>
         <result column="username" property="username"/>
@@ -21,7 +21,7 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <!-- 1. 新增用户 -->
+    <!-- 注册新增用户 -->
     <insert id="insertUser" parameterType="com.camplus.login.entity.User">
         INSERT INTO users (
         username, password_hash, nickname, email, phone,
@@ -32,22 +32,18 @@
         )
     </insert>
 
-    <!-- 2. 根据用户名查询用户 -->
+    <!-- 查询用户 -->
     <select id="selectByUsername" resultMap="UserResultMap">
         SELECT * FROM users WHERE username = #{username}
     </select>
-
-    <!-- 根据手机号查询 -->
     <select id="selectByPhone" resultMap="UserResultMap">
         SELECT * FROM users WHERE phone = #{phone}
     </select>
-
-    <!-- 根据邮箱查询 -->
     <select id="selectByEmail" resultMap="UserResultMap">
         SELECT * FROM users WHERE email = #{email}
     </select>
 
-    <!-- 5. 更新登录错误次数 -->
+    <!-- 更新登录错误次数 -->
     <update id="updateLoginErrorCount">
         UPDATE users
         SET login_error_count = #{errorCount}
