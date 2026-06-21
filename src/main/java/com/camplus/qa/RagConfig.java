@@ -1,101 +1,64 @@
 package com.camplus.qa;
 
-import dev.langchain4j.data.document.splitter.DocumentSplitters;
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
-import dev.langchain4j.data.segment.TextSegment;
+import com.camplus.vector.pojo.VectorSearchResult;
+import com.camplus.vector.service.VectorService;
+import dev.langchain4j.rag.content.Content;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
-import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.concurrent.CompletableFuture;
-import dev.langchain4j.data.document.splitter.DocumentSplitters;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 public class RagConfig {
 
-    // 1. 接入本地 Ollama 大模型
+    // 【大融合1】注入同学B写的向量检索服务
+    @Autowired
+    private VectorService vectorService;
+
+    @Value("${ollama.chat-model-name:qwen2.5:7b}")
+    private String chatModelName;
+
+    @Value("${ollama.base-url:http://localhost:11434}")
+    private String ollamaBaseUrl;
+
     @Bean
-    public ChatLanguageModel chatLanguageModel() {
-        return OllamaChatModel.builder()
-                .baseUrl("http://localhost:11434") // Ollama 默认本地端口
-                .modelName("qwen2.5:7b ")           // 严格匹配你下载的模型名称
+    public CampusAssistant campusAssistant() {
+
+        // 1. Ollama 在这里只安安心心负责“聊天和答案生成”，完全不负责“向量化”
+        ChatLanguageModel chatModel = OllamaChatModel.builder()
+                .baseUrl(ollamaBaseUrl)
+                .modelName(chatModelName)
                 .temperature(0.7)
                 .build();
-    }
 
-    // 2. 接入本地硬编码的 BGE-M3-ONNX 向量模型
-    // 2. 接入本地 Ollama 运行的 BGE-M3 向量模型
-    @Bean
-    public EmbeddingModel embeddingModel() {
-        return OllamaEmbeddingModel.builder()
-                .baseUrl("http://localhost:11434") // Ollama 默认本地端口
-                .modelName("bge-m3")               // 调用你刚才 pull 下来的模型
-                .build();
-    }
+        // 2.【大融合2：核心关键】自定义检索器
+        // 废弃原先的 InMemory 内存库，直接让 LangChain4j 在需要上下文时，去调同学B写的 MySQL 检索逻辑！
+        ContentRetriever contentRetriever = query -> {
+            String question = query.text(); // 获取用户前台提问的文本
 
-    // 3. 内存向量数据库
-    @Bean
-    public EmbeddingStore<TextSegment> embeddingStore() {
-        return new InMemoryEmbeddingStore<>();
-    }
+            // 联动同学B在 VectorServiceImpl里实现的 search 方法
+            // 该方法内部会自动触发本地ONNX向量化，并去 MySQL 的 knowledge_vector_store 表里查找匹配片段
+            List<VectorSearchResult> searchResults =
+                    vectorService.search("knowledge_vector_store", question);
 
-    // 4. 将知识库装载并构建大模型助手
-    @Bean
-    public CampusAssistant campusAssistant(ChatLanguageModel chatModel,
-                                           EmbeddingModel embeddingModel,
-                                           EmbeddingStore<TextSegment> embeddingStore) {
-
-        // 【优化点】读取文档和灌库的逻辑，包裹在 CompletableFuture 异步线程中执行
-        CompletableFuture.runAsync(() -> {
-            try {
-                System.out.println("⏳ [后台线程] 开始异步解析和导入本地知识库...");
-                long startTime = System.currentTimeMillis();
-
-                // 读取 docs 文件夹
-                Path documentPath = Paths.get("src/main/resources/docs");
-                List<Document> documents = FileSystemDocumentLoader.loadDocuments(documentPath);
-
-                // 构建切片器
-                EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
-                        .documentSplitter(DocumentSplitters.recursive(300, 30))
-                        .embeddingModel(embeddingModel)
-                        .embeddingStore(embeddingStore)
-                        .build();
-
-                // 异步执行耗时的灌库操作
-                ingestor.ingest(documents);
-
-                long endTime = System.currentTimeMillis();
-                System.out.println("🚀 [后台线程] 本地向量库计算完毕！耗时: " + (endTime - startTime) / 1000 + " 秒");
-
-            } catch (Exception e) {
-                System.err.println("❌ [后台线程] 知识库异步导入失败: " + e.getMessage());
-                e.printStackTrace();
+            List<Content> contents = new ArrayList<>();
+            if (searchResults != null) {
+                for (VectorSearchResult res : searchResults) {
+                    contents.add(Content.from(res.getContent()));
+                }
             }
-        });
+            return contents;
+        }; // 🌟 这里已经帮你加上了结束括号
 
-        // 核心改动：不再等待上面执行完，直接返回助手实例，让 Spring Boot 瞬间启动成功！
-        ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
-                .embeddingStore(embeddingStore)
-                .embeddingModel(embeddingModel)
-                .maxResults(3)
-                .minScore(0.6)
-                .build();
-
+        // 3. 构建大模型智能助手，挂载我们融合后的内容检索器
         return AiServices.builder(CampusAssistant.class)
                 .chatLanguageModel(chatModel)
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
