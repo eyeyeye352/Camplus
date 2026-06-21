@@ -4,6 +4,8 @@ import com.camplus.faq.mappers.FaqMapper;
 import com.camplus.faq.pojo.Faq;
 import com.camplus.faq.service.FaqService;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -11,9 +13,16 @@ import java.util.List;
 
 public class FaqServiceImpl implements FaqService {
 
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
+
+    private SqlSession getSession() {
+        return sqlSessionFactory.openSession();
+    }
+
     @Override
     public List<Faq> getHotFaqs(Integer limit) {
-        try (SqlSession session = MyBatisUtil.getSqlSession()) {
+        try (SqlSession session = getSession()) {
             FaqMapper faqMapper = session.getMapper(FaqMapper.class);
             return faqMapper.selectHotFaqs(limit);
         }
@@ -21,7 +30,7 @@ public class FaqServiceImpl implements FaqService {
 
     @Override
     public Faq getFaqById(Integer faqId) {
-        try (SqlSession session = MyBatisUtil.getSqlSession()) {
+        try (SqlSession session = getSession()) {
             FaqMapper faqMapper = session.getMapper(FaqMapper.class);
             return faqMapper.selectById(faqId);
         }
@@ -29,7 +38,7 @@ public class FaqServiceImpl implements FaqService {
 
     @Override
     public boolean recordClick(Integer faqId) {
-        try (SqlSession session = MyBatisUtil.getSqlSession()) {
+        try (SqlSession session = getSession()) {
             FaqMapper faqMapper = session.getMapper(FaqMapper.class);
             int rows = faqMapper.incrementQuestionCount(faqId);
             session.commit();
@@ -39,7 +48,7 @@ public class FaqServiceImpl implements FaqService {
 
     @Override
     public void updateHotScores() {
-        try (SqlSession session = MyBatisUtil.getSqlSession()) {
+        try (SqlSession session = getSession()) {
             FaqMapper faqMapper = session.getMapper(FaqMapper.class);
             List<Faq> faqs = faqMapper.selectAllDisplayed();
 
