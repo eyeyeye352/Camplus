@@ -7,60 +7,128 @@
     <link rel="stylesheet" href="userInfo.css">
 </head>
 <body>
-<div class="back-home">
-        <a href="../home/index.html">← 返回首页</a>
+<!-- 固定标题（当前页不需要显示） -->
+<div class="fixed-title" id="fixedTitle">
+    <h1>Camplus</h1>
+</div>
+
+<!-- 音乐控制按钮 -->
+<div class="music-button" id="musicButton">
+    <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18V5l12-2v13"></path>
+        <circle cx="6" cy="18" r="3"></circle>
+        <circle cx="18" cy="16" r="3"></circle>
+        <line class="music-slash" x1="4" y1="4" x2="20" y2="20" stroke-width="3" style="display: none;"></line>
+    </svg>
+</div>
+
+<!-- 菜单按钮 -->
+<div class="menu-button" id="menuButton">
+    <img src="../assets/icons/menuIcon.svg" alt="菜单" class="menu-icon">
+</div>
+
+<!-- 背景音乐 -->
+<audio id="bgMusic" loop>
+    <source src="../assets/musics/webbgm.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 菜单遮罩层 -->
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- 侧边菜单 -->
+<div class="side-menu" id="sideMenu">
+    <div class="border-container">
+        <div class="border-gradient"></div>
+        <div class="border-inner"></div>
     </div>
+    <div class="menu-content">
+        <a class="menu-item" href="../qna/qna.html">问答平台</a>
+        <a class="menu-item" href="../home/index.html">首页</a>
+        <a class="menu-item current-page" href="../userInfo/userInfo.html">用户</a>
+        <a class="menu-item" id="adminMenuItem" href="../admin/admin.html">管理者入口</a>
+        <a class="menu-item" href="../help/help.html">帮助</a>
+        <a class="menu-item" href="../contribution/contribution.html">用户贡献</a>
+    </div>
+    <div class="menu-footer">
+        <span class="menu-login-btn" id="menuLoginBtn">登入/注册</span>
+    </div>
+</div>
 
-    <div class="user-info-container">
-        <h1>个人信息</h1>
+<!-- 主内容区 -->
+<div class="main-content">
+    <!-- 返回首页 -->
+    <a class="back-link" href="../home/index.html">← 返回首页</a>
 
-    <div class="info-section">
+    <!-- 基本信息卡片 -->
+    <div class="info-card">
         <h2>基本信息</h2>
         <div class="info-row">
-            <span class="info-label">用户名：</span>
-            <span class="info-value" id="usernameValue"></span>
+            <span class="info-label">用户名</span>
+            <span class="info-value" id="usernameValue">—</span>
         </div>
         <div class="info-row">
-            <span class="info-label">邮箱：</span>
-            <span class="info-value" id="emailValue"></span>
+            <span class="info-label">邮箱</span>
+            <span class="info-value" id="emailValue">—</span>
         </div>
         <div class="info-row">
-            <span class="info-label">手机号：</span>
-            <span class="info-value" id="phoneValue"></span>
+            <span class="info-label">手机号</span>
+            <span class="info-value" id="phoneValue">—</span>
         </div>
         <div class="info-row">
-            <span class="info-label">身份：</span>
-            <span class="info-value" id="roleValue"></span>
+            <span class="info-label">身份</span>
+            <span class="info-value highlight" id="roleValue">—</span>
         </div>
     </div>
 
-    <div class="edit-section">
-        <h2>修改信息</h2>
-
-        <form id="editUsernameForm">
-            <label for="newUsername">新用户名：</label>
-            <input type="text" id="newUsername" name="newUsername" required>
-            <button type="submit">修改用户名</button>
+    <!-- 修改用户名 -->
+    <div class="edit-card">
+        <h2>修改用户名</h2>
+        <form class="edit-form" id="editUsernameForm">
+            <div class="form-row">
+                <label class="form-label">新用户名</label>
+                <input class="form-input" type="text" id="newUsername" placeholder="请输入新用户名" required>
+            </div>
+            <button class="submit-btn" type="submit">保存</button>
         </form>
+    </div>
 
-        <form id="editPasswordForm">
-            <label for="oldPassword">原密码：</label>
-            <input type="password" id="oldPassword" name="oldPassword" required>
-            <label for="newPassword">新密码：</label>
-            <input type="password" id="newPassword" name="newPassword" required>
-            <button type="submit">修改密码</button>
+    <!-- 修改密码 -->
+    <div class="edit-card">
+        <h2>修改密码</h2>
+        <form class="edit-form" id="editPasswordForm">
+            <div class="form-row">
+                <label class="form-label">原密码</label>
+                <input class="form-input" type="password" id="oldPassword" placeholder="请输入原密码" required>
+            </div>
+            <div class="form-row">
+                <label class="form-label">新密码</label>
+                <input class="form-input" type="password" id="newPassword" placeholder="请输入新密码" required>
+            </div>
+            <button class="submit-btn" type="submit">保存</button>
         </form>
+    </div>
 
-        <form id="editEmailForm">
-            <label for="newEmail">新邮箱：</label>
-            <input type="email" id="newEmail" name="newEmail" required>
-            <button type="submit">修改邮箱</button>
+    <!-- 修改邮箱 -->
+    <div class="edit-card">
+        <h2>修改邮箱</h2>
+        <form class="edit-form" id="editEmailForm">
+            <div class="form-row">
+                <label class="form-label">新邮箱</label>
+                <input class="form-input" type="email" id="newEmail" placeholder="请输入新邮箱" required>
+            </div>
+            <button class="submit-btn" type="submit">保存</button>
         </form>
+    </div>
 
-        <form id="editPhoneForm">
-            <label for="newPhone">新手机号：</label>
-            <input type="tel" id="newPhone" name="newPhone" required>
-            <button type="submit">修改手机号</button>
+    <!-- 修改手机号 -->
+    <div class="edit-card">
+        <h2>修改手机号</h2>
+        <form class="edit-form" id="editPhoneForm">
+            <div class="form-row">
+                <label class="form-label">新手机号</label>
+                <input class="form-input" type="tel" id="newPhone" placeholder="请输入新手机号" required>
+            </div>
+            <button class="submit-btn" type="submit">保存</button>
         </form>
     </div>
 </div>
