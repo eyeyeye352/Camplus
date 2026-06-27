@@ -1,24 +1,31 @@
 package com.camplus.problem.entity;
 
 public class FaqProblem {
-    private Long id;          // 问题唯一ID
-    private Long categoryId;  // 所属分类ID
-    private String question;  // 问题内容
-    private String answer;    // 问题答案
-    private Integer status;   // 状态 (1:正常, 0:隐藏)[cite: 2]
-    private Integer viewCount;// 浏览次数[cite: 2]
+    // 必须使用 faq_id，而不是 id
+    private Long faq_id;
+    // 必须使用 category_id，而不是 categoryId
+    private Long category_id;
+    private String question;
+    private String answer;
+    private Integer status;
+    private Integer view_count; // 必须使用 view_count
 
     // 更新后的 Getter 和 Setter 方法
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Long getCategoryId() { return categoryId; }
-    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+    public Long getFaq_id() { return faq_id; }
+    public void setFaq_id(Long faq_id) { this.faq_id = faq_id; }
+
+    public Long getCategory_id() { return category_id; }
+    public void setCategory_id(Long category_id) { this.category_id = category_id; }
+
     public String getQuestion() { return question; }
     public void setQuestion(String question) { this.question = question; }
+
     public String getAnswer() { return answer; }
     public void setAnswer(String answer) { this.answer = answer; }
+
     public Integer getStatus() { return status; }
     public void setStatus(Integer status) { this.status = status; }
-    public Integer getViewCount() { return viewCount; }
-    public void setViewCount(Integer viewCount) { this.viewCount = viewCount; }
+
+    public Integer getView_count() { return view_count; }
+    public void setView_count(Integer view_count) { this.view_count = view_count; }
 }
