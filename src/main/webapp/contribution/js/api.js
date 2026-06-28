@@ -13,19 +13,18 @@ async function requestJson(url, options = {}) {
     return result.data;
 }
 
-export function fetchCurrentUser() {
-    return requestJson(`${apiBase}/current-user`);
-}
-
-export function createContribution(formData) {
+export function createContribution(formData, userId) {
+    const params = new URLSearchParams(formData);
+    params.set('userId', userId);
     return requestJson(`${apiBase}/create`, {
         method: 'POST',
-        body: new URLSearchParams(formData)
+        body: params
     });
 }
 
-export function fetchContributions(status) {
+export function fetchContributions(userId, status) {
     const url = new URL(`${apiBase}/list`);
+    url.searchParams.set('userId', userId);
     if (status !== '') {
         url.searchParams.set('status', status);
     }

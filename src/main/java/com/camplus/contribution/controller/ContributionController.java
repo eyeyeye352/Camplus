@@ -2,8 +2,6 @@ package com.camplus.contribution.controller;
 
 import com.camplus.contribution.pojo.UserContribution;
 import com.camplus.contribution.service.ContributionService;
-import com.camplus.login.entity.User;
-import jakarta.servlet.http.HttpSession;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,65 +26,53 @@ public class ContributionController {
         this.contributionService = contributionService;
     }
 
-    @GetMapping("/current-user")
-    public Map<String, Object> currentUser(HttpSession session) {
-        User user = requireCurrentUser(session);
-        Map<String, Object> userInfo = new LinkedHashMap<>();
-        userInfo.put("userId", user.getUserId());
-        userInfo.put("username", user.getUsername());
-        userInfo.put("nickname", user.getNickname());
-        userInfo.put("email", user.getEmail());
-        userInfo.put("phone", user.getPhone());
-        return success("查询成功", userInfo);
-    }
-
     @PostMapping("/create")
     public Map<String, Object> create(
-            HttpSession session,
+            @RequestParam(required = false) Integer userId,
             @RequestParam(name = "contribution_type", required = false) Integer contributionType,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content) throws SQLException {
         UserContribution contribution = fromRequest(contributionType, title, content);
-        int contributionId = contributionService.create(contribution, currentUserId(session));
+        int contributionId = contributionService.create(contribution, userId);
         return success("提交成功", Map.of("contributionId", contributionId));
     }
 
     @GetMapping("/list")
     public Map<String, Object> list(
-            HttpSession session,
+            @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) Integer status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) throws SQLException {
-        List<UserContribution> contributions = contributionService.listMine(currentUserId(session), status, page, pageSize);
+        List<UserContribution> contributions = contributionService.listMine(userId, status, page, pageSize);
         return success("查询成功", contributions);
     }
 
     @GetMapping("/detail")
     public Map<String, Object> detail(
-            HttpSession session,
+            @RequestParam(required = false) Integer userId,
             @RequestParam(name = "contribution_id", required = false) Integer contributionId) throws SQLException {
-        UserContribution contribution = contributionService.detail(contributionId, currentUserId(session));
+        UserContribution contribution = contributionService.detail(contributionId, userId);
         return success("查询成功", contribution);
     }
 
     @PostMapping("/update")
     public Map<String, Object> update(
-            HttpSession session,
+            @RequestParam(required = false) Integer userId,
             @RequestParam(name = "contribution_id", required = false) Integer contributionId,
             @RequestParam(name = "contribution_type", required = false) Integer contributionType,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content) throws SQLException {
         UserContribution contribution = fromRequest(contributionType, title, content);
         contribution.setContributionId(contributionId);
-        contributionService.update(contribution, currentUserId(session));
+        contributionService.update(contribution, userId);
         return success("修改成功", null);
     }
 
     @PostMapping("/delete")
     public Map<String, Object> delete(
-            HttpSession session,
+            @RequestParam(required = false) Integer userId,
             @RequestParam(name = "contribution_id", required = false) Integer contributionId) throws SQLException {
-        contributionService.delete(contributionId, currentUserId(session));
+        contributionService.delete(contributionId, userId);
         return success("撤回成功", null);
     }
 
@@ -138,19 +124,4 @@ public class ContributionController {
         return value == null ? null : value.trim();
     }
 
-    private Integer currentUserId(HttpSession session) {
-        Long userId = requireCurrentUser(session).getUserId();
-        if (userId == null || userId <= 0) {
-            throw new SecurityException("请先登录");
-        }
-        return Math.toIntExact(userId);
-    }
-
-    private User requireCurrentUser(HttpSession session) {
-        Object user = session.getAttribute("user");
-        if (!(user instanceof User)) {
-            throw new SecurityException("请先登录");
-        }
-        return (User) user;
-    }
 }
