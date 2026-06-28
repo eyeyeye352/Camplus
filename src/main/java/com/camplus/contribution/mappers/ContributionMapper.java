@@ -16,6 +16,9 @@ public interface ContributionMapper {
                                         @Param("offset") int offset,
                                         @Param("size") int size);
 
+    int countByUserId(@Param("userId") Integer userId,
+                      @Param("status") Integer status);
+
     UserContribution findByIdAndUserId(@Param("contributionId") Integer contributionId,
                                        @Param("userId") Integer userId);
 

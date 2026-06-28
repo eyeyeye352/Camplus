@@ -35,6 +35,15 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM user_contributions
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
     <select id="findByIdAndUserId" resultMap="ContributionResultMap">
         SELECT *
         FROM user_contributions

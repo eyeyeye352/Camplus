@@ -1,5 +1,6 @@
 package com.camplus.contribution.controller;
 
+import com.camplus.contribution.pojo.ContributionPage;
 import com.camplus.contribution.pojo.UserContribution;
 import com.camplus.contribution.service.ContributionService;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -43,7 +43,7 @@ public class ContributionController {
             @RequestParam(required = false) Integer status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) throws SQLException {
-        List<UserContribution> contributions = contributionService.listMine(userId, status, page, pageSize);
+        ContributionPage contributions = contributionService.listMine(userId, status, page, pageSize);
         return success("查询成功", contributions);
     }
 

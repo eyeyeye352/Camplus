@@ -1,6 +1,7 @@
 package com.camplus.contribution.service;
 
 import com.camplus.contribution.dao.ContributionDao;
+import com.camplus.contribution.pojo.ContributionPage;
 import com.camplus.contribution.pojo.UserContribution;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +25,19 @@ public class ContributionService {
         return contributionDao.insert(contribution);
     }
 
-    public List<UserContribution> listMine(Integer userId, Integer status, int page, int pageSize)
+    public ContributionPage listMine(Integer userId, Integer status, int page, int pageSize)
             throws SQLException {
         ensureUserId(userId);
         if (status != null && (status < 0 || status > 2)) {
             throw new IllegalArgumentException("审核状态不正确");
         }
-        int safePage = Math.max(page, 1);
         int safeSize = Math.min(Math.max(pageSize, 1), 50);
+        int total = contributionDao.countByUserId(userId, status);
+        int totalPages = Math.max(1, (int) Math.ceil((double) total / safeSize));
+        int safePage = Math.min(Math.max(page, 1), totalPages);
         int offset = (safePage - 1) * safeSize;
-        return contributionDao.findByUserId(userId, status, offset, safeSize);
+        List<UserContribution> items = contributionDao.findByUserId(userId, status, offset, safeSize);
+        return new ContributionPage(items, safePage, safeSize, total, totalPages);
     }
 
     public UserContribution detail(Integer contributionId, Integer userId) throws SQLException {

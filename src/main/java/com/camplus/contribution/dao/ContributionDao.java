@@ -25,6 +25,10 @@ public class ContributionDao {
         return contributionMapper.findByUserId(userId, status, offset, size);
     }
 
+    public int countByUserId(Integer userId, Integer status) throws SQLException {
+        return contributionMapper.countByUserId(userId, status);
+    }
+
     public UserContribution findByIdAndUserId(Integer contributionId, Integer userId) throws SQLException {
         return contributionMapper.findByIdAndUserId(contributionId, userId);
     }
