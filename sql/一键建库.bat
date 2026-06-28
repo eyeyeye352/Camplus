@@ -10,11 +10,11 @@ echo.
 echo 当前目录: %cd%
 echo.
 
-set "mysql_path=C:\Program Files\MySQL\MySQL Server 8.0\bin"
+set "mysql_path=D:\MySQL\MySQL Server 8.0\bin"
 set "mysql_cmd=%mysql_path%\mysql.exe"
 
 if not exist "%mysql_cmd%" (
-    set "mysql_path=C:\Program Files (x86)\MySQL\MySQL Server 8.0\bin"
+    set "mysql_path=D:\MySQL\MySQL Server 8.0\bin"
     set "mysql_cmd=%mysql_path%\mysql.exe"
 )
 
