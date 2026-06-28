@@ -2,28 +2,39 @@ package com.camplus.admin.controller;
 
 import com.camplus.admin.pojo.KnowledgeExtractDTO;
 import com.camplus.admin.service.KnowledgeExtractService;
+
+// 【关键修复点1】引入组员写好的向量服务和响应实体
+import com.camplus.vector.service.VectorService;
+import com.camplus.vector.pojo.VectorEmbeddingResponse;
+// 【关键修复点2】引入组员写好的 Mapper
+import com.camplus.vector.mappers.VectorStoreMapper;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/admin/knowledge") // 路由扩展，不仅限faq
+@RequestMapping("/admin/knowledge")
 public class KnowledgeImportController {
 
     private final KnowledgeExtractService extractService;
+    private final VectorService vectorService;
+    private final VectorStoreMapper vectorStoreMapper;
 
-    // 【修改说明1】删除了原有的 FaqItemMapper 依赖注入，彻底与数据库解耦
-    // 【修改说明2】注入了全新的 KnowledgeExtractService 来处理文件流转
-    public KnowledgeImportController(KnowledgeExtractService extractService) {
+    // 构造器注入组员的 VectorService 和 VectorStoreMapper
+    public KnowledgeImportController(KnowledgeExtractService extractService,
+                                     VectorService vectorService,
+                                     VectorStoreMapper vectorStoreMapper) {
         this.extractService = extractService;
+        this.vectorService = vectorService;
+        this.vectorStoreMapper = vectorStoreMapper;
     }
 
-    /**
-     * 接口1：处理管理员前端上传的单个/多个文件
-     */
     @PostMapping("/upload")
     public Map<String, Object> uploadAndExtract(@RequestParam("file") MultipartFile file) {
         Map<String, Object> jsonResponse = new HashMap<>();
@@ -35,16 +46,22 @@ public class KnowledgeImportController {
         }
 
         try {
-            // 将文件落盘并提取文本
+            // 1. 文件落盘并提取为纯文本 DTO
             List<KnowledgeExtractDTO> extractedData = extractService.saveAndExtractUploadedFile(file);
 
-            // 【后续交接点】这里提取出的 extractedData 就是大模型需要的纯文本
-            // 目前作为演示，直接返回给前端。实际生产中，你可以将其推入 MQ 或异步转交给模型组员
+            int successCount = 0;
+
+            // 2. 遍历提取到的数据，进行向量化与入库
+            for (KnowledgeExtractDTO dto : extractedData) {
+                if ("TYPE_FAQ".equals(dto.getDataType())) {
+                    successCount += processFaqData(dto);
+                } else if ("TYPE_DOC".equals(dto.getDataType())) {
+                    successCount += processDocumentData(dto);
+                }
+            }
 
             jsonResponse.put("success", true);
-            jsonResponse.put("msg", "文件上传并解析成功，已存入 RawData 目录");
-            jsonResponse.put("dataCount", extractedData.size());
-            jsonResponse.put("extractedData", extractedData);
+            jsonResponse.put("msg", "文件处理完成！共提取数据段: " + extractedData.size() + "，成功向量化入库: " + successCount);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,27 +73,79 @@ public class KnowledgeImportController {
     }
 
     /**
-     * 接口2：全新功能，一键初始化本地 RawData 目录下的所有文件
+     * 处理结构化 FAQ 数据：合并问题和答案 -> 向量化 -> 入库 faq_vector_store
      */
-    @PostMapping("/initLocal")
-    public Map<String, Object> initFromLocalDir() {
-        Map<String, Object> jsonResponse = new HashMap<>();
+    private int processFaqData(KnowledgeExtractDTO dto) {
+        String combinedText = "问题：" + dto.getTitle() + "\n答案：" + dto.getPlainText();
 
         try {
-            // 扫描目录并批量提取文本
-            List<KnowledgeExtractDTO> allExtractedData = extractService.initDataFromRawDataDirectory();
+            // 调用组员的本地 ONNX 模型服务进行向量化
+            VectorEmbeddingResponse response = vectorService.embedText(combinedText);
+            if (response.isSuccess() && response.getDenseVector() != null) {
 
-            jsonResponse.put("success", true);
-            jsonResponse.put("msg", "本地目录扫描初始化成功");
-            jsonResponse.put("fileOrRecordCount", allExtractedData.size());
-            // jsonResponse.put("extractedData", allExtractedData); // 如果数据量极大，建议注释掉此行防止前端卡死
+                // 【核心修复】将 float[] 转为 byte[] 以适配组员的 MySQL BLOB 设计
+                byte[] combinedEmbeddingBytes = floatsToBytes(response.getDenseVector());
 
+                // 组员的 Mapper 要求 faqId 是 Integer
+                Integer faqId = Math.abs(UUID.randomUUID().hashCode());
+
+                // 注意：组员的接口支持单独传问题和答案的向量，为了节省计算资源，这里我们仅存 combined 向量，其余传 null
+                vectorStoreMapper.insertFaqVector(faqId, dto.getTitle(), dto.getPlainText(),
+                        null, null, combinedEmbeddingBytes);
+                return 1;
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            jsonResponse.put("success", false);
-            jsonResponse.put("msg", "本地目录初始化异常: " + e.getMessage());
+            System.err.println("FAQ向量化失败：" + dto.getTitle());
         }
+        return 0;
+    }
 
-        return jsonResponse;
+    /**
+     * 处理非结构化长文档：分块 (Chunking) -> 遍历向量化 -> 入库 knowledge_vector_store
+     */
+    private int processDocumentData(KnowledgeExtractDTO dto) {
+        int insertedChunks = 0;
+        String rawText = dto.getPlainText();
+        String sourceFileName = dto.getSourceFileName();
+
+        // 组员的 Mapper 要求 docId 是 Integer
+        Integer docId = Math.abs(UUID.randomUUID().hashCode());
+
+        // 固定长度切片算法
+        int chunkSize = 500;
+        int chunkIndex = 0;
+
+        for (int i = 0; i < rawText.length(); i += chunkSize) {
+            int end = Math.min(rawText.length(), i + chunkSize);
+            String chunkContent = rawText.substring(i, end);
+
+            try {
+                VectorEmbeddingResponse response = vectorService.embedText(chunkContent);
+                if (response.isSuccess() && response.getDenseVector() != null) {
+
+                    // 【核心修复】将 float[] 转为 byte[]
+                    byte[] chunkEmbeddingBytes = floatsToBytes(response.getDenseVector());
+                    String metadata = "{\"source\":\"" + sourceFileName + "\"}";
+
+                    vectorStoreMapper.insertKnowledgeVector(docId, chunkIndex, chunkContent, chunkEmbeddingBytes, metadata);
+                    insertedChunks++;
+                }
+            } catch (Exception e) {
+                System.err.println("文档分块向量化失败，分块索引：" + chunkIndex);
+            }
+            chunkIndex++;
+        }
+        return insertedChunks;
+    }
+
+    /**
+     * 【底层桥接引擎】将 BGE-M3 模型生成的 float[] 转换为 MySQL BLOB 需要的 byte[]
+     */
+    private byte[] floatsToBytes(float[] floats) {
+        if (floats == null) return null;
+        ByteBuffer buffer = ByteBuffer.allocate(floats.length * 4);
+        // 使用高效的块写入
+        buffer.asFloatBuffer().put(floats);
+        return buffer.array();
     }
 }

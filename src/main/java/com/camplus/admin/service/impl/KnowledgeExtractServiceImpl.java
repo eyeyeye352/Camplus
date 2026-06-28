@@ -157,7 +157,7 @@ public class KnowledgeExtractServiceImpl implements KnowledgeExtractService {
     }
 
     /**
-     * 4. 解析 CSV 文件 (保留原有的 Q&A 形式，以防有需要)
+     * 4. 解析 CSV 文件 (改良版：完美支持问答文本内部包含英文逗号及转义双引号)
      */
     private List<KnowledgeExtractDTO> parseCsv(File file) throws Exception {
         List<KnowledgeExtractDTO> list = new ArrayList<>();
@@ -171,14 +171,58 @@ public class KnowledgeExtractServiceImpl implements KnowledgeExtractService {
                 }
                 if (line.trim().isEmpty()) continue;
 
-                String[] columns = line.split(",", 2);
+                // 【核心修复】调用智能安全切分算法，效仿 split(regex, 2) 且识别引号隔离区
+                String[] columns = parseCsvLineLimit2(line);
                 if (columns.length >= 2) {
-                    String question = columns[0].trim().replace("\"", "");
-                    String answer = columns[1].trim().replace("\"", "");
+                    String question = columns[0];
+                    String answer = columns[1];
                     list.add(new KnowledgeExtractDTO(file.getName(), "TYPE_FAQ", question, answer));
                 }
             }
         }
         return list;
+    }
+
+    /**
+     * 核心辅助方法：在忽略双引号内部逗号的前提下，只切分第一个合法的英文逗号（实现安全的 split(..., 2) 效果）
+     */
+    private String[] parseCsvLineLimit2(String line) {
+        boolean inQuotes = false;
+        int splitIdx = -1;
+
+        // 线性扫描整行字符，动态跟踪是否处于双引号的“内容隔离区”
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                inQuotes = !inQuotes; // 状态取反：进入或离开双引号区域
+            } else if (c == ',' && !inQuotes) {
+                splitIdx = i; // 找到了第一个真正用于隔离【问题】与【答案】的合法逗号
+                break;
+            }
+        }
+
+        // 如果整行没找到引号外部的合法逗号，说明无法切分成 Q&A 结构
+        if (splitIdx == -1) {
+            return new String[]{line};
+        }
+
+        // 精准切分为前后两部分（第一列为 Question，后面剩余的全部归为 Answer）
+        String part1 = line.substring(0, splitIdx).trim();
+        String part2 = line.substring(splitIdx + 1).trim();
+
+        // 深度清洗两部分数据（去除标准 CSV 自动加上的外层双引号，并还原内部转义）
+        return new String[]{cleanCsvField(part1), cleanCsvField(part2)};
+    }
+
+    /**
+     * 彻底清洗 CSV 字段文本：去掉外层包裹的双引号，并将内部转义双写 "" 还原为单引号 "
+     */
+    private String cleanCsvField(String field) {
+        // 1. 检查并剥离 CSV 自动为“包含逗号的文本”包裹的外层双引号
+        if (field.startsWith("\"") && field.endsWith("\"") && field.length() >= 2) {
+            field = field.substring(1, field.length() - 1);
+        }
+        // 2. 还原标准 CSV 中被双写转义的引号（例如：把文本内部的 "" 还原为真正的 "）
+        return field.replace("\"\"", "\"").trim();
     }
 }
