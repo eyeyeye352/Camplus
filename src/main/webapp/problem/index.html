@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Camplus-校园百事通</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background-color: #f0f2f5; padding: 0; margin: 0; }
+        /* 左上角 Logo */
+        .header-logo { padding: 20px 40px; font-size: 20px; font-weight: bold; color: #007bff; background: white; border-bottom: 1px solid #e1e4e8; }
+        
+        .container { max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        
+        /* 突出显示标题 */
+        .main-title { text-align: center; color: #1a1a1a; font-size: 28px; margin-bottom: 30px; letter-spacing: 1px; }
+        
+        .search-box { width: 100%; padding: 15px 25px; margin-bottom: 30px; border: none; border-radius: 30px; outline: none; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); box-sizing: border-box; }
+        
+        .faq-item { background: white; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s; }
+        .faq-item:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+        
+        .question { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #333; font-size: 17px; }
+        .question span { color: #007bff; font-weight: bold; }
+        
+        .answer { padding: 15px 20px 20px 20px; color: #555; line-height: 1.8; border-top: 1px solid #f8f9fa; background-color: #fafafa; border-radius: 0 0 10px 10px; }
+    </style>
+</head>
+<body>
+    <div class="header-logo">Camplus-校园百事通</div>
+
+    <div id="app" class="container">
+        <h1 class="main-title">✨ 固定问题查询</h1>
+        
+        <input v-model="searchQuery" class="search-box" placeholder="🔍 输入关键词搜索（如：图书馆、选课、宿舍...）">
+        
+        <div v-for="(item, index) in filteredList" :key="index" class="faq-item">
+            <div class="question" @click="item.show = !item.show">
+                {{ item.question }}
+                <span>{{ item.show ? '收起 −' : '展开 +' }}</span>
+            </div>
+            <div v-if="item.show" class="answer">
+                {{ item.answer }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return { faqList: [], searchQuery: '' }
+            },
+            computed: {
+                filteredList() {
+                    return this.faqList.filter(item => 
+                        item.question.toLowerCase().includes(this.searchQuery.toLowerCase())
+                    );
+                }
+            },
+            mounted() {
+                axios.get('http://localhost:8080/faq?action=list&categoryId=1')
+                    .then(res => {
+                        this.faqList = res.data.map(item => ({ ...item, show: false }));
+                    });
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

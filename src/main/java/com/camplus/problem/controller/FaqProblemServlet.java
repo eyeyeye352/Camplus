@@ -23,6 +23,10 @@ public class FaqProblemServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
         // 设置响应编码为 UTF-8，这是解决中文乱码的关键
         response.setContentType("application/json;charset=UTF-8");
 
