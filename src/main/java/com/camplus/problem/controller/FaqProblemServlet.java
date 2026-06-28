@@ -3,6 +3,7 @@ package com.camplus.problem.controller;
 import com.camplus.problem.entity.FaqProblem;
 import com.camplus.problem.service.FaqProblemService;
 import com.camplus.problem.service.FaqProblemServiceImpl;
+import com.google.gson.Gson; // 确保你的项目里有 Gson 依赖
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,14 +16,18 @@ import java.util.List;
 @WebServlet("/faq")
 public class FaqProblemServlet extends HttpServlet {
 
-    // 使用 final 关键字，让代码更健壮（这也是 IDEA 刚才建议的）
     private final FaqProblemService faqProblemService = new FaqProblemServiceImpl();
+    private final Gson gson = new Gson(); // 用于将对象转换成前端需要的 JSON 格式
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 设置响应编码，防止中文乱码
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+        // 设置响应编码为 UTF-8，这是解决中文乱码的关键
         response.setContentType("application/json;charset=UTF-8");
 
         String action = request.getParameter("action");
@@ -33,8 +38,10 @@ public class FaqProblemServlet extends HttpServlet {
             if (categoryIdStr != null) {
                 Long categoryId = Long.parseLong(categoryIdStr);
                 List<FaqProblem> list = faqProblemService.getProblemsByCategory(categoryId);
-                // 暂时打印一下，证明我们拿到了数据，同时也消除了“未使用”警告
-                System.out.println("成功获取分类ID为 " + categoryId + " 的问题列表，数量：" + list.size());
+
+                // 将数据转为 JSON 并返回给前端
+                String json = gson.toJson(list);
+                response.getWriter().write(json);
             }
         } else if ("detail".equals(action)) {
             // 处理查询问题详情
@@ -42,10 +49,10 @@ public class FaqProblemServlet extends HttpServlet {
             if (idStr != null) {
                 Long id = Long.parseLong(idStr);
                 FaqProblem problem = faqProblemService.getProblemDetail(id);
-                // 暂时打印一下详情内容
-                if (problem != null) {
-                    System.out.println("成功获取问题详情：" + problem.getQuestion());
-                }
+
+                // 将对象转为 JSON 并返回给前端
+                String json = gson.toJson(problem);
+                response.getWriter().write(json);
             }
         }
     }

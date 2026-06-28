@@ -6,22 +6,29 @@ import com.camplus.problem.entity.FaqProblem;
 import java.util.List;
 
 public class FaqProblemServiceImpl implements FaqProblemService {
-    private FaqProblemDao faqProblemDao = new FaqProblemDaoImpl();
+
+
+    private final FaqProblemDao faqProblemDao = new FaqProblemDaoImpl();
 
     @Override
-    public List<FaqProblem> getProblemsByCategory(Long categoryId) {
-        return faqProblemDao.findItemsByCategoryId(categoryId);
+    public List<FaqProblem> getProblemsByCategory(Long category_id) {
+        if (category_id == null || category_id <= 0) return null;
+        return faqProblemDao.findItemsByCategoryId(category_id);
     }
+
+    @Override
+    public FaqProblem getProblemDetail(Long faq_id) {
+        FaqProblem p = faqProblemDao.findItemById(faq_id);
+        if (p != null) {
+            faqProblemDao.incrementViewCount(faq_id);
+        }
+        return p;
+    }
+
 
     @Override
     public List<FaqProblem> searchProblems(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) return null;
+        if (keyword == null || keyword.isEmpty()) return null;
         return faqProblemDao.searchItemsByKeyword(keyword);
-    }
-
-    @Override
-    public FaqProblem getProblemDetail(Long id) {
-        faqProblemDao.incrementViewCount(id);
-        return faqProblemDao.findItemById(id);
     }
 }
