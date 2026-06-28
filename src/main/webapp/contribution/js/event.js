@@ -1,4 +1,4 @@
-import { createContribution, fetchContributions, fetchCurrentUser } from './api.js';
+import { createContribution, fetchContributions } from './api.js';
 import { elements, pageState } from './state.js';
 import { renderList, renderLoadError, renderLoading, setLoginStatus, showToast } from './render.js';
 
@@ -9,15 +9,22 @@ export function bindEvents() {
     elements.statusFilter.addEventListener('change', loadContributions);
 }
 
-export async function initCurrentUser() {
-    try {
-        const user = await fetchCurrentUser();
-        pageState.currentUser = user;
-        setLoginStatus(displayName(user));
-    } catch (error) {
+export function initCurrentUser() {
+    const userId = sessionStorage.getItem('userId');
+    if (!userId) {
         pageState.currentUser = null;
         setLoginStatus('未登录');
+        return;
     }
+
+    pageState.currentUser = {
+        userId: Number(userId),
+        username: sessionStorage.getItem('username'),
+        nickname: sessionStorage.getItem('nickname'),
+        email: sessionStorage.getItem('email'),
+        phone: sessionStorage.getItem('phone')
+    };
+    setLoginStatus(displayName(pageState.currentUser));
 }
 
 function bindNavigation() {
@@ -59,7 +66,7 @@ function bindSubmitForm() {
         }
 
         try {
-            await createContribution(formData);
+            await createContribution(formData, pageState.currentUser.userId);
             elements.form.reset();
             showToast('提交成功，已进入待审核');
         } catch (error) {
@@ -79,7 +86,10 @@ async function loadContributions() {
             throw new Error('请先登录后查看我的贡献');
         }
 
-        const data = await fetchContributions(elements.statusFilter.value);
+        const data = await fetchContributions(
+            pageState.currentUser.userId,
+            elements.statusFilter.value
+        );
         renderList(data || []);
         setLoginStatus(displayName(pageState.currentUser));
     } catch (error) {
