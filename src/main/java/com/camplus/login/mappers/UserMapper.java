@@ -22,4 +22,19 @@ public interface UserMapper {
 
     // 更新最后登录时间并重置错误次数
     int updateLoginSuccessInfo(@Param("userId") Long userId, @Param("loginTime") java.time.LocalDateTime loginTime);
+
+    // 更新用户名
+    int updateUsername(@Param("userId") Long userId, @Param("username") String username);
+
+    // 更新邮箱
+    int updateEmail(@Param("userId") Long userId, @Param("email") String email);
+
+    // 更新手机号
+    int updatePhone(@Param("userId") Long userId, @Param("phone") String phone);
+
+    // 更新密码
+    int updatePassword(@Param("userId") Long userId, @Param("passwordHash") String passwordHash);
+
+    // 根据用户ID查询
+    User selectById(@Param("userId") Long userId);
 }

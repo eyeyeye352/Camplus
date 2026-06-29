@@ -105,10 +105,29 @@ menuLoginBtn.addEventListener('click', () => {
     }
 });
 
-// admin链接点击：未登录跳转登录页
-adminMenuItem.addEventListener('click', (e) => {
+// admin链接点击：未登录跳转登录页，已登录则校验管理员身份
+adminMenuItem.addEventListener('click', async (e) => {
     if (!sessionStorage.getItem('username')) {
         e.preventDefault();
         goToLogin();
+        return;
+    }
+
+    e.preventDefault();
+    const userId = sessionStorage.getItem('userId');
+
+    try {
+        const { data: result } = await axios.post('/user/getRole',
+            new URLSearchParams({ userId }),
+            { withCredentials: true });
+
+        if (result.success && (result.data === 1 || result.data === '1')) {
+            window.location.href = '../admin/admin.html';
+        } else {
+            alert('您不是管理员！');
+        }
+    } catch (err) {
+        alert('请求异常，请稍后重试');
+        console.error(err);
     }
 });

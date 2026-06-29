@@ -64,4 +64,37 @@
         WHERE user_id = #{userId}
     </update>
 
+    <!-- 更新用户名 -->
+    <update id="updateUsername">
+        UPDATE users
+        SET username = #{username}, update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 更新邮箱 -->
+    <update id="updateEmail">
+        UPDATE users
+        SET email = #{email}, update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 更新手机号 -->
+    <update id="updatePhone">
+        UPDATE users
+        SET phone = #{phone}, update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 更新密码 -->
+    <update id="updatePassword">
+        UPDATE users
+        SET password_hash = #{passwordHash}, update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 根据ID查询用户 -->
+    <select id="selectById" resultMap="UserResultMap">
+        SELECT * FROM users WHERE user_id = #{userId}
+    </select>
+
 </mapper>

@@ -60,4 +60,59 @@ public class UserController {
         }
         return Result.fail("账号信息已存在，注册失败");
     }
+
+    @PostMapping("/user/updateUsername")
+    public Result<User> updateUsername(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "newUsername") String newUsername) {
+        User user = userService.updateUsername(userId, newUsername);
+        if (user != null) {
+            return Result.ok("用户名修改成功！", user);
+        }
+        return Result.fail("用户名已存在，修改失败");
+    }
+
+    @PostMapping("/user/updateEmail")
+    public Result<User> updateEmail(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "newEmail") String newEmail) {
+        User user = userService.updateEmail(userId, newEmail);
+        if (user != null) {
+            return Result.ok("邮箱修改成功！", user);
+        }
+        return Result.fail("邮箱已存在，修改失败");
+    }
+
+    @PostMapping("/user/updatePhone")
+    public Result<User> updatePhone(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "newPhone") String newPhone) {
+        User user = userService.updatePhone(userId, newPhone);
+        if (user != null) {
+            return Result.ok("手机号修改成功！", user);
+        }
+        return Result.fail("手机号已存在，修改失败");
+    }
+
+    @PostMapping("/user/updatePassword")
+    public Result<String> updatePassword(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "oldPassword") String oldPassword,
+            @RequestParam(name = "newPassword") String newPassword) {
+        boolean success = userService.updatePassword(userId, oldPassword, newPassword);
+        if (success) {
+            return Result.ok("密码修改成功！", null);
+        }
+        return Result.fail("原密码错误，修改失败");
+    }
+
+    @PostMapping("/user/getRole")
+    public Result<Integer> getRole(
+            @RequestParam(name = "userId") Long userId) {
+        Integer role = userService.getRole(userId);
+        if (role != null) {
+            return Result.ok("查询成功", role);
+        }
+        return Result.fail("用户不存在");
+    }
 }
