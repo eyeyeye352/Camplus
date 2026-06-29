@@ -1,10 +1,10 @@
 const fixedTitle = document.querySelector('.fixed-title');
 const menuButton = document.getElementById('menuButton');
 const sideMenu = document.getElementById('sideMenu');
-const menuOverlay = document.getElementById('menuOverlay');
 const musicButton = document.getElementById('musicButton');
 const bgMusic = document.getElementById('bgMusic');
-const userButton = document.getElementById('userButton');
+const avatarCircle = document.getElementById('avatarCircle');
+const accountName = document.getElementById('accountName');
 const menuLoginBtn = document.getElementById('menuLoginBtn');
 const adminMenuItem = document.getElementById('adminMenuItem');
 const activationZone = 200;
@@ -18,17 +18,15 @@ function goToLogin() {
 function updateLoginUI() {
     const username = sessionStorage.getItem('username');
     if (username) {
-        // 已登录：显示用户名，不可点击
-        menuLoginBtn.textContent = username;
-        menuLoginBtn.style.pointerEvents = 'none';
-        menuLoginBtn.style.opacity = '1';
-        menuLoginBtn.style.cursor = 'default';
+        accountName.textContent = username;
+        avatarCircle.classList.add('logged-in');
+        menuLoginBtn.textContent = '登出';
+        menuLoginBtn.classList.add('logged-in');
     } else {
-        // 未登录：显示"登入/注册"
+        accountName.textContent = '游客';
+        avatarCircle.classList.remove('logged-in');
         menuLoginBtn.textContent = '登入/注册';
-        menuLoginBtn.style.pointerEvents = 'auto';
-        menuLoginBtn.style.opacity = '0.8';
-        menuLoginBtn.style.cursor = 'pointer';
+        menuLoginBtn.classList.remove('logged-in');
     }
 }
 
@@ -92,28 +90,44 @@ document.addEventListener('mousemove', (e) => {
 
 menuButton.addEventListener('click', () => {
     sideMenu.classList.toggle('active');
-    menuOverlay.classList.toggle('active');
-});
-
-menuOverlay.addEventListener('click', () => {
-    sideMenu.classList.remove('active');
-    menuOverlay.classList.remove('active');
 });
 
 // 页面加载时初始化登录UI
 updateLoginUI();
 
-// 登录按钮/用户名点击事件
+// 登录按钮/登出点击事件
 menuLoginBtn.addEventListener('click', () => {
-    if (!sessionStorage.getItem('username')) {
+    if (sessionStorage.getItem('username')) {
+        sessionStorage.clear();
+        location.reload();
+    } else {
         goToLogin();
     }
 });
 
-// admin链接点击：未登录跳转登录页
-adminMenuItem.addEventListener('click', (e) => {
+// admin链接点击：未登录跳转登录页，已登录则校验管理员身份
+adminMenuItem.addEventListener('click', async (e) => {
     if (!sessionStorage.getItem('username')) {
         e.preventDefault();
         goToLogin();
+        return;
+    }
+
+    e.preventDefault();
+    const userId = sessionStorage.getItem('userId');
+
+    try {
+        const { data: result } = await axios.post('/user/getRole',
+            new URLSearchParams({ userId }),
+            { withCredentials: true });
+
+        if (result.success && (result.data === 1 || result.data === '1')) {
+            window.location.href = '../admin/admin.html';
+        } else {
+            alert('您不是管理员！');
+        }
+    } catch (err) {
+        alert('请求异常，请稍后重试');
+        console.error(err);
     }
 });
