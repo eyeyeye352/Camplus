@@ -31,6 +31,12 @@ Desktop.ini
 # 数据库本地配置
 jdbc.properties
 application-local.properties
+application-local.yml
+
+# Spring Boot 配置文件（包含数据库密码等敏感信息）
+application.yml
+application.yaml
+application.properties
 
 # 其他临时文件
 *.tmp

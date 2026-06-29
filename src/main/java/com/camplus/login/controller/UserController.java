@@ -10,13 +10,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-public class RegisterController {
+public class UserController {
 
     private final UserService userService;
 
     @Autowired
-    public RegisterController(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/login")
+    public Result<User> login(
+            @RequestParam(name = "loginAccount") String loginAccount,
+            @RequestParam(name = "password") String password,
+            @RequestParam(name = "rememberMe", required = false) String rememberMe) {
+
+        User user = userService.login(loginAccount, password);
+
+        if (user != null) {
+            return Result.ok("登录成功！", user);
+        }
+        return Result.fail("账号或密码错误，或账号已被锁定/禁用");
     }
 
     @PostMapping("/register")
