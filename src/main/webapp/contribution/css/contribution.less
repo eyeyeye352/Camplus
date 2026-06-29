@@ -287,11 +287,16 @@ button {
 }
 
 .contribution-card {
+    width: 100%;
+    min-height: 0;
+    color: @text;
+    text-align: left;
     transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
 
     &:hover {
         border-color: rgba(255, 0, 128, 0.42);
         background: rgba(255, 255, 255, 0.1);
+        color: @text;
         transform: translateY(-2px);
     }
 
@@ -303,6 +308,14 @@ button {
         color: @muted;
         line-height: 1.7;
     }
+}
+
+.card-action {
+    display: block;
+    margin-top: 12px;
+    color: @cyan;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .meta {
@@ -374,6 +387,132 @@ button {
     }
 }
 
+[hidden] {
+    display: none !important;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.pagination button {
+    min-width: 88px;
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.42;
+        transform: none;
+    }
+}
+
+.page-info {
+    min-width: 180px;
+    color: @muted;
+    text-align: center;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.detail-dialog {
+    width: min(680px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    padding: 0;
+    overflow: auto;
+    border: 1px solid @line-strong;
+    border-radius: 12px;
+    background: @surface;
+    color: @text;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.48);
+
+    &::backdrop {
+        background: rgba(0, 0, 0, 0.72);
+    }
+}
+
+.dialog-shell {
+    padding: 24px;
+}
+
+.dialog-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 22px;
+
+    .eyebrow {
+        margin: 0 0 6px;
+        color: @cyan;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+}
+
+.icon-button {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-color: @line-strong;
+    background: @surface-soft;
+    font-size: 26px;
+    line-height: 1;
+}
+
+.detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    color: @dim;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.detail-block,
+.review-block {
+    padding: 18px;
+    border: 1px solid @line;
+    border-radius: 8px;
+    background: @surface-soft;
+
+    h3 {
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin-bottom: 0;
+        color: @muted;
+        line-height: 1.75;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+}
+
+.review-block {
+    margin-top: 14px;
+    border-color: rgba(255, 92, 122, 0.46);
+    background: rgba(255, 92, 122, 0.1);
+
+    h3 {
+        color: @danger;
+    }
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
 @media (max-width: 760px) {
     .topbar,
     .section-head {
@@ -392,5 +531,18 @@ button {
     .form-grid,
     .guide-grid {
         grid-template-columns: 1fr;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+    }
+
+    .page-info {
+        order: -1;
+        width: 100%;
+    }
+
+    .dialog-shell {
+        padding: 20px;
     }
 }
