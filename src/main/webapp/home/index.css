@@ -18,6 +18,75 @@ body {
     background-color: #2a2a2a;
 }
 
+/* ========== 首页中央文字 ========== */
+.hero-center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    animation: heroFadeIn 1.2s ease-out 0.3s forwards;
+}
+
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.hero-text {
+    font-family: 'Camplus_title', sans-serif;
+    font-size: 32px;
+    color: #ffffff;
+    letter-spacing: 3px;
+}
+
+/* ========== 右上角菜单引导 ========== */
+.hero-guide {
+    position: fixed;
+    top: 70px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    animation: heroFadeInRight 1.2s ease-out 0.6s forwards;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes heroFadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.hero-arrow {
+    width: 100px;
+    height: 42px;
+}
+
+.hero-hint {
+    font-family: sans-serif;
+    font-size: 13px;
+    color: #46b4dc;
+    letter-spacing: 1px;
+}
+
 .fixed-title {
     position: fixed;
     left: 30px;
@@ -276,5 +345,5 @@ body {
 }
 
 .menu-login-btn.logged-in {
-    display: none;
+    display: inline-block;
 }
