@@ -88,8 +88,15 @@ document.addEventListener('mousemove', (e) => {
     }
 });
 
+let heroGuideHidden = false;
+
 menuButton.addEventListener('click', () => {
     sideMenu.classList.toggle('active');
+    const heroGuide = document.querySelector('.hero-guide');
+    if (heroGuide && !heroGuideHidden && sideMenu.classList.contains('active')) {
+        heroGuide.style.opacity = '0';
+        heroGuideHidden = true;
+    }
 });
 
 // 页面加载时初始化登录UI

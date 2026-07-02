@@ -5,9 +5,33 @@ if (sessionStorage.getItem('username')) {
 
 const menuButton = document.getElementById('menuButton');
 const sideMenu = document.getElementById('sideMenu');
-const menuOverlay = document.getElementById('menuOverlay');
 const musicButton = document.getElementById('musicButton');
 const bgMusic = document.getElementById('bgMusic');
+const avatarCircle = document.getElementById('avatarCircle');
+const accountName = document.getElementById('accountName');
+const menuLoginBtn = document.getElementById('menuLoginBtn');
+const adminMenuItem = document.getElementById('adminMenuItem');
+
+// 跳转到登录页面（当前页就是登录页，空操作）
+function goToLogin() {
+    // 已在登录页
+}
+
+// 根据登录态更新UI
+function updateLoginUI() {
+    const username = sessionStorage.getItem('username');
+    if (username) {
+        accountName.textContent = username;
+        avatarCircle.classList.add('logged-in');
+        menuLoginBtn.textContent = '登出';
+        menuLoginBtn.classList.add('logged-in');
+    } else {
+        accountName.textContent = '游客';
+        avatarCircle.classList.remove('logged-in');
+        menuLoginBtn.textContent = '登入/注册';
+        menuLoginBtn.classList.remove('logged-in');
+    }
+}
 
 // 注册相关元素
 const loginContent = document.getElementById('loginContent');
@@ -100,13 +124,21 @@ musicButton.addEventListener('click', (e) => {
 
 menuButton.addEventListener('click', () => {
     sideMenu.classList.toggle('active');
-    menuOverlay.classList.toggle('active');
 });
 
-menuOverlay.addEventListener('click', () => {
-    sideMenu.classList.remove('active');
-    menuOverlay.classList.remove('active');
+menuLoginBtn.addEventListener('click', () => {
+    if (sessionStorage.getItem('username')) {
+        sessionStorage.clear();
+        location.reload();
+    }
 });
+
+adminMenuItem.addEventListener('click', async (e) => {
+    e.preventDefault();
+    alert('请先登录');
+});
+
+updateLoginUI();
 
 
 
@@ -142,7 +174,6 @@ loginForm.addEventListener('submit', async (e) => {
 
     const loginAccount = document.getElementById('loginAccount').value.trim();
     const password = document.getElementById('password').value.trim();
-    const rememberMe = document.querySelector('input[name="rememberMe"]')?.checked ? 'on' : 'off';
 
     if (!loginAccount || !password) {
         alert('请填写账号和密码');
@@ -151,7 +182,7 @@ loginForm.addEventListener('submit', async (e) => {
 
     try {
         const { data: result } = await axios.post('/login',
-            new URLSearchParams({ loginAccount, password, rememberMe }),
+            new URLSearchParams({ loginAccount, password }),
             { withCredentials: true });
 
         if (result.success) {
