@@ -176,120 +176,106 @@ window.switchView = function(viewName) {
 };
 
 // ==========================================================================
-// 2. 知识导入模块：拖拽与前端 CSV 数据解析
+// 2. 知识导入模块：统一文件上传 (不作前端内容读取分流)
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
-    let selectedFile = null; // 用于缓存当前拖入的文件
+    let selectedFile = null;
 
-    if (!dropZone) return; // 防止在其他未加载该元素的页面报错
+    if (!dropZone) return;
 
-    // 点击拖拽框任意地方，触发隐藏的真正的文件选择器
+    // 点击拖拽框触发文件选择
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // 必须阻止浏览器的默认行为
+    // 阻止浏览器默认拖拽打开文件的行为
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => e.preventDefault(), false);
     });
 
-    // 拖进来时高亮
+    // 拖拽高亮特效
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, () => dropZone.classList.add('highlight'), false);
     });
-
-    // 离开或松开时取消高亮
     ['dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, () => dropZone.classList.remove('highlight'), false);
     });
 
-    // 监听鼠标松开（放下文件）事件
+    // 接收拖拽文件
     dropZone.addEventListener('drop', (e) => {
         processFiles(e.dataTransfer.files);
     });
 
-    // 监听点击选择文件后的变化
+    // 接收点击选择的文件
     fileInput.addEventListener('change', (e) => {
         processFiles(e.target.files);
     });
 
-    // 读取并解析 CSV 数据进行漂亮的前端表格渲染
+    // 核心逻辑：不区分类型，一视同仁记录文件
     function processFiles(files) {
         if (files.length === 0) return;
-        const file = files[0];
+        selectedFile = files[0];
 
-        // 后缀校验
-        if (!file.name.endsWith('.csv')) {
-            alert('文件格式不支持！请拖入标准的 .csv 逗号分隔符文件。');
-            return;
+        // 改变拖拽框的提示文字
+        const dropText = document.querySelector('#dropZone .drop-text');
+        if (dropText) {
+            dropText.innerHTML = `当前选中：<span style="color: #40e0d0; font-weight: bold;">${selectedFile.name}</span>`;
         }
 
-        selectedFile = file;
+        // 显示上传确认面板
+        const uploadResult = document.getElementById('uploadResult');
+        const fileInfo = document.getElementById('selectedFileInfo');
 
-        // 利用 HTML5 FileReader 读取文本内容
-        const reader = new FileReader();
-        reader.readAsText(file, 'utf-8');
-        reader.onload = function (event) {
-            const csvContent = event.target.result;
-            const rows = csvContent.split('\n');
-            const tbody = document.getElementById('previewBody');
-            tbody.innerHTML = ''; // 清空历史残留
-
-            let validRowCount = 0;
-            // 索引从 1 开始：代表自动跳过 CSV 的第一行表头 (question, answer)
-            for (let i = 1; i < rows.length; i++) {
-                const rowText = rows[i].trim();
-                if (!rowText) continue; // 跳过空白行
-
-                const columns = rowText.split(',');
-                if (columns.length >= 2) {
-                    validRowCount++;
-                    const q = columns[0].replace(/"/g, ''); // 去除可能存在的包裹双引号
-                    const a = columns[1].replace(/"/g, '');
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="padding: 10px; color: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(255,255,255,0.05);">${q}</td>
-                        <td style="padding: 10px; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.05);">${a}</td>
-                    `;
-                    tbody.appendChild(tr);
-                }
-            }
-
-            if (validRowCount > 0) {
-                document.getElementById('uploadResult').style.display = 'block';
-            } else {
-                alert('未在 CSV 文件中解析到合规的问答数据！格式应为：问题,答案');
-                document.getElementById('uploadResult').style.display = 'none';
-            }
-        };
+        if (uploadResult && fileInfo) {
+            const sizeKB = (selectedFile.size / 1024).toFixed(2);
+            fileInfo.innerHTML = `即将把文件 <b>${selectedFile.name}</b> (${sizeKB} KB) 提交至后端进行落盘解析与向量化。`;
+            uploadResult.style.display = 'block';
+        }
     }
 
-    // 绑定最终一键导入后端数据库按钮
+    // 提交给后端 KnowledgeImportController 的 /upload 接口
     document.getElementById('btnSubmitImport').addEventListener('click', async () => {
         if (!selectedFile) return;
 
+        const btn = document.getElementById('btnSubmitImport');
+        const originalText = btn.innerText;
+        btn.innerText = '⏳ 正在上传并进行向量化处理 (耗时较长请稍候)...';
+        btn.disabled = true;
+
+        // 构造与后端 @RequestParam("file") MultipartFile 匹配的数据
         const formData = new FormData();
         formData.append('file', selectedFile);
 
         try {
-            const response = await fetch('/admin/faq/import', {
+            // 对接 KnowledgeImportController[cite: 4]
+            const response = await fetch('/admin/knowledge/upload', {
                 method: 'POST',
                 body: formData
             });
             const result = await response.json();
 
+            // 直接采用后端返回的详细 msg[cite: 4]
             if (result.success) {
-                alert(`🎉 批量导入成功！共计 ${result.count} 条校务知识直接录入系统 FAQ 库！`);
+                alert(`🎉 导入成功！\n${result.msg}`);
+
+                // 重置前端 UI 状态
                 document.getElementById('uploadResult').style.display = 'none';
                 selectedFile = null;
                 fileInput.value = '';
+                const dropText = document.querySelector('#dropZone .drop-text');
+                if (dropText) {
+                    dropText.innerHTML = `将你的知识库文件拖拽到此处，或 <span>点击选择文件</span>`;
+                }
             } else {
-                alert('导入失败：' + result.msg);
+                alert('处理失败：' + result.msg);
             }
         } catch (err) {
             console.error(err);
-            alert('无法连接到后端解析接口，请检查后端服务是否启动。');
+            alert('网络请求异常，无法连接到后端的知识库导入接口。');
+        } finally {
+            // 恢复按钮状态
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
     });
 });
