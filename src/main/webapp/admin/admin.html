@@ -74,32 +74,23 @@
         <div class="glass-card">
             <div class="card-header" style="flex-direction: column; align-items: flex-start; gap: 6px;">
                 <h2>多源知识批量导入</h2>
-                <p style="color: rgba(255,255,255,0.4); font-size: 13px; margin: 0;">支持拖拽本地文件直接解析入库</p>
+                <p style="color: rgba(255,255,255,0.4); font-size: 13px; margin: 0;">支持拖拽 TXT, CSV, PDF, Word 格式文件，直接交由向量大模型解析入库</p>
             </div>
 
             <div class="import-container" style="margin-top: 20px; padding: 0; background: transparent; border: none; backdrop-filter: none;">
                 <div id="dropZone" class="drop-zone">
                     <div class="drop-icon">📤</div>
                     <p class="drop-text">将你的知识库文件拖拽到此处，或 <span>点击选择文件</span></p>
-                    <input type="file" id="fileInput" accept=".csv" style="display: none;">
+                    <!-- 移除了 accept 属性，前端不设限 -->
+                    <input type="file" id="fileInput" style="display: none;">
                 </div>
 
                 <div id="uploadResult" class="upload-result" style="display: none;">
-                    <h3 style="color: #40e0d0; margin-bottom: 15px; font-size: 15px;">📊 成功解析数据预览</h3>
-                    <div class="preview-table-wrapper">
-                        <table style="width: 100%;">
-                            <thead>
-                            <tr>
-                                <th>标准问题 (Question)</th>
-                                <th>标准答案 (Answer)</th>
-                            </tr>
-                            </thead>
-                            <tbody id="previewBody">
-                            </tbody>
-                        </table>
-                    </div>
-                    <button class="btn-approve" id="btnSubmitImport" style="margin-top: 20px; float: right;">
-                        确认无误，批量导入数据库
+                    <h3 style="color: #40e0d0; margin-bottom: 15px; font-size: 15px;">📦 文件已就绪</h3>
+                    <p id="selectedFileInfo" style="color: rgba(255,255,255,0.8); margin-bottom: 20px; font-size: 14px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px;"></p>
+
+                    <button class="btn-approve" id="btnSubmitImport" style="display: block; margin-left: auto;">
+                        一键上传并调用大模型解析
                     </button>
                 </div>
             </div>
