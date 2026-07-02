@@ -109,4 +109,68 @@ public class UserServiceImpl implements UserService {
         userMapper.updateLoginSuccessInfo(user.getUserId(), LocalDateTime.now());
         return user;
     }
+
+    @Override
+    @Transactional
+    public User updateUsername(Long userId, String newUsername) {
+        User exist = userMapper.selectByUsername(newUsername);
+        if (exist != null && !exist.getUserId().equals(userId)) {
+            return null;
+        }
+        int rows = userMapper.updateUsername(userId, newUsername);
+        if (rows > 0) {
+            return userMapper.selectById(userId);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public User updateEmail(Long userId, String newEmail) {
+        User exist = userMapper.selectByEmail(newEmail);
+        if (exist != null && !exist.getUserId().equals(userId)) {
+            return null;
+        }
+        int rows = userMapper.updateEmail(userId, newEmail);
+        if (rows > 0) {
+            return userMapper.selectById(userId);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public User updatePhone(Long userId, String newPhone) {
+        User exist = userMapper.selectByPhone(newPhone);
+        if (exist != null && !exist.getUserId().equals(userId)) {
+            return null;
+        }
+        int rows = userMapper.updatePhone(userId, newPhone);
+        if (rows > 0) {
+            return userMapper.selectById(userId);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public boolean updatePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            return false;
+        }
+        String oldEncrypt = MD5Util.md5Encrypt(oldPassword);
+        if (!oldEncrypt.equals(user.getPasswordHash())) {
+            return false;
+        }
+        String newEncrypt = MD5Util.md5Encrypt(newPassword);
+        int rows = userMapper.updatePassword(userId, newEncrypt);
+        return rows > 0;
+    }
+
+    @Override
+    public Integer getRole(Long userId) {
+        User user = userMapper.selectById(userId);
+        return user != null ? user.getRole() : null;
+    }
 }
