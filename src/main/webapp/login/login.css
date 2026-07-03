@@ -554,3 +554,37 @@ body {
 .back-to-login:hover, .back-to-select:hover {
     color: #fff;
 }
+
+.send-code-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(45deg, #46b4dc, #7dd3f5);
+    color: #0a0a0a;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.send-code-btn:hover {
+    background: linear-gradient(45deg, #38a0c4, #6bc8e6);
+}
+
+.send-code-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.send-code-btn.disabled {
+    background: #4a4a4a;
+    cursor: not-allowed;
+}
+
+#verificationCodeGroup {
+    display: flex;
+    align-items: center;
+}

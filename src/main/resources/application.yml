@@ -5,8 +5,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/camplus_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: "060102"
+    username: ${DB_USER:root}
+    password: ${DB_PASS:}
 
 mybatis:
   mapper-locations: classpath:mybatis/mappers/*.xml
@@ -15,3 +15,13 @@ mybatis:
 
 server:
   port: 8080
+
+camplus:
+  verification:
+    code:
+      length: 6
+      expire-minutes: 5
+      max-error-count: 3
+  email:
+    verification:
+      template: "您的验证码是：{code}，5分钟内有效。"

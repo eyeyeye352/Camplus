@@ -36,10 +36,6 @@ public class UserServiceImpl implements UserService {
         if (existUser != null) {
             return null;
         }
-        existUser = userMapper.selectByPhone(user.getPhone());
-        if (existUser != null) {
-            return null;
-        }
 
         user.setRole(0);
         user.setStatus(1);
@@ -53,8 +49,6 @@ public class UserServiceImpl implements UserService {
         if (user.getUsername() == null || "".equals(user.getUsername())) {
             if (user.getEmail() != null && !"".equals(user.getEmail())) {
                 user.setUsername(user.getEmail());
-            } else if (user.getPhone() != null && !"".equals(user.getPhone())) {
-                user.setUsername(user.getPhone());
             }
         }
 
@@ -73,9 +67,6 @@ public class UserServiceImpl implements UserService {
         user = userMapper.selectByUsername(loginAccount);
         if (user == null) {
             user = userMapper.selectByEmail(loginAccount);
-        }
-        if (user == null) {
-            user = userMapper.selectByPhone(loginAccount);
         }
 
         if (user == null) {
@@ -172,5 +163,10 @@ public class UserServiceImpl implements UserService {
     public Integer getRole(Long userId) {
         User user = userMapper.selectById(userId);
         return user != null ? user.getRole() : null;
+    }
+
+    @Override
+    public boolean isEmailExist(String email) {
+        return userMapper.selectByEmail(email) != null;
     }
 }

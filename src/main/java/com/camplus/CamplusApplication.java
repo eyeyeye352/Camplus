@@ -2,6 +2,7 @@ package com.camplus;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 @MapperScan({
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         "com.camplus.vector.mappers"
 })
 @SpringBootApplication
+@EnableScheduling
 public class CamplusApplication {
     public static void main(String[] args) {
         SpringApplication.run(CamplusApplication.class, args);

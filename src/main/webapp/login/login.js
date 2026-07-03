@@ -12,12 +12,9 @@ const accountName = document.getElementById('accountName');
 const menuLoginBtn = document.getElementById('menuLoginBtn');
 const adminMenuItem = document.getElementById('adminMenuItem');
 
-// 跳转到登录页面（当前页就是登录页，空操作）
 function goToLogin() {
-    // 已在登录页
 }
 
-// 根据登录态更新UI
 function updateLoginUI() {
     const username = sessionStorage.getItem('username');
     if (username) {
@@ -33,51 +30,67 @@ function updateLoginUI() {
     }
 }
 
-// 注册相关元素
 const loginContent = document.getElementById('loginContent');
-const registerSelectContent = document.getElementById('registerSelectContent');
 const registerFormContent = document.getElementById('registerFormContent');
 const registerLink = document.getElementById('registerLink');
-const backToLoginFromSelect = document.getElementById('backToLoginFromSelect');
 const backToLoginFromForm = document.getElementById('backToLoginFromForm');
-const backToSelect = document.getElementById('backToSelect');
-const emailRegisterBtn = document.getElementById('emailRegisterBtn');
-const phoneRegisterBtn = document.getElementById('phoneRegisterBtn');
-const usernameRegisterBtn = document.getElementById('usernameRegisterBtn');
 const registerForm = document.getElementById('registerForm');
 const registerInput = document.getElementById('registerInput');
-const registerTitle = document.getElementById('registerTitle');
+const verificationCodeGroup = document.getElementById('verificationCodeGroup');
+const verificationCode = document.getElementById('verificationCode');
+const sendCodeBtn = document.getElementById('sendCodeBtn');
+const smtpPassword = document.getElementById('smtpPassword');
+const visitorLoginLink = document.getElementById('visitorLoginLink');
 
-// 当前注册类型
-let currentRegisterType = '';
+let countdownTimer = null;
 
-// 显示登录界面
 function showLogin() {
     loginContent.style.display = 'block';
-    registerSelectContent.style.display = 'none';
     registerFormContent.style.display = 'none';
+    clearCountdown();
 }
 
-// 显示注册选择界面
-function showRegisterSelect() {
-    loginContent.style.display = 'none';
-    registerSelectContent.style.display = 'block';
-    registerFormContent.style.display = 'none';
-}
-
-// 显示注册表单界面
-function showRegisterForm(type, placeholder, title) {
-    currentRegisterType = type;
-    registerInput.placeholder = placeholder;
-    registerTitle.textContent = title;
+function showRegisterForm() {
     registerInput.value = '';
+    verificationCode.value = '';
+    smtpPassword.value = '';
     document.getElementById('registerPassword').value = '';
+    
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.classList.add('disabled');
+    sendCodeBtn.textContent = '获取验证码';
+    
+    clearCountdown();
+    
     loginContent.style.display = 'none';
-    registerSelectContent.style.display = 'none';
     registerFormContent.style.display = 'block';
 }
 
-// 音乐控制
+function clearCountdown() {
+    if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
+}
+
+function startCountdown() {
+    let seconds = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.classList.add('disabled');
+    
+    countdownTimer = setInterval(() => {
+        seconds--;
+        sendCodeBtn.textContent = `${seconds}秒后重新获取`;
+        
+        if (seconds <= 0) {
+            clearCountdown();
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.classList.remove('disabled');
+            sendCodeBtn.textContent = '获取验证码';
+        }
+    }, 1000);
+}
+
 let isMusicPlaying = true;
 const musicSlash = document.querySelector('.music-slash');
 
@@ -140,34 +153,65 @@ adminMenuItem.addEventListener('click', async (e) => {
 
 updateLoginUI();
 
-
-
-// 注册链接点击事件
 registerLink.addEventListener('click', (e) => {
     e.preventDefault();
-    showRegisterSelect();
+    showRegisterForm();
 });
 
-// 返回登录点击事件
-backToLoginFromSelect.addEventListener('click', showLogin);
 backToLoginFromForm.addEventListener('click', showLogin);
-backToSelect.addEventListener('click', showRegisterSelect);
 
-// 注册类型选择
-emailRegisterBtn.addEventListener('click', () => {
-    showRegisterForm('email', '请输入邮箱', '邮箱注册');
+visitorLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    sessionStorage.setItem('userId', '-1');
+    sessionStorage.setItem('username', '游客');
+    sessionStorage.setItem('email', '');
+    sessionStorage.setItem('phone', '');
+    sessionStorage.setItem('nickname', '游客');
+    sessionStorage.setItem('avatarUrl', '');
+    sessionStorage.setItem('role', '0');
+    sessionStorage.setItem('status', '1');
+    alert('欢迎，游客！');
+    window.location.href = '/home/index.html';
 });
 
-phoneRegisterBtn.addEventListener('click', () => {
-    showRegisterForm('phone', '请输入手机号', '手机号注册');
+registerInput.addEventListener('input', () => {
+    const value = registerInput.value.trim();
+    const isValid = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(value);
+    if (isValid) {
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.classList.remove('disabled');
+    } else {
+        sendCodeBtn.disabled = true;
+        sendCodeBtn.classList.add('disabled');
+    }
 });
 
-usernameRegisterBtn.addEventListener('click', () => {
-    showRegisterForm('username', '请输入用户名', '用户名注册');
+sendCodeBtn.addEventListener('click', async () => {
+    const target = registerInput.value.trim();
+    const smtpPass = smtpPassword.value.trim();
+    
+    if (!smtpPass) {
+        alert('请先填写SMTP授权码');
+        return;
+    }
+    
+    try {
+        const { data: result } = await axios.post('/sendCode',
+            new URLSearchParams({ target, type: 'email', smtpPassword: smtpPass }),
+            { withCredentials: true });
+        
+        if (result.success) {
+            alert('验证码已发送');
+            startCountdown();
+        } else {
+            alert(result.msg);
+        }
+    } catch (err) {
+        console.error(err);
+        alert('请求异常，请稍后重试');
+    }
 });
 
-
-// ========== 登录表单提交 ==========
 const loginForm = document.getElementById('loginForm');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -206,22 +250,28 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
-// ========== 注册表单提交 ==========
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const inputValue = registerInput.value.trim();
     const password = document.getElementById('registerPassword').value.trim();
+    const code = verificationCode.value.trim();
+    const smtpPass = smtpPassword.value.trim();
 
     if (!inputValue || !password) {
         alert('请填写完整信息');
         return;
     }
+    if (!code) {
+        alert('请输入验证码');
+        return;
+    }
+    if (!smtpPass) {
+        alert('请填写SMTP授权码');
+        return;
+    }
 
-    const params = new URLSearchParams({ password });
-    if (currentRegisterType === 'email') params.set('email', inputValue);
-    else if (currentRegisterType === 'phone') params.set('phone', inputValue);
-    else if (currentRegisterType === 'username') params.set('username', inputValue);
+    const params = new URLSearchParams({ email: inputValue, password, code, smtpPassword: smtpPass });
 
     try {
         const { data: result } = await axios.post('/register', params, { withCredentials: true });

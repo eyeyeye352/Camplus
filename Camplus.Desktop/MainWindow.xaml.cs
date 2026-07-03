@@ -162,9 +162,9 @@ namespace Camplus.Desktop
                     return;
                 }
 
-                var warPath = Path.Combine(projectRoot, "target", "Camplus.war");
+                var jarPath = Path.Combine(projectRoot, "target", "Camplus.jar");
                 
-                if (!File.Exists(warPath))
+                if (!File.Exists(jarPath))
                 {
                     UpdateStatus("编译项目...");
                     var mavenResult = await RunMavenBuild(projectRoot, cancellationToken);
@@ -178,7 +178,7 @@ namespace Camplus.Desktop
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = $"/c chcp 65001 >nul && title Camplus后端服务 && set DB_USERNAME={_dbUsername} && set DB_PASSWORD={_dbPassword} && java -Dfile.encoding=UTF-8 -jar \"{warPath}\"",
+                    Arguments = $"/c chcp 65001 >nul && title Camplus后端服务 && java -Dfile.encoding=UTF-8 -jar \"{jarPath}\" --spring.datasource.username={_dbUsername} --spring.datasource.password={_dbPassword}",
                     WorkingDirectory = projectRoot,
                     UseShellExecute = true,
                     CreateNoWindow = false

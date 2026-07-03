@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-<!-- 动态背景 -->
 <div class="background-container">
-    <!-- 12个浮动圆点 -->
     <div class="dot dot1"></div>
     <div class="dot dot2"></div>
     <div class="dot dot3"></div>
@@ -24,7 +22,6 @@
     <div class="dot dot12"></div>
 </div>
 
-<!-- 音乐控制按钮 -->
 <div class="music-button" id="musicButton">
     <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 18V5l12-2v13"></path>
@@ -34,17 +31,14 @@
     </svg>
 </div>
 
-<!-- 菜单按钮 -->
 <div class="menu-button" id="menuButton">
     <img src="../assets/icons/menuIcon.svg" alt="菜单" class="menu-icon">
 </div>
 
-<!-- 背景音乐 -->
 <audio id="bgMusic" loop>
     <source src="../assets/musics/webbgm.mp3" type="audio/mpeg">
-</audio>
 
-<!-- 侧边菜单 -->
+
 <div class="side-menu" id="sideMenu">
     <div class="menu-header">
         <div class="account-area">
@@ -113,15 +107,13 @@
     </div>
 </div>
 
-<!-- 登录弹窗 -->
 <div class="login-modal">
-    <!-- 登录内容 -->
     <div class="login-content" id="loginContent">
         <h1>Camplus</h1>
 
         <form id="loginForm">
             <div class="input-group">
-                <input type="text" id="loginAccount" placeholder="邮箱/用户名/手机号" required>
+                <input type="text" id="loginAccount" placeholder="邮箱/用户名" required>
             </div>
 
             <div class="input-group">
@@ -131,53 +123,30 @@
             <button type="submit" class="login-btn">登入！</button>
         </form>
 
-
         <p class="register-tip">
             没有账号？<a href="#" id="registerLink">注册</a>
         </p>
+        
+        <p class="visitor-tip">
+            <a href="#" id="visitorLoginLink">游客登录</a>
+        </p>
     </div>
 
-    <!-- 注册选择内容 -->
-    <div class="register-select-content" id="registerSelectContent" style="display: none;">
-        <h1>注册</h1>
-        
-        <div class="register-buttons">
-            <button class="register-type-btn" id="emailRegisterBtn">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-                邮箱注册
-            </button>
-            
-            <button class="register-type-btn" id="phoneRegisterBtn">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-                手机号注册
-            </button>
-            
-            <button class="register-type-btn" id="usernameRegisterBtn">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                用户名注册
-            </button>
-        </div>
-        
-        <div class="back-buttons">
-            <p class="back-to-login" id="backToLoginFromSelect">← 返回登录</p>
-        </div>
-    </div>
-
-    <!-- 注册表单内容 -->
     <div class="register-form-content" id="registerFormContent" style="display: none;">
-        <h1 id="registerTitle">注册</h1>
+        <h1>邮箱注册</h1>
         
         <form id="registerForm">
             <div class="input-group">
-                <input type="text" id="registerInput" placeholder="" required>
+                <input type="text" id="registerInput" placeholder="请输入邮箱" required>
+            </div>
+
+            <div class="input-group" id="verificationCodeGroup">
+                <input type="text" id="verificationCode" placeholder="验证码" maxlength="6">
+                <button type="button" class="send-code-btn" id="sendCodeBtn">获取验证码</button>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="smtpPassword" placeholder="SMTP授权码">
             </div>
 
             <div class="input-group">
@@ -189,7 +158,6 @@
         
         <div class="back-buttons">
             <p class="back-to-login" id="backToLoginFromForm">← 返回登录</p>
-            <p class="back-to-select" id="backToSelect">← 选择注册方式</p>
         </div>
     </div>
 </div>
