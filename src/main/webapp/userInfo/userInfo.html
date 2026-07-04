@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../components/menu.css">
 </head>
 <body>
-<!-- 音乐控制按钮 -->
 <div class="music-button" id="musicButton">
     <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 18V5l12-2v13"></path>
@@ -17,18 +16,12 @@
         <line class="music-slash" x1="4" y1="4" x2="20" y2="20" stroke-width="3" style="display: none;"></line>
     </svg>
 </div>
-
-<!-- 菜单按钮 -->
 <div class="menu-button" id="menuButton">
     <img src="../assets/icons/menuIcon.svg" alt="菜单" class="menu-icon">
 </div>
-
-<!-- 背景音乐 -->
 <audio id="bgMusic" loop>
     <source src="../assets/musics/webbgm.mp3" type="audio/mpeg">
-</audio></audio>
-
-<!-- 侧边菜单 -->
+</audio>
 <div class="side-menu" id="sideMenu">
     <div class="menu-header">
         <div class="account-area" id="accountArea">
@@ -81,10 +74,8 @@
         </a>
     </div>
 </div>
-
 <div class="main-content">
     <a class="back-link" href="../home/index.html">← 返回首页</a>
-
     <div class="info-card">
         <h2>基本信息</h2>
         <div class="info-row">
@@ -96,10 +87,8 @@
             <span class="info-value highlight" id="roleValue">—</span>
         </div>
     </div>
-
     <button class="logout-btn" id="logoutBtn">登出</button>
 </div>
-
 <script src="../components/menu.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="userInfo.js"></script>

@@ -141,6 +141,15 @@
 
     <build>
         <finalName>Camplus</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <targetPath>META-INF/resources</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -176,6 +185,13 @@
                 <configuration>
                     <mainClass>com.camplus.CamplusApplication</mainClass>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

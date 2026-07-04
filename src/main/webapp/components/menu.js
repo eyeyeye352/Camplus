@@ -15,6 +15,8 @@ function initMenu() {
     }
 
     function updateLoginUI() {
+        if (!accountName || !accountEmail || !avatarCircle) return;
+        
         const username = sessionStorage.getItem('username');
         const email = sessionStorage.getItem('email');
         if (username) {
@@ -78,40 +80,54 @@ function initMenu() {
         }
     });
 
-    accountArea.addEventListener('click', () => {
-        if (sessionStorage.getItem('username')) {
-            window.location.href = '../userInfo/userInfo.html';
-        } else {
-            window.location.href = '../login/login.html';
-        }
-    });
+    if (accountArea) {
+        accountArea.addEventListener('click', () => {
+            if (sessionStorage.getItem('username')) {
+                window.location.href = '../userInfo/userInfo.html';
+            } else {
+                window.location.href = '../login/login.html';
+            }
+        });
+    }
 
-    adminMenuItem.addEventListener('click', (e) => {
-        const role = sessionStorage.getItem('role');
-        if (!sessionStorage.getItem('username')) {
-            e.preventDefault();
-            alert('请先登录');
-            window.location.href = '../login/login.html';
-        } else if (role !== '1') {
-            e.preventDefault();
-            alert('您不是管理员，无法访问此页面');
-        }
-    });
+    if (adminMenuItem) {
+        adminMenuItem.addEventListener('click', (e) => {
+            const role = sessionStorage.getItem('role');
+            if (!sessionStorage.getItem('username')) {
+                e.preventDefault();
+                alert('请先登录');
+                window.location.href = '../login/login.html';
+            } else if (role !== '1') {
+                e.preventDefault();
+                alert('您不是管理员，无法访问此页面');
+            }
+        });
+    }
 
     let isMusicPlaying = false;
     const musicSlash = document.querySelector('.music-slash');
 
-    musicSlash.style.display = '';
-    musicButton.style.opacity = '0.5';
+    if (musicSlash) {
+        musicSlash.style.display = '';
+    }
+    if (musicButton) {
+        musicButton.style.opacity = '0.5';
+    }
 
     function toggleMusic() {
+        if (!bgMusic) return;
+        
         if (isMusicPlaying) {
             bgMusic.pause();
-            musicSlash.style.display = '';
+            if (musicSlash) {
+                musicSlash.style.display = '';
+            }
             musicButton.style.opacity = '0.5';
         } else {
             bgMusic.play().then(() => {
-                musicSlash.style.display = 'none';
+                if (musicSlash) {
+                    musicSlash.style.display = 'none';
+                }
                 musicButton.style.opacity = '1';
             }).catch(err => {
                 console.log('需要用户交互才能播放音乐', err);
@@ -120,10 +136,12 @@ function initMenu() {
         isMusicPlaying = !isMusicPlaying;
     }
 
-    musicButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleMusic();
-    });
+    if (musicButton) {
+        musicButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMusic();
+        });
+    }
 }
 
 if (document.readyState === 'loading') {

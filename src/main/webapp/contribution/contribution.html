@@ -26,7 +26,7 @@
 <!-- 背景音乐 -->
 <audio id="bgMusic" loop>
     <source src="../assets/musics/webbgm.mp3" type="audio/mpeg">
-</audio>
+</audio></audio>
 
 <!-- 背景容器 -->
 <div class="background-container">
@@ -98,81 +98,83 @@
     </div>
 </div>
 
-<!--核心区域-->
+<!-- 主体内容区域 -->
 <main class="layout">
-    <!--侧边拦-->
+    <!-- 侧边导航栏 -->
     <aside class="sidebar">
-        <span id="loginStatus" style="display: block; padding: 8px 14px; color: rgba(255, 255, 255, 0.5); font-size: 12px; text-align: center;"></span>
-        <button class="nav-item active" data-panel="submitPanel">提交贡献</button>
-        <button class="nav-item" data-panel="myPanel">我的贡献</button>
-        <button class="nav-item" id="backHomeBut">返回首页</button>
+        <nav class="nav">
+            <button class="nav-item active" data-panel="submitPanel">提交贡献</button>
+            <button class="nav-item" data-panel="myPanel">我的贡献</button>
+        </nav>
     </aside>
 
-    <!--内容区域-->
+    <!-- 主内容区 -->
     <section class="content">
-        <!--提交贡献区域-->
-        <section class="panel active" id="submitPanel">
-            <!--标题-->
+        <!-- 提交贡献面板 -->
+        <div class="panel active" id="submitPanel">
             <div class="section-head">
                 <div>
-                    <p class="eyebrow">Submit</p>
-                    <h2>提交一条校园知识贡献</h2>
+                    <p class="eyebrow">Contribution</p>
+                    <h2>提交新贡献</h2>
                 </div>
-                <span class="hint">提交后默认进入审核中</span>
+                <div class="hint">支持文本、图片、链接等多种类型</div>
             </div>
 
-            <!--提交贡献表单-->
-            <form id="contributionForm" class="form-grid">
-                <!--贡献类型-->
+            <form class="form-grid" id="submitForm">
+                <label>
+                    贡献标题
+                    <input type="text" name="title" placeholder="输入贡献标题" required>
+                </label>
                 <label>
                     贡献类型
-                    <select name="contribution_type" required>
-                        <option value="0">新增问题</option>
-                        <option value="1">答案纠错</option>
+                    <select name="type" required>
+                        <option value="" disabled selected>选择类型</option>
+                        <option value="text">文本内容</option>
+                        <option value="image">图片资源</option>
+                        <option value="link">链接分享</option>
+                        <option value="other">其他</option>
                     </select>
                 </label>
-                <!--贡献标题-->
-                <label>
-                    标题
-                    <input name="title" maxlength="128" placeholder="例如：图书馆假期开放时间补充" required>
-                </label>
-                <!--贡献内容-->
                 <label class="wide">
                     贡献内容
-                    <textarea name="content" rows="8" placeholder="填写新问题描述，或说明已有答案需要纠错的地方" required></textarea>
+                    <textarea name="content" rows="6" placeholder="详细描述您的贡献内容..." required></textarea>
                 </label>
-
-                <!--操作选项栏-->
-                <div class="actions wide">
-                    <button type="reset" class="secondary">清空</button>
-                    <button type="submit">提交审核</button>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">提交贡献</button>
                 </div>
             </form>
-        </section>
+        </div>
 
-        <!--我的贡献区域-->
-        <section class="panel" id="myPanel">
+        <!-- 我的贡献面板 -->
+        <div class="panel" id="myPanel">
             <div class="section-head">
                 <div>
-                    <p class="eyebrow">Mine</p>
-                    <h2>我的贡献记录</h2>
+                    <p class="eyebrow">My Contributions</p>
+                    <h2>我的贡献</h2>
                 </div>
-                <select id="statusFilter">
-                    <option value="">全部状态</option>
-                    <option value="0">审核中</option>
-                    <option value="1">已通过</option>
-                    <option value="2">已拒绝</option>
-                </select>
+                <div class="filter-group">
+                    <select id="statusFilter">
+                        <option value="all">全部状态</option>
+                        <option value="pending">待审核</option>
+                        <option value="approved">已通过</option>
+                        <option value="rejected">已拒绝</option>
+                    </select>
+                </div>
             </div>
-            <div class="list" id="contributionList">
-                <div class="empty">点击“我的贡献”后会自动加载记录。</div>
+
+            <div id="contributionList">
+                <!-- 贡献列表将通过 JS 动态生成 -->
+                <div class="empty-state">
+                    <p>暂无贡献记录</p>
+                </div>
             </div>
-            <nav class="pagination" aria-label="贡献记录分页">
+
+            <nav class="pagination">
                 <button type="button" class="secondary" id="previousPage">上一页</button>
-                <span class="page-info" id="pageInfo">第 1 / 1 页，共 0 条</span>
+                <span id="pageInfo">第 1 页 / 共 1 页</span>
                 <button type="button" class="secondary" id="nextPage">下一页</button>
             </nav>
-        </section>
+        </div>
     </section>
 </main>
 
@@ -207,30 +209,34 @@
 
         <form class="form-grid" id="editContributionForm" hidden>
             <label>
-                贡献类型
-                <select name="contribution_type" id="editContributionType" required>
-                    <option value="0">新增问题</option>
-                    <option value="1">答案纠错</option>
-                </select>
+                贡献标题
+                <input type="text" name="title" id="editTitle" required>
             </label>
             <label>
-                标题
-                <input name="title" id="editTitle" maxlength="128" required>
+                贡献类型
+                <select name="type" id="editType" required>
+                    <option value="text">文本内容</option>
+                    <option value="image">图片资源</option>
+                    <option value="link">链接分享</option>
+                    <option value="other">其他</option>
+                </select>
             </label>
             <label class="wide">
                 贡献内容
-                <textarea name="content" id="editContent" rows="8" required></textarea>
+                <textarea name="content" rows="6" id="editContent" required></textarea>
             </label>
-            <div class="dialog-actions wide">
-                <button type="button" class="secondary" id="cancelEdit">取消修改</button>
-                <button type="submit">保存修改</button>
+            <div class="form-actions">
+                <button type="button" class="secondary" id="cancelEdit">取消</button>
+                <button type="submit" class="submit-btn">保存修改</button>
             </div>
         </form>
     </div>
 </dialog>
 
-<div class="toast" id="toast"></div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="../components/menu.js"></script>
-<script type="module" src="./js/index.js"></script>
+<script src="./js/contribution.js"></script>
 </body>
 </html>
