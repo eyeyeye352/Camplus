@@ -1,9 +1,10 @@
 package com.camplus;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
 
 @MapperScan({
         "com.camplus.login.mappers",
@@ -12,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.camplus.contribution.mappers",
         "com.camplus.vector.mappers"
 })
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableScheduling
 public class CamplusApplication {
     public static void main(String[] args) {

@@ -1,24 +1,20 @@
-// 基础 UI 控制 (复用并修复侧边栏切换逻辑)
-// 缓存全局拉取到的贡献列表，供打开模态框时查找原始值
 window.cachedContributions = [];
 
-// ========== 后端数据交互 ==========
-
-// 1. 获取待审核列表
 async function fetchContributions() {
     try {
         const response = await fetch('/admin/contribution/list');
         const data = await response.json();
-        window.cachedContributions = data; // 存入缓存
+        window.cachedContributions = data;
         renderTable(data);
     } catch (err) {
         console.error("数据加载失败:", err);
     }
 }
 
-// 2. 渲染表格内容
 function renderTable(list) {
     const body = document.getElementById('contributionBody');
+    if (!body) return;
+    
     body.innerHTML = '';
 
     if (!list || list.length === 0) {
@@ -48,7 +44,6 @@ function renderTable(list) {
     });
 }
 
-// 3. 打开审核弹窗并完成原内容回显
 function openReviewModal(id) {
     const record = window.cachedContributions.find(c => c.contributionId === id);
     if (!record) return;
@@ -76,12 +71,10 @@ function openReviewModal(id) {
     document.getElementById('reviewModal').classList.add('active');
 }
 
-// 4. 关闭弹窗
 function closeModal() {
     document.getElementById('reviewModal').classList.remove('active');
 }
 
-// 5. 组装高级数据传输：适配 ReviewRequestDTO
 async function submitReview(status) {
     const contributionId = parseInt(document.getElementById('currentContributionId').value);
     const comment = document.getElementById('modalComment').value.trim();
@@ -92,7 +85,7 @@ async function submitReview(status) {
     const categoryId = parseInt(document.getElementById('modalCategoryId').value);
 
     if (status === 2 && !comment) {
-        alert("驳回操作必须填写管理员审核评语/拒绝理由！");
+        showToast("驳回操作必须填写管理员审核评语/拒绝理由！", "warning");
         return;
     }
 
@@ -118,82 +111,163 @@ async function submitReview(status) {
 
         const result = await response.json();
         if (result.success) {
-            alert(status === 1 ? "审核通过，并已成功联动同步至系统 FAQ 库！" : "已成功驳回该条贡献。");
+            showToast(status === 1 ? "审核通过，并已成功联动同步至系统 FAQ 库！" : "已成功驳回该条贡献。", "success");
             closeModal();
             fetchContributions();
         } else {
-            alert("操作失败：" + (result.msg || "未知错误"));
+            showToast("操作失败：" + (result.msg || "未知错误"), "error");
         }
     } catch (err) {
         console.error("提交审核发生异常:", err);
-        alert("网络请求失败，请检查后端控制器是否正常运行。");
+        showToast("网络请求失败，请检查后端控制器是否正常运行。", "error");
     }
 }
 
-// 页面加载完成后自动拉取数据
-document.addEventListener('DOMContentLoaded', () => {
-    fetchContributions();
-});
-
-// ==========================================================================
-// 1. 侧边栏菜单点击切换视图控制
-// ==========================================================================
-// ==========================================================================
-// 核心修复：将 switchView 显式绑定到 window 全局，彻底粉碎作用域隔离问题
-// ==========================================================================
 window.switchView = function(viewName) {
     const panelReview = document.getElementById('panelReview');
     const panelImport = document.getElementById('panelImport');
+    const panelSettings = document.getElementById('panelSettings');
     const menuReview = document.getElementById('menuReview');
     const menuImport = document.getElementById('menuImport');
+    const menuSettings = document.getElementById('menuSettings');
 
-    if (!panelReview || !panelImport) {
-        console.error("【Camplus 调试错误】: 切换失败！...");
+    if (!panelReview || !panelImport || !panelSettings) {
+        console.error("切换失败！未找到面板元素");
         return;
     }
 
     if (viewName === 'import') {
         panelReview.style.display = 'none';
         panelImport.style.display = 'block';
+        panelSettings.style.display = 'none';
 
         if (menuReview) menuReview.classList.remove('active');
         if (menuImport) menuImport.classList.add('active');
-
-        console.log("已成功切换至：知识导入界面");
-    } else if (viewName === 'review') {
-        // 切换回贡献审核
-        panelReview.style.display = 'block'; // ✅ 修复：直接设置为 block 即可
+        if (menuSettings) menuSettings.classList.remove('active');
+    } else if (viewName === 'settings') {
+        panelReview.style.display = 'none';
         panelImport.style.display = 'none';
+        panelSettings.style.display = 'block';
+
+        if (menuReview) menuReview.classList.remove('active');
+        if (menuImport) menuImport.classList.remove('active');
+        if (menuSettings) menuSettings.classList.add('active');
+
+        fetchAdminList();
+    } else {
+        panelReview.style.display = 'block';
+        panelImport.style.display = 'none';
+        panelSettings.style.display = 'none';
 
         if (menuReview) menuReview.classList.add('active');
         if (menuImport) menuImport.classList.remove('active');
+        if (menuSettings) menuSettings.classList.remove('active');
 
         if (typeof fetchContributions === 'function') {
             fetchContributions();
         }
-        console.log("已成功切换至：贡献审核界面");
     }
 };
 
-// ==========================================================================
-// 2. 知识导入模块：统一文件上传 (不作前端内容读取分流)
-// ==========================================================================
+async function fetchAdminList() {
+    const body = document.getElementById('adminListBody');
+    if (!body) return;
+    
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:rgba(255,255,255,0.4);">正在加载...</td></tr>';
+
+    try {
+        const response = await fetch('/admin/user/listAdmin');
+        const result = await response.json();
+        
+        if (!result.success) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:rgba(255,255,255,0.4);">加载失败</td></tr>';
+            return;
+        }
+
+        const adminList = result.data;
+        if (!adminList || adminList.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:rgba(255,255,255,0.4);">暂无管理员</td></tr>';
+            return;
+        }
+
+        body.innerHTML = adminList.map(user => `
+            <tr>
+                <td>${user.userId}</td>
+                <td>${user.username}</td>
+                <td>${user.email || '-'}</td>
+                <td>${user.nickname || '-'}</td>
+                <td>${user.status === 1 ? '正常' : '禁用'}</td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        console.error("加载管理员列表失败:", err);
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:rgba(255,255,255,0.4);">加载失败</td></tr>';
+    }
+}
+
+async function addAdmin() {
+    const username = document.getElementById('newAdminUsername').value.trim();
+    if (!username) {
+        showToast("请输入要设为管理员的用户名", "warning");
+        return;
+    }
+
+    try {
+        const response = await fetch('/admin/user/addAdmin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showToast("设置成功！用户 " + username + " 已成为管理员", "success");
+            document.getElementById('newAdminUsername').value = '';
+            fetchAdminList();
+        } else {
+            showToast("操作失败：" + (result.msg || "未知错误"), "error");
+        }
+    } catch (err) {
+        console.error("设置管理员失败:", err);
+        showToast("网络请求失败", "error");
+    }
+}
+
+function updateLoginStatus() {
+    const loginStatus = document.getElementById('loginStatus');
+    const username = sessionStorage.getItem('username');
+    const role = sessionStorage.getItem('role');
+    
+    if (loginStatus) {
+        if (username && role === '1') {
+            loginStatus.textContent = `管理员: ${username}`;
+        } else {
+            loginStatus.textContent = '未登录';
+            setTimeout(() => {
+                window.location.href = '../login/login.html';
+            }, 1000);
+        }
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    updateLoginStatus();
+    fetchContributions();
+
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     let selectedFile = null;
 
     if (!dropZone) return;
 
-    // 点击拖拽框触发文件选择
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // 阻止浏览器默认拖拽打开文件的行为
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => e.preventDefault(), false);
     });
 
-    // 拖拽高亮特效
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, () => dropZone.classList.add('highlight'), false);
     });
@@ -201,28 +275,23 @@ document.addEventListener("DOMContentLoaded", () => {
         dropZone.addEventListener(eventName, () => dropZone.classList.remove('highlight'), false);
     });
 
-    // 接收拖拽文件
     dropZone.addEventListener('drop', (e) => {
         processFiles(e.dataTransfer.files);
     });
 
-    // 接收点击选择的文件
     fileInput.addEventListener('change', (e) => {
         processFiles(e.target.files);
     });
 
-    // 核心逻辑：不区分类型，一视同仁记录文件
     function processFiles(files) {
         if (files.length === 0) return;
         selectedFile = files[0];
 
-        // 改变拖拽框的提示文字
         const dropText = document.querySelector('#dropZone .drop-text');
         if (dropText) {
             dropText.innerHTML = `当前选中：<span style="color: #40e0d0; font-weight: bold;">${selectedFile.name}</span>`;
         }
 
-        // 显示上传确认面板
         const uploadResult = document.getElementById('uploadResult');
         const fileInfo = document.getElementById('selectedFileInfo');
 
@@ -233,7 +302,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 提交给后端 KnowledgeImportController 的 /upload 接口
     document.getElementById('btnSubmitImport').addEventListener('click', async () => {
         if (!selectedFile) return;
 
@@ -242,23 +310,19 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.innerText = '⏳ 正在上传并进行向量化处理 (耗时较长请稍候)...';
         btn.disabled = true;
 
-        // 构造与后端 @RequestParam("file") MultipartFile 匹配的数据
         const formData = new FormData();
         formData.append('file', selectedFile);
 
         try {
-            // 对接 KnowledgeImportController[cite: 4]
             const response = await fetch('/admin/knowledge/upload', {
                 method: 'POST',
                 body: formData
             });
             const result = await response.json();
 
-            // 直接采用后端返回的详细 msg[cite: 4]
             if (result.success) {
-                alert(`🎉 导入成功！\n${result.msg}`);
+                showToast(`导入成功！\n${result.msg}`, "success");
 
-                // 重置前端 UI 状态
                 document.getElementById('uploadResult').style.display = 'none';
                 selectedFile = null;
                 fileInput.value = '';
@@ -267,13 +331,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     dropText.innerHTML = `将你的知识库文件拖拽到此处，或 <span>点击选择文件</span>`;
                 }
             } else {
-                alert('处理失败：' + result.msg);
+                showToast('处理失败：' + result.msg, "error");
             }
         } catch (err) {
             console.error(err);
-            alert('网络请求异常，无法连接到后端的知识库导入接口。');
+            showToast('网络请求异常，无法连接到后端的知识库导入接口。', "error");
         } finally {
-            // 恢复按钮状态
             btn.innerText = originalText;
             btn.disabled = false;
         }

@@ -1,20 +1,12 @@
-/* ==========================================================================
-   Camplus 管理员后台核心样式表 - 赛博朋克/暗黑流光玻璃态 (修复排版版)
-   ========================================================================== */
-
-/* 1. 引入全局基础样式 */
-@import url('../login/login.css');
-
-/* ⚡ 核心修复：彻底粉碎并重置从 login.css 继承来的 flex 居中与高度锁定 */
 body {
-    display: block !important;         /* 强制改回标准块级布局，阻止内容居中堆叠 */
-    height: auto !important;          /* 允许页面高度随内容自适应伸展 */
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
     min-height: 100vh;
-    overflow-y: auto !important;      /* 恢复纵向滚动条 */
-    background-color: #0a0a0a;        /* 保持赛博暗黑底色 */
+    overflow: auto !important;
+    overflow-x: hidden !important;
+    background-color: #0a0a0a;
     box-sizing: border-box;
-
-    /* 使用 body 的 padding 直接为顶栏(100px)和左侧常驻边栏(280px)撑开安全区域 */
     padding: 100px 40px 40px 280px !important;
 }
 
@@ -29,14 +21,20 @@ body {
     height: 70px;
     padding: 0 40px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     background: rgba(10, 10, 10, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    z-index: 9999; /* 确保顶栏永远在最顶层 */
+    z-index: 100;
     box-sizing: border-box;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
 }
 
 .admin-title {
@@ -46,10 +44,14 @@ body {
     letter-spacing: 4px;
 }
 
-.header-right {
-    display: flex;
-    gap: 25px;
-    align-items: center;
+#loginStatus {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+body .menu-button,
+body .music-button {
+    z-index: 100003;
 }
 
 /* --------------------------------------------------------------------------
@@ -156,10 +158,7 @@ body {
     border-color: rgba(255, 75, 43, 0.25);
 }
 
-/* 🚀 善后处理：隐藏后台页面中完全不需要的抽屉开关按钮及废弃的遮罩层 */
-#menuButton, .menu-overlay, #menuOverlay {
-    display: none !important;
-}
+
 
 /* --------------------------------------------------------------------------
    4. 主体内容展示区 (Main Content)

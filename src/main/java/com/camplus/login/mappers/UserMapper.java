@@ -37,4 +37,10 @@ public interface UserMapper {
 
     // 根据用户ID查询
     User selectById(@Param("userId") Long userId);
+
+    // 根据角色查询用户列表
+    java.util.List<User> selectByRole(@Param("role") Integer role);
+
+    // 更新用户角色
+    int updateRole(@Param("userId") Long userId, @Param("role") Integer role);
 }

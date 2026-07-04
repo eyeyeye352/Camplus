@@ -97,4 +97,16 @@
         SELECT * FROM users WHERE user_id = #{userId}
     </select>
 
+    <!-- 根据角色查询用户列表 -->
+    <select id="selectByRole" resultMap="UserResultMap">
+        SELECT * FROM users WHERE role = #{role} ORDER BY create_time DESC
+    </select>
+
+    <!-- 更新用户角色 -->
+    <update id="updateRole">
+        UPDATE users
+        SET role = #{role}, update_time = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
 </mapper>

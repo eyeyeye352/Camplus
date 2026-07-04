@@ -89,7 +89,7 @@ sendCodeBtn.addEventListener('click', async () => {
     const smtpPass = smtpPassword.value.trim();
     
     if (!smtpPass) {
-        alert('请先填写SMTP授权码');
+        showToast('请先填写SMTP授权码', 'warning');
         return;
     }
     
@@ -99,14 +99,14 @@ sendCodeBtn.addEventListener('click', async () => {
             { withCredentials: true });
         
         if (result.success) {
-            alert('验证码已发送');
+            showToast('验证码已发送', 'success');
             startCountdown();
         } else {
-            alert(result.msg);
+            showToast(result.msg, 'error');
         }
     } catch (err) {
         console.error(err);
-        alert('请求异常，请稍后重试');
+        showToast('请求异常，请稍后重试', 'error');
     }
 });
 
@@ -118,7 +118,7 @@ loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password').value.trim();
 
     if (!loginAccount || !password) {
-        alert('请填写账号和密码');
+        showToast('请填写账号和密码', 'warning');
         return;
     }
 
@@ -137,14 +137,16 @@ loginForm.addEventListener('submit', async (e) => {
             sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
             sessionStorage.setItem('role', user.role || '0');
             sessionStorage.setItem('status', user.status || '1');
-            alert(result.msg);
-            window.location.href = '/home/index.html';
+            showToast(result.msg, 'success');
+            setTimeout(() => {
+                window.location.href = '/home/index.html';
+            }, 500);
         } else {
-            alert(result.msg);
+            showToast(result.msg, 'error');
         }
     } catch (err) {
         console.error(err);
-        alert('请求异常，请稍后重试');
+        showToast('请求异常，请稍后重试', 'error');
     }
 });
 
@@ -157,15 +159,15 @@ registerForm.addEventListener('submit', async (e) => {
     const smtpPass = smtpPassword.value.trim();
 
     if (!inputValue || !password) {
-        alert('请填写完整信息');
+        showToast('请填写完整信息', 'warning');
         return;
     }
     if (!code) {
-        alert('请输入验证码');
+        showToast('请输入验证码', 'warning');
         return;
     }
     if (!smtpPass) {
-        alert('请填写SMTP授权码');
+        showToast('请填写SMTP授权码', 'warning');
         return;
     }
 
@@ -184,13 +186,15 @@ registerForm.addEventListener('submit', async (e) => {
             sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
             sessionStorage.setItem('role', user.role || '0');
             sessionStorage.setItem('status', user.status || '1');
-            alert(result.msg);
-            window.location.href = '/home/index.html';
+            showToast(result.msg, 'success');
+            setTimeout(() => {
+                window.location.href = '/home/index.html';
+            }, 500);
         } else {
-            alert(result.msg);
+            showToast(result.msg, 'error');
         }
     } catch (err) {
         console.error(err);
-        alert('请求异常，请稍后重试');
+        showToast('请求异常，请稍后重试', 'error');
     }
 });

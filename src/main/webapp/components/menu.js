@@ -92,14 +92,17 @@ function initMenu() {
 
     if (adminMenuItem) {
         adminMenuItem.addEventListener('click', (e) => {
+            e.preventDefault();
             const role = sessionStorage.getItem('role');
             if (!sessionStorage.getItem('username')) {
-                e.preventDefault();
-                alert('请先登录');
-                window.location.href = '../login/login.html';
+                showToast('请先登录', 'warning');
+                setTimeout(() => {
+                    window.location.href = '../login/login.html';
+                }, 1500);
             } else if (role !== '1') {
-                e.preventDefault();
-                alert('您不是管理员，无法访问此页面');
+                showToast('您不是管理员，无法访问此页面', 'error');
+            } else {
+                window.location.href = '../admin/admin.html';
             }
         });
     }

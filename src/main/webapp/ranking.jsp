@@ -12,6 +12,7 @@
 <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
 <!-- ECharts -->
 <script src="https://modao.cc/agent-py/static/source/js/echarts.min.js"></script>
+<link rel="stylesheet" href="components/toast.css">
 <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
@@ -235,7 +236,7 @@
                 const result = await forwardResponse.json();
                 
                 if (result.success && result.data) {
-                    alert('问答系统回复：' + result.data.qaResult);
+                    showToast('问答系统回复：' + result.data.qaResult, 'info');
                 }
             } catch (error) {
                 console.error('处理点击失败:', error);
@@ -281,5 +282,6 @@
             loadRankings();
         });
     </script>
+    <script src="components/toast.js"></script>
 </body>
 </html>

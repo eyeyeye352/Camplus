@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const username = sessionStorage.getItem('username');
 
     if (!username) {
-        alert('请先登录');
-        window.location.href = '../login/login.html';
+        showToast('请先登录', 'warning');
+        setTimeout(() => {
+            window.location.href = '../login/login.html';
+        }, 100);
         return;
     }
 
