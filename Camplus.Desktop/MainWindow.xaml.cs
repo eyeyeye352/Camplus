@@ -184,8 +184,8 @@ namespace Camplus.Desktop
 
                 var startInfo = new ProcessStartInfo
                 {
-                    FileName = "java",
-                    Arguments = "-Dfile.encoding=UTF-8 -jar \"" + jarPath + "\"",
+                    FileName = "cmd.exe",
+                    Arguments = "/k chcp 65001 && java -Dfile.encoding=UTF-8 -jar \"" + jarPath + "\"",
                     WorkingDirectory = projectRoot,
                     UseShellExecute = true,
                     CreateNoWindow = false

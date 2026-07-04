@@ -3,109 +3,54 @@
 
 <mapper namespace="com.camplus.login.mappers.UserMapper">
 
-    <!-- 驼峰映射 -->
     <resultMap id="UserResultMap" type="com.camplus.login.entity.User">
         <id column="user_id" property="userId"/>
         <result column="username" property="username"/>
         <result column="password_hash" property="passwordHash"/>
-        <result column="nickname" property="nickname"/>
         <result column="email" property="email"/>
-        <result column="phone" property="phone"/>
-        <result column="avatar_url" property="avatarUrl"/>
         <result column="role" property="role"/>
-        <result column="status" property="status"/>
-        <result column="last_login_time" property="lastLoginTime"/>
-        <result column="login_error_count" property="loginErrorCount"/>
-        <result column="lock_time" property="lockTime"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <!-- 注册新增用户 -->
     <insert id="insertUser" parameterType="com.camplus.login.entity.User">
-        INSERT INTO users (
-        username, password_hash, nickname, email, phone,
-        avatar_url, role, status, login_error_count, create_time, update_time
-        ) VALUES (
-        #{username}, #{passwordHash}, #{nickname}, #{email}, #{phone},
-        #{avatarUrl}, #{role}, #{status}, 0, NOW(), NOW()
-        )
+        INSERT INTO users (username, password_hash, email, role, create_time, update_time)
+        VALUES (#{username}, #{passwordHash}, #{email}, #{role}, NOW(), NOW())
     </insert>
 
-    <!-- 查询用户 -->
     <select id="selectByUsername" resultMap="UserResultMap">
         SELECT * FROM users WHERE username = #{username}
     </select>
-    <select id="selectByPhone" resultMap="UserResultMap">
-        SELECT * FROM users WHERE phone = #{phone}
-    </select>
+
     <select id="selectByEmail" resultMap="UserResultMap">
         SELECT * FROM users WHERE email = #{email}
     </select>
 
-    <!-- 更新登录错误次数 -->
-    <update id="updateLoginErrorCount">
-        UPDATE users
-        SET login_error_count = #{errorCount}
-        WHERE user_id = #{userId}
-    </update>
-
-    <!-- 6. 更新账号锁定时间 -->
-    <update id="updateLockTime">
-        UPDATE users
-        SET lock_time = #{lockTime}
-        WHERE user_id = #{userId}
-    </update>
-
-    <!-- 7. 更新登录成功信息（最后登录时间 + 重置错误次数） -->
-    <update id="updateLoginSuccessInfo">
-        UPDATE users
-        SET last_login_time = #{loginTime}, login_error_count = 0
-        WHERE user_id = #{userId}
-    </update>
-
-    <!-- 更新用户名 -->
     <update id="updateUsername">
-        UPDATE users
-        SET username = #{username}, update_time = NOW()
+        UPDATE users SET username = #{username}, update_time = NOW()
         WHERE user_id = #{userId}
     </update>
 
-    <!-- 更新邮箱 -->
     <update id="updateEmail">
-        UPDATE users
-        SET email = #{email}, update_time = NOW()
+        UPDATE users SET email = #{email}, update_time = NOW()
         WHERE user_id = #{userId}
     </update>
 
-    <!-- 更新手机号 -->
-    <update id="updatePhone">
-        UPDATE users
-        SET phone = #{phone}, update_time = NOW()
-        WHERE user_id = #{userId}
-    </update>
-
-    <!-- 更新密码 -->
     <update id="updatePassword">
-        UPDATE users
-        SET password_hash = #{passwordHash}, update_time = NOW()
+        UPDATE users SET password_hash = #{passwordHash}, update_time = NOW()
         WHERE user_id = #{userId}
     </update>
 
-    <!-- 根据ID查询用户 -->
     <select id="selectById" resultMap="UserResultMap">
         SELECT * FROM users WHERE user_id = #{userId}
     </select>
 
-    <!-- 根据角色查询用户列表 -->
     <select id="selectByRole" resultMap="UserResultMap">
         SELECT * FROM users WHERE role = #{role} ORDER BY create_time DESC
     </select>
 
-    <!-- 更新用户角色 -->
     <update id="updateRole">
-        UPDATE users
-        SET role = #{role}, update_time = NOW()
+        UPDATE users SET role = #{role}, update_time = NOW()
         WHERE user_id = #{userId}
     </update>
 

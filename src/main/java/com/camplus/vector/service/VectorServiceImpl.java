@@ -74,6 +74,17 @@ public class VectorServiceImpl implements VectorService {
 
     @Override
     public List<VectorSearchResult> search(String tableName, String queryText) {
+        return search(tableName, queryText, FIXED_MIN_SCORE, FIXED_TOP_K);
+    }
+
+    @Override
+    public List<VectorSearchResult> search(String tableName, String queryText, float minScore, int topK) {
+        return search(tableName, queryText, minScore, topK, 0.6f, 0.4f);
+    }
+
+    @Override
+    public List<VectorSearchResult> search(String tableName, String queryText, float minScore, int topK,
+                                           float denseWeight, float sparseWeight) {
         try {
             if (!bgeM3OnnxService.isInitialized()) {
                 log.error("BGE-M3模型未初始化");
@@ -87,8 +98,15 @@ public class VectorServiceImpl implements VectorService {
             Map<Integer, Float> querySparse = queryResult.sparse;
 
             List<Map<String, Object>> vectors = loadVectorsFromTable(tableName);
+            log.info("[向量检索] 表={}, 已加载{}条向量, 阈值={}, Top={}, dense={}, sparse={}, 查询=\"{}\"",
+                    tableName, vectors.size(), minScore, topK, denseWeight, sparseWeight,
+                    queryText.length() > 50 ? queryText.substring(0, 50) + "..." : queryText);
 
             List<VectorSearchResultWithScore> results = new ArrayList<>();
+
+            float bestScore = -1f;
+            String bestName = null;
+            Long bestId = null;
 
             for (Map<String, Object> vectorMap : vectors) {
                 try {
@@ -111,13 +129,25 @@ public class VectorServiceImpl implements VectorService {
                         }
                     }
 
-                    float score = bgeM3OnnxService.hybridSimilarity(queryDense, querySparse, storedDense, storedSparse);
+                    float denseScore = bgeM3OnnxService.cosineSimilarity(queryDense, storedDense);
+                    float sparseScore = bgeM3OnnxService.lexicalSimilarity(querySparse, storedSparse);
+                    float score = denseWeight * denseScore + sparseWeight * sparseScore;
 
-                    if (score >= FIXED_MIN_SCORE) {
-                        Long recordId = vectorMap.get("id") instanceof Long ?
-                            (Long) vectorMap.get("id") :
-                            ((Integer) vectorMap.get("id")).longValue();
+                    String name = null;
+                    if (vectorMap.containsKey("question")) {
+                        name = (String) vectorMap.get("question");
+                    } else if (vectorMap.containsKey("doc_name")) {
+                        name = (String) vectorMap.get("doc_name");
+                    }
+                    Long recordId = ((Number) vectorMap.get("id")).longValue();
 
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestName = name;
+                        bestId = recordId;
+                    }
+
+                    if (score >= minScore) {
                         String content = "";
                         if (vectorMap.containsKey("question")) {
                             content = (String) vectorMap.get("question");
@@ -137,9 +167,30 @@ public class VectorServiceImpl implements VectorService {
                 }
             }
 
-            return results.stream()
+            List<VectorSearchResultWithScore> sorted = results.stream()
                 .sorted((a, b) -> Float.compare(b.getScore(), a.getScore()))
-                .limit(FIXED_TOP_K)
+                .limit(topK)
+                .collect(Collectors.toList());
+
+            if (sorted.isEmpty()) {
+                if (bestName != null) {
+                    String preview = bestName.replace("\n", " ");
+                    if (preview.length() > 60) preview = preview.substring(0, 60) + "...";
+                    log.info("[向量检索] 表={} 未达阈值({}), 最高相似度: id={} score={} 名称=\"{}\"",
+                            tableName, minScore, bestId, String.format("%.4f", bestScore), preview);
+                } else {
+                    log.info("[向量检索] 表={} 无数据", tableName);
+                }
+            } else {
+                for (VectorSearchResultWithScore r : sorted) {
+                    String preview = r.getContent().replace("\n", " ");
+                    if (preview.length() > 60) preview = preview.substring(0, 60) + "...";
+                    log.info("[向量检索] 表={} 命中 id={} score={} 内容=\"{}\"",
+                            tableName, r.getRecordId(), String.format("%.4f", r.getScore()), preview);
+                }
+            }
+
+            return sorted.stream()
                 .map(r -> new VectorSearchResult(
                     r.getRecordId(), r.getContent(), r.getScore(), r.getMetadata(), r.getTableName()
                 ))
@@ -172,9 +223,7 @@ public class VectorServiceImpl implements VectorService {
                     float score = bgeM3OnnxService.cosineSimilarity(queryVector, storedDense);
 
                     if (score >= FIXED_MIN_SCORE) {
-                        Long recordId = vectorMap.get("id") instanceof Long ?
-                            (Long) vectorMap.get("id") :
-                            ((Integer) vectorMap.get("id")).longValue();
+                        Long recordId = ((Number) vectorMap.get("id")).longValue();
 
                         String content = "";
                         if (vectorMap.containsKey("question")) {

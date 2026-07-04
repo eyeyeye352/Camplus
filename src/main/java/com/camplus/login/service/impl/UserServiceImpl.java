@@ -8,16 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
-
-    private static final int MAX_ERROR_COUNT = 5;
-    private static final int LOCK_DURATION_MINUTES = 30;
 
     @Override
     @Transactional
@@ -32,16 +27,14 @@ public class UserServiceImpl implements UserService {
         if (existUser != null) {
             return null;
         }
-        existUser = userMapper.selectByEmail(user.getEmail());
-        if (existUser != null) {
-            return null;
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            existUser = userMapper.selectByEmail(user.getEmail());
+            if (existUser != null) {
+                return null;
+            }
         }
 
         user.setRole(0);
-        user.setStatus(1);
-        user.setLoginErrorCount(0);
-        user.setLockTime(null);
-        user.setLastLoginTime(null);
 
         String encryptPwd = MD5Util.md5Encrypt(user.getPasswordHash());
         user.setPasswordHash(encryptPwd);
@@ -62,9 +55,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User login(String loginAccount, String password) {
-        User user = null;
-
-        user = userMapper.selectByUsername(loginAccount);
+        User user = userMapper.selectByUsername(loginAccount);
         if (user == null) {
             user = userMapper.selectByEmail(loginAccount);
         }
@@ -72,32 +63,12 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return null;
         }
-        if (user.getLockTime() != null) {
-            LocalDateTime unlockTime = user.getLockTime().plusMinutes(LOCK_DURATION_MINUTES);
-            if (LocalDateTime.now().isBefore(unlockTime)) {
-                return null;
-            }
-            userMapper.updateLockTime(user.getUserId(), null);
-            userMapper.updateLoginErrorCount(user.getUserId(), 0);
-            user.setLockTime(null);
-            user.setLoginErrorCount(0);
-        }
-        if (user.getStatus() != 1) {
-            return null;
-        }
 
         String inputEncryptPwd = MD5Util.md5Encrypt(password);
         if (!inputEncryptPwd.equals(user.getPasswordHash())) {
-            int newCount = user.getLoginErrorCount() + 1;
-            userMapper.updateLoginErrorCount(user.getUserId(), newCount);
-
-            if (newCount >= MAX_ERROR_COUNT) {
-                userMapper.updateLockTime(user.getUserId(), LocalDateTime.now());
-            }
             return null;
         }
 
-        userMapper.updateLoginSuccessInfo(user.getUserId(), LocalDateTime.now());
         return user;
     }
 
@@ -123,20 +94,6 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         int rows = userMapper.updateEmail(userId, newEmail);
-        if (rows > 0) {
-            return userMapper.selectById(userId);
-        }
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public User updatePhone(Long userId, String newPhone) {
-        User exist = userMapper.selectByPhone(newPhone);
-        if (exist != null && !exist.getUserId().equals(userId)) {
-            return null;
-        }
-        int rows = userMapper.updatePhone(userId, newPhone);
         if (rows > 0) {
             return userMapper.selectById(userId);
         }

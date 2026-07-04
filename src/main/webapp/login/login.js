@@ -132,11 +132,7 @@ loginForm.addEventListener('submit', async (e) => {
             sessionStorage.setItem('userId', user.userId);
             sessionStorage.setItem('username', user.username);
             sessionStorage.setItem('email', user.email || '');
-            sessionStorage.setItem('phone', user.phone || '');
-            sessionStorage.setItem('nickname', user.nickname || '');
-            sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
             sessionStorage.setItem('role', user.role || '0');
-            sessionStorage.setItem('status', user.status || '1');
             showToast(result.msg, 'success');
             setTimeout(() => {
                 window.location.href = '/home/index.html';
@@ -181,11 +177,7 @@ registerForm.addEventListener('submit', async (e) => {
             sessionStorage.setItem('userId', user.userId);
             sessionStorage.setItem('username', user.username);
             sessionStorage.setItem('email', user.email || '');
-            sessionStorage.setItem('phone', user.phone || '');
-            sessionStorage.setItem('nickname', user.nickname || '');
-            sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
             sessionStorage.setItem('role', user.role || '0');
-            sessionStorage.setItem('status', user.status || '1');
             showToast(result.msg, 'success');
             setTimeout(() => {
                 window.location.href = '/home/index.html';

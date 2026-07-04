@@ -19,14 +19,7 @@ CREATE TABLE users (
     username VARCHAR(32) NOT NULL COMMENT '用户名',
     password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希值',
     email VARCHAR(64) DEFAULT NULL COMMENT '邮箱',
-    phone VARCHAR(20) DEFAULT NULL COMMENT '手机号',
-    nickname VARCHAR(32) DEFAULT NULL COMMENT '昵称',
-    avatar_url VARCHAR(255) DEFAULT NULL COMMENT '头像URL',
     role TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '角色，0普通用户，1管理员',
-    status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '账号状态，0禁用，1正常',
-    last_login_time DATETIME DEFAULT NULL COMMENT '最后登录时间',
-    login_error_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '登录错误次数',
-    lock_time DATETIME DEFAULT NULL COMMENT '账号锁定截止时间',
     create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     UNIQUE KEY uk_username (username),
@@ -142,17 +135,3 @@ CREATE TABLE verification_codes (
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_target_type (target, type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='验证码表';
-
--- ============================================================
--- 9. qa_logs 问答记录表（骨架，待完善）
--- ============================================================
-CREATE TABLE qa_logs (
-    qa_log_id INT AUTO_INCREMENT PRIMARY KEY COMMENT '问答记录ID'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='问答记录表';
-
--- ============================================================
--- 10. admin_operation_logs 管理员操作日志表（骨架，待完善）
--- ============================================================
-CREATE TABLE admin_operation_logs (
-    op_log_id INT AUTO_INCREMENT PRIMARY KEY COMMENT '操作日志ID'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='管理员操作日志表';

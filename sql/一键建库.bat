@@ -1,13 +1,12 @@
 @echo off
-chcp 65001
 cd /d "%~dp0"
 
 echo ========================================
-echo      Camplus - 一键建库脚本
+echo      Camplus - Database Setup
 echo ========================================
 echo.
 
-echo 当前目录: %cd%
+echo Current directory: %cd%
 echo.
 
 set "mysql_path=C:\Program Files\MySQL\MySQL Server 8.0\bin"
@@ -19,84 +18,81 @@ if not exist "%mysql_cmd%" (
 )
 
 if not exist "%mysql_cmd%" (
-    echo 错误: 未找到 MySQL 客户端
-    echo 请确保 MySQL 已安装
-    echo 按任意键退出...
+    echo ERROR: MySQL client not found
+    echo Please make sure MySQL is installed
+    echo Press any key to exit...
     pause
     exit /b 1
 )
 
-echo MySQL客户端: %mysql_cmd%
+echo MySQL client: %mysql_cmd%
 echo.
 
 set "user="
-set /p "user=请输入MySQL用户名: "
+set /p "user=Enter MySQL username: "
 if "%user%"=="" set "user=root"
 
 set "pass="
-set /p "pass=请输入MySQL密码: "
+set /p "pass=Enter MySQL password: "
 
 echo.
 echo ========================================
-echo 开始初始化数据库...
+echo Initializing database...
 echo ========================================
 echo.
 
-echo 步骤1: 执行建库脚本 init.sql...
+echo Step 1: Executing init.sql...
 "%mysql_cmd%" -u%user% -p%pass% < init.sql
 if errorlevel 1 (
     echo.
-    echo 错误: 建库失败！
-    echo 请检查用户名和密码是否正确
+    echo ERROR: Database creation failed!
+    echo Please check username and password
     pause
     exit /b 1
 )
-echo init.sql 执行成功
+echo init.sql executed successfully
 echo.
 
-echo 步骤2: 执行数据脚本 data.sql...
+echo Step 2: Executing data.sql...
 "%mysql_cmd%" -u%user% -p%pass% < data.sql
 if errorlevel 1 (
-    echo 警告: data.sql 执行可能有问题
+    echo WARNING: data.sql may have issues
 ) else (
-    echo data.sql 执行成功
+    echo data.sql executed successfully
 )
 echo.
 
 echo.
 echo ========================================
-echo 数据库创建完成！
+echo Database created!
 echo ========================================
 echo.
-echo 数据库: camplus_db
-echo 用户名: %user%
-echo.
-
-echo ========================================
-echo 步骤3: 数据导入
-echo ========================================
+echo Database: camplus_db
+echo Username: %user%
 echo.
 
-REM 回到项目根目录
+echo ========================================
+echo Step 3: Data Import
+echo ========================================
+echo.
+
 cd /d "%~dp0\.."
 
-REM 检查 jar 是否存在
 set "jar_path=target\Camplus.jar"
 
-echo 正在编译打包项目...
+echo Compiling and packaging project...
 call mvn clean package -q -DskipTests
 if errorlevel 1 (
     echo.
-    echo 错误: 编译打包失败！
-    echo 请手动执行 mvn clean package -DskipTests 后重新运行此脚本
+    echo ERROR: Compilation failed!
+    echo Please run "mvn clean package -DskipTests" manually and retry
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause
     exit /b 1
 )
-echo 编译打包完成
+echo Compilation completed
 
-REM 检查 RawData 目录是否有有效文件
 set "has_file=0"
 if exist "RawData" (
     for %%f in (RawData\*) do (
@@ -105,15 +101,15 @@ if exist "RawData" (
 )
 
 if "%has_file%"=="0" (
-    echo RawData 目录中没有有效文件，跳过数据导入
+    echo No valid files in RawData directory, skipping import
     echo.
-    echo 建库完成！按任意键退出...
+    echo Done! Press any key to exit...
     pause
     exit /b 0
 )
 
-echo 找到 RawData 文件，开始数据导入...
-echo 这将解析文件、加载向量化模型并导入数据，可能需要几分钟。
+echo Found RawData files, starting import...
+echo This will parse files, load vector model and import data. May take a few minutes.
 echo.
 
 java -jar "%jar_path%" --import-only --spring.profiles.active=import-only --db-user "%user%" --db-pass "%pass%"
@@ -121,21 +117,21 @@ java -jar "%jar_path%" --import-only --spring.profiles.active=import-only --db-u
 if errorlevel 1 (
     echo.
     echo ========================================
-    echo 警告: 数据导入过程中出现错误
+    echo WARNING: Data import completed with errors
     echo ========================================
-    echo 可能原因：
-    echo   1. BGE-M3 模型文件未找到
-    echo   2. 数据库连接失败
-    echo   3. 文件解析失败
+    echo Possible causes:
+    echo   1. BGE-M3 model files not found
+    echo   2. Database connection failed
+    echo   3. File parsing failed
     echo.
-    echo 你也可以启动 Camplus 应用，系统会再次尝试自动导入
+    echo You can also start Camplus app, the system will retry auto-import
 ) else (
     echo.
     echo ========================================
-    echo 建库 + 数据导入全部完成！
+    echo Database + import completed!
     echo ========================================
 )
 
 echo.
-echo 按任意键退出...
+echo Press any key to exit...
 pause

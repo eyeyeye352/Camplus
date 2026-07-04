@@ -186,7 +186,7 @@ async function fetchAdminList() {
 
         const adminList = result.data;
         if (!adminList || adminList.length === 0) {
-            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:rgba(255,255,255,0.4);">暂无管理员</td></tr>';
+            body.innerHTML = '<tr><td colspan="3" style="text-align:center; color:rgba(255,255,255,0.4);">暂无管理员</td></tr>';
             return;
         }
 
@@ -195,13 +195,11 @@ async function fetchAdminList() {
                 <td>${user.userId}</td>
                 <td>${user.username}</td>
                 <td>${user.email || '-'}</td>
-                <td>${user.nickname || '-'}</td>
-                <td>${user.status === 1 ? '正常' : '禁用'}</td>
             </tr>
         `).join('');
     } catch (err) {
         console.error("加载管理员列表失败:", err);
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:rgba(255,255,255,0.4);">加载失败</td></tr>';
+        body.innerHTML = '<tr><td colspan="3" style="text-align:center; color:rgba(255,255,255,0.4);">加载失败</td></tr>';
     }
 }
 

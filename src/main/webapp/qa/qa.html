@@ -141,17 +141,25 @@
         if (!text) return;
         appendMessage(text, 'user');
         chatInput.value = '';
-        setTimeout(() => {
-            appendMessage('<span style="opacity:0.6">正在检索本地知识库...</span>', 'bot');
-            setTimeout(() => {
-                chatBox.removeChild(chatBox.lastChild);
-                if (text.includes('饭堂')) {
-                    appendMessage('根据本地知识库：我们学校一共有三个饭堂，分别是一号饭堂、二号饭堂和三号饭堂。', 'bot');
-                } else {
-                    appendMessage('我没有在本地知识库中找到相关信息，您可以尝试联系管理人员补充相关文档。', 'bot');
-                }
-            }, 800);
-        }, 300);
+        appendMessage('<span style="opacity:0.6">正在检索本地知识库...</span>', 'bot');
+
+        fetch('../api/qa/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: text })
+        })
+        .then(function(response) {
+            if (!response.ok) throw new Error('服务器响应异常: ' + response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            chatBox.removeChild(chatBox.lastChild);
+            appendMessage(data.answer || '抱歉，未能获取到回答。', 'bot');
+        })
+        .catch(function(error) {
+            chatBox.removeChild(chatBox.lastChild);
+            appendMessage('<span style="color:#ff6b6b">请求失败：' + error.message + '</span>', 'bot');
+        });
     }
     sendBtn.addEventListener('click', handleSend);
     chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });

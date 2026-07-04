@@ -1,7 +1,6 @@
 package com.camplus.login.service;
 
-import com.camplus.login.entity.*;
-
+import com.camplus.login.entity.User;
 
 public interface UserService {
 
@@ -14,8 +13,6 @@ public interface UserService {
     User updateUsername(Long userId, String newUsername);
 
     User updateEmail(Long userId, String newEmail);
-
-    User updatePhone(Long userId, String newPhone);
 
     boolean updatePassword(Long userId, String oldPassword, String newPassword);
 

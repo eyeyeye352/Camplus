@@ -13,5 +13,10 @@ public interface VectorService {
 
     List<VectorSearchResult> search(String tableName, String queryText);
 
+    List<VectorSearchResult> search(String tableName, String queryText, float minScore, int topK);
+
+    List<VectorSearchResult> search(String tableName, String queryText, float minScore, int topK,
+                                    float denseWeight, float sparseWeight);
+
     List<VectorSearchResult> searchWithVector(String tableName, float[] queryVector);
 }

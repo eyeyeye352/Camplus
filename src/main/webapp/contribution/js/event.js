@@ -44,9 +44,7 @@ export function initCurrentUser() {
     pageState.currentUser = {
         userId: Number(userId),
         username: sessionStorage.getItem('username'),
-        nickname: sessionStorage.getItem('nickname'),
-        email: sessionStorage.getItem('email'),
-        phone: sessionStorage.getItem('phone')
+        email: sessionStorage.getItem('email')
     };
     setLoginStatus(displayName(pageState.currentUser));
 }
@@ -247,7 +245,7 @@ async function loadContributions() {
 }
 
 function displayName(user) {
-    return user?.nickname || user?.username || user?.email || user?.phone || '用户';
+    return user?.username || user?.email || '用户';
 }
 
 function bindBackHomeButton() {

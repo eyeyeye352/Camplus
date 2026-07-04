@@ -1,13 +1,17 @@
 package com.camplus.qa;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/qa")
-@CrossOrigin(origins = "*") // 暴力解除跨域限制，方便局域网内前端同学联调
+@CrossOrigin(origins = "*")
 public class QaController {
+
+    private static final Logger log = LoggerFactory.getLogger(QaController.class);
 
     private final CampusAssistant campusAssistant;
 
@@ -17,16 +21,16 @@ public class QaController {
 
     @PostMapping("/ask")
     public Map<String, String> askQuestion(@RequestBody Map<String, String> request) {
-        // 提取前端发来的问题
         String question = request.get("question");
+        log.info("[问答] 收到问题: {}", question);
 
-        // 唤醒本地的 Qwen2.5 大模型开始思考
         String answer = campusAssistant.answer(question);
 
-        // 封装成 JSON 格式返回给前端
+        String preview = answer != null ? (answer.length() > 100 ? answer.substring(0, 100) + "..." : answer) : "null";
+        log.info("[问答] 回答: {}", preview);
+
         Map<String, String> response = new HashMap<>();
         response.put("answer", answer);
-
         return response;
     }
 }

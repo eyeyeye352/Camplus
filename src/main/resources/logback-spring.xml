@@ -7,16 +7,20 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <root level="WARN">
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <logger name="com.camplus" level="DEBUG"/>
+    <!-- 项目代码：INFO 级别，保留运行信息 -->
+    <logger name="com.camplus" level="INFO"/>
+    <!-- Spring 框架：仅警告和错误 -->
     <logger name="org.springframework" level="WARN"/>
+    <!-- 数据库连接池：仅警告和错误 -->
     <logger name="com.zaxxer.hikari" level="WARN"/>
-    <logger name="org.mybatis" level="DEBUG"/>
+    <!-- MyBatis：仅警告和错误，屏蔽 SQL 调试日志 -->
+    <logger name="org.mybatis" level="WARN"/>
 
-    <!-- import-only 模式：精简日志，只保留基本运行信息和错误 -->
+    <!-- import-only 模式：更精简 -->
     <springProfile name="import-only">
         <root level="WARN"/>
         <logger name="com.camplus" level="INFO"/>
@@ -24,8 +28,5 @@
         <logger name="com.camplus.admin.runner.DataImportRunner" level="INFO"/>
         <logger name="com.camplus.admin.service.impl.KnowledgeExtractServiceImpl" level="INFO"/>
         <logger name="com.camplus.vector.service.BgeM3OnnxService" level="INFO"/>
-        <logger name="org.mybatis" level="WARN"/>
-        <logger name="org.springframework" level="WARN"/>
-        <logger name="com.zaxxer.hikari" level="WARN"/>
     </springProfile>
 </configuration>

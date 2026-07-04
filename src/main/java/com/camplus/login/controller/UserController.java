@@ -40,7 +40,7 @@ public class UserController {
         if (user != null) {
             return Result.ok("登录成功！", user);
         }
-        return Result.fail("账号或密码错误，或账号已被锁定/禁用");
+        return Result.fail("账号或密码错误");
     }
 
     @PostMapping("/sendCode")
@@ -138,17 +138,6 @@ public class UserController {
             return Result.ok("邮箱修改成功！", user);
         }
         return Result.fail("邮箱已存在，修改失败");
-    }
-
-    @PostMapping("/user/updatePhone")
-    public Result<User> updatePhone(
-            @RequestParam(name = "userId") Long userId,
-            @RequestParam(name = "newPhone") String newPhone) {
-        User user = userService.updatePhone(userId, newPhone);
-        if (user != null) {
-            return Result.ok("手机号修改成功！", user);
-        }
-        return Result.fail("手机号已存在，修改失败");
     }
 
     @PostMapping("/user/updatePassword")

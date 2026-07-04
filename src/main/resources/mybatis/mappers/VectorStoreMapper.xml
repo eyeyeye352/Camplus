@@ -5,15 +5,17 @@
 <mapper namespace="com.camplus.vector.mappers.VectorStoreMapper">
 
     <select id="searchFaqVectors" resultType="map">
-        SELECT id, faq_id, question, answer, question_embedding, 
-               answer_embedding, combined_embedding
+        SELECT id, faq_id, question, answer, question_embedding,
+               answer_embedding, combined_embedding, sparse_embedding
         FROM faq_vector_store
     </select>
 
     <select id="searchKnowledgeVectors" resultType="map">
-        SELECT id, doc_id, chunk_index, chunk_content, 
-               chunk_embedding, chunk_metadata
-        FROM knowledge_vector_store
+        SELECT v.id, v.doc_id, v.chunk_index, v.chunk_content,
+               v.chunk_embedding, v.chunk_metadata, v.sparse_embedding,
+               d.doc_name
+        FROM knowledge_vector_store v
+        LEFT JOIN knowledge_docs d ON v.doc_id = d.doc_id
     </select>
 
     <select id="getAllVectorsFromTable" resultType="map">
