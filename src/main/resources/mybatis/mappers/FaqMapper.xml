@@ -34,4 +34,9 @@
         SELECT * FROM faq_items WHERE display_status = 1
     </select>
 
+    <insert id="insertFaq" parameterType="map" useGeneratedKeys="true" keyProperty="faqId" keyColumn="faq_id">
+        INSERT INTO faq_items (question, answer, display_status, question_count, like_count, hot_score, source)
+        VALUES (#{question}, #{answer}, 1, 0, 0, 0, #{source})
+    </insert>
+
 </mapper>

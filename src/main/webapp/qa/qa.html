@@ -35,7 +35,26 @@
         @keyframes float10 { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(30px, 25px) scale(0.9); } 50% { transform: translate(15px, 40px) scale(1.1); } 75% { transform: translate(-10px, 20px) scale(0.95); } }
         @keyframes float11 { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(-25px, -20px) scale(1.05); } 50% { transform: translate(-10px, -35px) scale(0.9); } 75% { transform: translate(15px, -15px) scale(1.1); } }
         @keyframes float12 { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(20px, 20px) scale(0.95); } 50% { transform: translate(35px, 5px) scale(1.05); } 75% { transform: translate(20px, -10px) scale(1); } }
-        .chat-layout { position: absolute; top: 50%; left: 50%; width: 90%; max-width: 900px; height: 85vh; margin-top: -42.5vh; margin-left: -45%; background: #0a0a0a; border-radius: 16px; box-shadow: 0 0 30px 15px rgba(26, 26, 26, 0.8), 0 0 60px 30px rgba(26, 26, 26, 0.4); display: flex; flex-direction: column; overflow: hidden; z-index: 10; }
+        .main-container { position: absolute; top: 50%; left: 50%; width: 92%; max-width: 1200px; height: 85vh; margin-top: -42.5vh; margin-left: -46%; display: flex; gap: 20px; z-index: 10; }
+        .hot-sidebar { width: 280px; flex-shrink: 0; background: #0a0a0a; border-radius: 16px; box-shadow: 0 0 30px 15px rgba(26, 26, 26, 0.8), 0 0 60px 30px rgba(26, 26, 26, 0.4); display: flex; flex-direction: column; overflow: hidden; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 10px; background-color: rgba(255, 255, 255, 0.02); }
+        .sidebar-header svg { width: 20px; height: 20px; color: #ff6b6b; }
+        .sidebar-title { color: #ffffff; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; }
+        .hot-list { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .hot-list::-webkit-scrollbar { width: 4px; }
+        .hot-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .hot-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .hot-item:hover { background: rgba(70, 180, 220, 0.1); border-color: rgba(70, 180, 220, 0.3); transform: translateX(3px); }
+        .hot-rank { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; font-style: italic; border-radius: 6px; flex-shrink: 0; }
+        .hot-rank.top1 { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .hot-rank.top2 { background: rgba(249, 115, 22, 0.15); color: #f97316; }
+        .hot-rank.top3 { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+        .hot-rank.normal { background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.4); }
+        .hot-content { flex: 1; min-width: 0; }
+        .hot-question { color: #ffffff; font-size: 14px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hot-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; color: rgba(255, 255, 255, 0.4); font-size: 11px; }
+        .hot-meta svg { width: 12px; height: 12px; }
+        .chat-layout { flex: 1; min-width: 0; background: #0a0a0a; border-radius: 16px; box-shadow: 0 0 30px 15px rgba(26, 26, 26, 0.8), 0 0 60px 30px rgba(26, 26, 26, 0.4); display: flex; flex-direction: column; overflow: hidden; }
         .chat-header { padding: 20px 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; background-color: rgba(255, 255, 255, 0.02); }
         .chat-title-group { display: flex; flex-direction: column; gap: 5px; }
         .chat-title { color: #ffffff; font-size: 18px; font-weight: 600; letter-spacing: 1px; }
@@ -80,12 +99,23 @@
     </div>
 </div>
 <div class="background-container"><div class="dot dot1"></div><div class="dot dot2"></div><div class="dot dot3"></div><div class="dot dot4"></div><div class="dot dot5"></div><div class="dot dot6"></div><div class="dot dot7"></div><div class="dot dot8"></div><div class="dot dot9"></div><div class="dot dot10"></div><div class="dot dot11"></div><div class="dot dot12"></div></div>
-<div class="chat-layout">
-    <div class="chat-header"><div class="chat-title-group"><span class="chat-title">Camplus 校园智能助手</span></div></div>
-    <div class="chat-messages" id="chatBox"><div class="message-row bot"><div class="bubble bot">欢迎使用 Camplus 校园问答助手。请问有什么可以帮助到你的。</div></div></div>
-    <div class="chat-input-container">
-        <input type="text" id="chatInput" class="chat-input" placeholder="输入你想咨询的问题..." autocomplete="off">
-        <button class="send-btn" id="sendBtn">发送<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+<div class="main-container">
+    <div class="hot-sidebar">
+        <div class="sidebar-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+            <span class="sidebar-title">热点问题</span>
+        </div>
+        <div class="hot-list" id="hotList">
+            <div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px 20px;font-size:13px;">加载中...</div>
+        </div>
+    </div>
+    <div class="chat-layout">
+        <div class="chat-header"><div class="chat-title-group"><span class="chat-title">Camplus 校园智能助手</span></div></div>
+        <div class="chat-messages" id="chatBox"><div class="message-row bot"><div class="bubble bot">欢迎使用 Camplus 校园问答助手。请问有什么可以帮助到你的。</div></div></div>
+        <div class="chat-input-container">
+            <input type="text" id="chatInput" class="chat-input" placeholder="输入你想咨询的问题..." autocomplete="off">
+            <button class="send-btn" id="sendBtn">发送<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+        </div>
     </div>
 </div>
 <script src="../components/toast.js"></script>
@@ -94,6 +124,8 @@
     const chatBox = document.getElementById('chatBox');
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
+    const hotList = document.getElementById('hotList');
+
     function appendMessage(text, sender) {
         const row = document.createElement('div');
         row.className = 'message-row ' + sender;
@@ -123,6 +155,73 @@
     }
     sendBtn.addEventListener('click', handleSend);
     chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function loadHotFaqs() {
+        fetch('../api/faq/hot?limit=10')
+            .then(function(response) { return response.json(); })
+            .then(function(result) {
+                if (result.success && result.data && result.data.length > 0) {
+                    renderHotList(result.data);
+                } else {
+                    hotList.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px 20px;font-size:13px;">暂无热点问题</div>';
+                }
+            })
+            .catch(function(error) {
+                console.error('加载热点问题失败:', error);
+                var mockData = [
+                    { faqId: 1, question: '饭堂开放时间是什么时候？', questionCount: 128, hotScore: 1280 },
+                    { faqId: 2, question: '图书馆怎么预约座位？', questionCount: 96, hotScore: 960 },
+                    { faqId: 3, question: '校园卡丢了怎么补办？', questionCount: 85, hotScore: 850 },
+                    { faqId: 4, question: '四六级报名在哪里？', questionCount: 72, hotScore: 720 },
+                    { faqId: 5, question: '宿舍报修流程是怎样的？', questionCount: 65, hotScore: 650 },
+                    { faqId: 6, question: '校车时刻表在哪里查？', questionCount: 58, hotScore: 580 },
+                    { faqId: 7, question: '教务处办公时间是几点？', questionCount: 45, hotScore: 450 },
+                    { faqId: 8, question: '体育课选课怎么选？', questionCount: 38, hotScore: 380 },
+                    { faqId: 9, question: '奖学金评定标准是什么？', questionCount: 32, hotScore: 320 },
+                    { faqId: 10, question: '校园网怎么连接？', questionCount: 28, hotScore: 280 }
+                ];
+                renderHotList(mockData);
+            });
+    }
+
+    function renderHotList(faqs) {
+        hotList.innerHTML = '';
+        faqs.forEach(function(faq, index) {
+            var rankClass = 'normal';
+            if (index === 0) rankClass = 'top1';
+            else if (index === 1) rankClass = 'top2';
+            else if (index === 2) rankClass = 'top3';
+
+            var item = document.createElement('div');
+            item.className = 'hot-item';
+            item.innerHTML =
+                '<div class="hot-rank ' + rankClass + '">' + (index + 1) + '</div>' +
+                '<div class="hot-content">' +
+                    '<div class="hot-question">' + escapeHtml(faq.question) + '</div>' +
+                    '<div class="hot-meta">' +
+                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>' +
+                        '<span>' + (faq.questionCount || 0) + ' 次查询</span>' +
+                    '</div>' +
+                '</div>';
+            item.addEventListener('click', function() {
+                handleHotClick(faq);
+            });
+            hotList.appendChild(item);
+        });
+    }
+
+    function handleHotClick(faq) {
+        chatInput.value = faq.question;
+        handleSend();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadHotFaqs);
 </script>
 </body>
 </html>

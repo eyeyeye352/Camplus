@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
@@ -21,17 +21,17 @@
     </select>
 
     <insert id="insertFaqVector">
-        INSERT INTO faq_vector_store (faq_id, question, answer, 
-                                     question_embedding, answer_embedding, combined_embedding)
-        VALUES (#{faqId}, #{question}, #{answer}, 
-                #{questionEmbedding}, #{answerEmbedding}, #{combinedEmbedding})
+        INSERT INTO faq_vector_store (faq_id, question, answer,
+                                     question_embedding, answer_embedding, combined_embedding, sparse_embedding)
+        VALUES (#{faqId}, #{question}, #{answer},
+                #{questionEmbedding}, #{answerEmbedding}, #{combinedEmbedding}, #{sparseEmbedding})
     </insert>
 
     <insert id="insertKnowledgeVector">
-        INSERT INTO knowledge_vector_store (doc_id, chunk_index, chunk_content, 
-                                           chunk_embedding, chunk_metadata)
-        VALUES (#{docId}, #{chunkIndex}, #{chunkContent}, 
-                #{chunkEmbedding}, #{chunkMetadata})
+        INSERT INTO knowledge_vector_store (doc_id, chunk_index, chunk_content,
+                                           chunk_embedding, chunk_metadata, sparse_embedding)
+        VALUES (#{docId}, #{chunkIndex}, #{chunkContent},
+                #{chunkEmbedding}, #{chunkMetadata}, #{sparseEmbedding})
     </insert>
 
     <delete id="deleteFaqVector">

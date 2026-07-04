@@ -15,4 +15,17 @@
     <logger name="org.springframework" level="WARN"/>
     <logger name="com.zaxxer.hikari" level="WARN"/>
     <logger name="org.mybatis" level="DEBUG"/>
+
+    <!-- import-only 模式：精简日志，只保留基本运行信息和错误 -->
+    <springProfile name="import-only">
+        <root level="WARN"/>
+        <logger name="com.camplus" level="INFO"/>
+        <logger name="com.camplus.admin.service.DataImportService" level="INFO"/>
+        <logger name="com.camplus.admin.runner.DataImportRunner" level="INFO"/>
+        <logger name="com.camplus.admin.service.impl.KnowledgeExtractServiceImpl" level="INFO"/>
+        <logger name="com.camplus.vector.service.BgeM3OnnxService" level="INFO"/>
+        <logger name="org.mybatis" level="WARN"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="com.zaxxer.hikari" level="WARN"/>
+    </springProfile>
 </configuration>

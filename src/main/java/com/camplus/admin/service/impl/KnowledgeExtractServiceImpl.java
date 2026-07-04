@@ -8,6 +8,8 @@ import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,9 +21,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class KnowledgeExtractServiceImpl implements KnowledgeExtractService {
+
+    private static final Logger log = LoggerFactory.getLogger(KnowledgeExtractServiceImpl.class);
 
     private final String RAW_DATA_DIR = System.getProperty("user.dir") + File.separator + "RawData";
 
@@ -63,28 +69,53 @@ public class KnowledgeExtractServiceImpl implements KnowledgeExtractService {
 
     /**
      * 核心路由：根据文件后缀名调用不同的文本提取策略
+     * FAQ.txt 文件特殊处理：解析 Q:/A: 格式的问答对
      */
     private List<KnowledgeExtractDTO> extractFromFile(File file) {
         List<KnowledgeExtractDTO> list = new ArrayList<>();
-        String fileName = file.getName().toLowerCase();
+        String fileName = file.getName();
 
         try {
-            if (fileName.endsWith(".csv")) {
+            if (fileName.equals("FAQ.txt")) {
+                list.addAll(parseFaqFile(file));
+            } else if (fileName.toLowerCase().endsWith(".csv")) {
                 list.addAll(parseCsv(file));
-            } else if (fileName.endsWith(".txt")) {
+            } else if (fileName.toLowerCase().endsWith(".txt")) {
                 list.addAll(parseTxt(file));
-            } else if (fileName.endsWith(".pdf")) {
+            } else if (fileName.toLowerCase().endsWith(".pdf")) {
                 list.addAll(parsePdf(file));
-            } else if (fileName.endsWith(".docx") || fileName.endsWith(".doc")) {
+            } else if (fileName.toLowerCase().endsWith(".docx") || fileName.toLowerCase().endsWith(".doc")) {
                 list.addAll(parseWord(file));
             } else {
-                System.out.println("【警告】暂不支持解析此类文件: " + fileName);
+                log.warn("暂不支持解析此类文件: {}", fileName);
             }
         } catch (Exception e) {
-            System.err.println("【错误】解析文件失败: " + file.getName() + "，原因：" + e.getMessage());
-            e.printStackTrace();
+            log.error("解析文件失败: {} - {}", file.getName(), e.getMessage(), e);
         }
 
+        return list;
+    }
+
+    /**
+     * 解析 FAQ.txt 文件，格式为 Q: 问题 / A: 答案 的问答对
+     */
+    private List<KnowledgeExtractDTO> parseFaqFile(File file) throws Exception {
+        List<KnowledgeExtractDTO> list = new ArrayList<>();
+        String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+
+        Pattern pattern = Pattern.compile("Q:\\s*(.+?)\\s*A:\\s*(.+?)(?=\\s*Q:|$)",
+                Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            String question = matcher.group(1).trim();
+            String answer = matcher.group(2).trim();
+            if (!question.isEmpty() && !answer.isEmpty()) {
+                list.add(new KnowledgeExtractDTO(file.getName(), "TYPE_FAQ", question, answer));
+            }
+        }
+
+        log.info("FAQ解析完成: {} ({} 条问答对)", file.getName(), list.size());
         return list;
     }
 

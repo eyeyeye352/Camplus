@@ -15,8 +15,9 @@ public class DatabaseConfigService {
     private static final String DEFAULT_PASSWORD = "123456";
     private static final String URL_TEMPLATE = "jdbc:mysql://localhost:3306/camplus_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true";
 
-    private volatile String currentUsername = DEFAULT_USERNAME;
-    private volatile String currentPassword = DEFAULT_PASSWORD;
+    // 优先从系统属性读取（用于 --import-only 模式传入凭据），否则使用默认值
+    private volatile String currentUsername = System.getProperty("camplus.db.user", DEFAULT_USERNAME);
+    private volatile String currentPassword = System.getProperty("camplus.db.pass", DEFAULT_PASSWORD);
     private final AtomicBoolean connectionValid = new AtomicBoolean(false);
 
     @PostConstruct

@@ -89,9 +89,16 @@ public class KnowledgeImportController {
                 // 组员的 Mapper 要求 faqId 是 Integer
                 Integer faqId = Math.abs(UUID.randomUUID().hashCode());
 
+                // 稀疏向量 JSON
+                String sparseJson = null;
+                if (response.getSparseVector() != null) {
+                    sparseJson = new com.fasterxml.jackson.databind.ObjectMapper()
+                            .writeValueAsString(response.getSparseVector());
+                }
+
                 // 注意：组员的接口支持单独传问题和答案的向量，为了节省计算资源，这里我们仅存 combined 向量，其余传 null
                 vectorStoreMapper.insertFaqVector(faqId, dto.getTitle(), dto.getPlainText(),
-                        null, null, combinedEmbeddingBytes);
+                        null, null, combinedEmbeddingBytes, sparseJson);
                 return 1;
             }
         } catch (Exception e) {
@@ -115,6 +122,8 @@ public class KnowledgeImportController {
         int chunkSize = 500;
         int chunkIndex = 0;
 
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
         for (int i = 0; i < rawText.length(); i += chunkSize) {
             int end = Math.min(rawText.length(), i + chunkSize);
             String chunkContent = rawText.substring(i, end);
@@ -127,7 +136,13 @@ public class KnowledgeImportController {
                     byte[] chunkEmbeddingBytes = floatsToBytes(response.getDenseVector());
                     String metadata = "{\"source\":\"" + sourceFileName + "\"}";
 
-                    vectorStoreMapper.insertKnowledgeVector(docId, chunkIndex, chunkContent, chunkEmbeddingBytes, metadata);
+                    // 稀疏向量 JSON
+                    String sparseJson = null;
+                    if (response.getSparseVector() != null) {
+                        sparseJson = objectMapper.writeValueAsString(response.getSparseVector());
+                    }
+
+                    vectorStoreMapper.insertKnowledgeVector(docId, chunkIndex, chunkContent, chunkEmbeddingBytes, metadata, sparseJson);
                     insertedChunks++;
                 }
             } catch (Exception e) {
