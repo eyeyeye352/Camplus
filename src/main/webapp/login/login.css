@@ -19,7 +19,6 @@ body {
     background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
 }
 
-/* 动态背景容器 */
 .background-container {
     position: fixed;
     top: 0;
@@ -30,7 +29,6 @@ body {
     pointer-events: none;
 }
 
-/* 圆点样式 */
 .dot {
     position: absolute;
     background-color: #fff;
@@ -38,7 +36,6 @@ body {
     opacity: 0.6;
 }
 
-/* 更多圆点 */
 .dot1 { width: 8px; height: 8px; top: 15%; left: 10%; animation: float1 15s ease-in-out infinite; }
 .dot2 { width: 12px; height: 12px; top: 25%; left: 25%; animation: float2 12s ease-in-out infinite; }
 .dot3 { width: 6px; height: 6px; top: 35%; left: 40%; animation: float3 18s ease-in-out infinite; }
@@ -52,7 +49,6 @@ body {
 .dot11 { width: 10px; height: 10px; bottom: 40%; right: 55%; animation: float11 14s ease-in-out infinite; }
 .dot12 { width: 6px; height: 6px; bottom: 60%; right: 35%; animation: float12 16s ease-in-out infinite; }
 
-/* 圆点浮动动画 */
 @keyframes float1 {
     0%, 100% { transform: translate(0, 0) scale(1); }
     25% { transform: translate(30px, 20px) scale(1.1); }
@@ -126,249 +122,10 @@ body {
     75% { transform: translate(20px, -10px) scale(1); }
 }
 
-.menu-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100001;
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.3s ease, transform 0.1s ease;
-}
-
-.menu-button:hover {
-    opacity: 1;
-}
-
-.menu-button:active {
-    opacity: 0.5;
-    transform: scale(0.95);
-}
-
-.menu-icon {
-    width: 40px;
-    height: 40px;
-    filter: brightness(0) invert(1);
-}
-
-.music-button {
-    position: fixed;
-    top: 20px;
-    right: 100px;
-    z-index: 99997;
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.3s ease, transform 0.1s ease;
-}
-
-.music-button:hover {
-    opacity: 1;
-}
-
-.music-button:active {
-    opacity: 0.5;
-    transform: scale(0.95);
-}
-
-.music-icon {
-    width: 40px;
-    height: 40px;
-    color: #ffffff;
-}
-
-/* ========== 侧边菜单 ========== */
-.side-menu {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 100vh;
-    background: linear-gradient(90deg,
-        rgba(10, 20, 40, 0) 0%,
-        rgba(10, 20, 40, 0.3) 15%,
-        rgba(10, 20, 40, 0.7) 30%,
-        rgba(10, 20, 40, 0.92) 50%,
-        rgba(5, 15, 30, 0.95) 100%);
-    z-index: 99999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-}
-
-.side-menu.active {
-    opacity: 1;
-}
-
-.menu-header,
-.menu-content,
-.menu-footer {
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition: visibility 0s linear 0.4s, opacity 0.4s ease;
-}
-
-.side-menu.active .menu-header,
-.side-menu.active .menu-content,
-.side-menu.active .menu-footer {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-    transition: visibility 0s linear 0s, opacity 0.4s ease;
-}
-
-.menu-header {
-    position: relative;
-    z-index: 3;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 25px 30px;
-    border-bottom: 1px solid rgba(70, 180, 220, 0.2);
-    margin-left: 25%;
-}
-
-.account-area {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.avatar-icon--smile {
-    display: none;
-}
-
-.avatar-circle.logged-in .avatar-icon--user {
-    display: none;
-}
-
-.avatar-circle.logged-in .avatar-icon--smile {
-    display: block;
-}
-
-.avatar-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(70, 180, 220, 0.15);
-    border: 2px solid rgba(70, 180, 220, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.3s ease, background 0.3s ease;
-}
-
-.avatar-circle.logged-in {
-    border-color: rgba(70, 180, 220, 0.7);
-    background: rgba(70, 180, 220, 0.2);
-}
-
-.avatar-icon {
-    width: 24px;
-    height: 24px;
-    color: #46b4dc;
-}
-
-.avatar-icon--smile {
-    stroke-width: 1.5;
-}
-
-.account-name {
-    color: #46b4dc;
-    font-size: 18px;
-    font-weight: 500;
-    opacity: 0.8;
-    transition: color 0.3s ease, opacity 0.3s ease;
-}
-
-.account-name.logged-in {
-    opacity: 1;
-}
-
-.menu-content {
-    position: relative;
-    z-index: 3;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    padding: 40px 30px;
-    margin-left: 25%;
-}
-
-.menu-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    aspect-ratio: 1 / 1;
-    font-family: sans-serif;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
-    text-decoration: none;
-    background: rgba(70, 180, 220, 0.04);
-    border: 1px solid rgba(70, 180, 220, 0.1);
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.menu-item-icon {
-    width: 32px;
-    height: 32px;
-    stroke-width: 1.5;
-}
-
-.menu-item:hover {
-    background: rgba(70, 180, 220, 0.15);
-    border-color: rgba(70, 180, 220, 0.35);
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.menu-item--bright {
-    background: rgba(70, 180, 220, 0.12);
-    border-color: rgba(70, 180, 220, 0.25);
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.menu-item--bright:hover {
-    background: rgba(70, 180, 220, 0.25);
-    border-color: rgba(70, 180, 220, 0.5);
-    color: #7dd3f5;
-    box-shadow: 0 0 20px rgba(70, 180, 220, 0.2);
-}
-
-.menu-footer {
-    position: absolute;
-    bottom: 40px;
-    left: 25%;
-    right: 30px;
-    z-index: 3;
-    text-align: center;
-}
-
-.menu-login-btn {
-    color: #46b4dc;
-    font-size: 15px;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
-}
-
-.menu-login-btn:hover {
-    opacity: 1;
-    text-decoration: underline;
-}
-
-.menu-login-btn.logged-in {
-    display: none;
-}
-
-/* ========== 背景音乐 ========== */
 #bgMusic {
     display: none;
 }
 
-/* 登录弹窗样式 */
 .login-modal {
     position: absolute;
     top: 50%;
@@ -381,12 +138,10 @@ body {
     animation: fadeIn 0.4s ease forwards;
     z-index: 1;
     background: #0a0a0a;
-    /* 边缘渐变到背景色 */
     box-shadow: 0 0 30px 15px rgba(26, 26, 26, 0.8),
                 0 0 60px 30px rgba(26, 26, 26, 0.4);
 }
 
-/* 登录内容 */
 .login-content {
     position: relative;
     z-index: 1;
@@ -395,7 +150,6 @@ body {
     text-align: center;
 }
 
-/* 渐入动画 */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -407,7 +161,6 @@ body {
     }
 }
 
-/* 标题文字 */
 .login-content h1 {
     font-family: 'Camplus_title', sans-serif;
     font-size: 42px;
@@ -416,7 +169,6 @@ body {
     letter-spacing: 2px;
 }
 
-/* 输入框组 - 细底线样式 */
 .input-group {
     margin-bottom: 35px;
     position: relative;
@@ -450,7 +202,7 @@ body {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    background: linear-gradient(45deg, #ff0080, #ff8c00);
+    background: linear-gradient(45deg, #46b4dc, #0077b6);
     color: #fff;
     transition: transform 0.2s, opacity 0.2s;
 }
@@ -471,18 +223,19 @@ body {
 }
 
 .register-tip a {
-    color: #fff;
+    color: #46b4dc;
     text-decoration: underline;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .register-tip a:hover {
-    color: #ff0080;
+    color: #7dd3f5;
 }
 
-/* 注册选择内容 */
-.register-select-content, .register-form-content {
+
+
+.register-form-content {
     position: relative;
     z-index: 1;
     padding: 45px 35px;
@@ -490,51 +243,12 @@ body {
     text-align: center;
 }
 
-.register-select-content h1, .register-form-content h1 {
+.register-form-content h1 {
     font-family: 'Camplus_title', sans-serif;
     font-size: 42px;
     margin-bottom: 50px;
     font-weight: 700;
     letter-spacing: 2px;
-}
-
-.register-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.register-type-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    flex: 1;
-    padding: 20px 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    color: #fff;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s, transform 0.2s;
-    flex-direction: column;
-}
-
-.register-type-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: scale(1.02);
-}
-
-.register-type-btn:active {
-    transform: scale(0.98);
-}
-
-.btn-icon {
-    width: 32px;
-    height: 32px;
 }
 
 .back-buttons {
@@ -543,7 +257,7 @@ body {
     margin-top: 30px;
 }
 
-.back-to-login, .back-to-select {
+.back-to-login {
     color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
     font-size: 14px;
@@ -551,7 +265,7 @@ body {
     margin: 0;
 }
 
-.back-to-login:hover, .back-to-select:hover {
+.back-to-login:hover {
     color: #fff;
 }
 

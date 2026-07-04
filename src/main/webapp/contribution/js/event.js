@@ -51,7 +51,14 @@ export function initCurrentUser() {
 
 function bindNavigation() {
     elements.navItems.forEach((item) => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (event) => {
+            if (!item.dataset.panel) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
             elements.navItems.forEach((nav) => nav.classList.remove('active'));
             elements.panels.forEach((panel) => panel.classList.remove('active'));
 

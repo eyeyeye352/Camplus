@@ -5,7 +5,7 @@ export const elements = {
     list: document.querySelector('#contributionList'),
     statusFilter: document.querySelector('#statusFilter'),
     toast: document.querySelector('#toast'),
-    loginStatus: document.querySelector('#loginStatus'),
+    loginStatus: null,
     previousPage: document.querySelector('#previousPage'),
     nextPage: document.querySelector('#nextPage'),
     pageInfo: document.querySelector('#pageInfo'),
@@ -26,6 +26,14 @@ export const elements = {
     editContent: document.querySelector('#editContent'),
     cancelEdit: document.querySelector('#cancelEdit')
 };
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        elements.loginStatus = document.querySelector('#loginStatus');
+    });
+} else {
+    elements.loginStatus = document.querySelector('#loginStatus');
+}
 
 export const pageState = {
     currentUser: null,

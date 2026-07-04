@@ -62,6 +62,18 @@ public class EmailServiceImpl implements EmailService {
             } else if (username.endsWith("@yahoo.com")) {
                 host = "smtp.mail.yahoo.com";
                 port = 587;
+            } else if (username.endsWith("@qq.com") || username.endsWith("@foxmail.com")) {
+                host = "smtp.qq.com";
+                port = 587;
+            } else if (username.endsWith("@189.cn")) {
+                host = "smtp.189.cn";
+                port = 25;
+            } else if (username.endsWith("@139.com")) {
+                host = "smtp.139.com";
+                port = 25;
+            } else if (username.endsWith("@yeah.net")) {
+                host = "smtp.yeah.net";
+                port = 25;
             }
         }
         

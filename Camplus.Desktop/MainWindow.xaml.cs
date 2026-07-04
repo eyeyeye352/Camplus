@@ -18,6 +18,9 @@ namespace Camplus.Desktop
         private CancellationTokenSource? _cancellationTokenSource;
         private string _dbUsername = "";
         private string _dbPassword = "";
+        
+        private const string DefaultDbUsername = "Camplus_sql";
+        private const string DefaultDbPassword = "123456";
 
         public MainWindow()
         {
@@ -66,6 +69,34 @@ namespace Camplus.Desktop
 
         private void ShowDbCredentialsDialog()
         {
+            var envUsername = Environment.GetEnvironmentVariable("DB_USER");
+            var envPassword = Environment.GetEnvironmentVariable("DB_PASS");
+
+            if (!string.IsNullOrEmpty(envUsername) && !string.IsNullOrEmpty(envPassword))
+            {
+                UpdateStatus($"使用环境变量配置的数据库连接: {envUsername}");
+                UpdateStatus("正在验证MySQL连接...");
+                if (TestMySqlConnection(envUsername, envPassword))
+                {
+                    _dbUsername = envUsername;
+                    _dbPassword = envPassword;
+                    UpdateStatus("MySQL连接验证成功");
+                    return;
+                }
+                UpdateStatus("环境变量配置的数据库连接验证失败，使用默认值");
+            }
+
+            UpdateStatus($"使用默认数据库配置: {DefaultDbUsername}");
+            UpdateStatus("正在验证MySQL连接...");
+            if (TestMySqlConnection(DefaultDbUsername, DefaultDbPassword))
+            {
+                _dbUsername = DefaultDbUsername;
+                _dbPassword = DefaultDbPassword;
+                UpdateStatus("MySQL连接验证成功");
+                return;
+            }
+            UpdateStatus("默认数据库连接验证失败，请手动输入");
+
             bool isValid = false;
             while (!isValid)
             {

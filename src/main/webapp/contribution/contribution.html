@@ -3,150 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户贡献 - Camplus</title>
+    <title>贡献 - Camplus</title>
     <link rel="stylesheet" href="./css/contribution.css">
+    <link rel="stylesheet" href="../components/menu.css">
 </head>
 <body>
-    <!--用户贡献页面标题栏-->
-    <header class="topbar">
-        <div>
-            <p class="eyebrow">Camplus</p>
-            <h1>用户贡献中心</h1>
+<!-- 音乐控制按钮 -->
+<div class="music-button" id="musicButton">
+    <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18V5l12-2v13"></path>
+        <circle cx="6" cy="18" r="3"></circle>
+        <circle cx="18" cy="16" r="3"></circle>
+        <line class="music-slash" x1="4" y1="4" x2="20" y2="20" stroke-width="3" style="display: none;"></line>
+    </svg>
+</div>
+
+<!-- 菜单按钮 -->
+<div class="menu-button" id="menuButton">
+    <img src="../assets/icons/menuIcon.svg" alt="菜单" class="menu-icon">
+</div>
+
+<!-- 背景音乐 -->
+<audio id="bgMusic" loop>
+    <source src="../assets/musics/webbgm.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 背景容器 -->
+<div class="background-container">
+    <div class="dot dot1"></div>
+    <div class="dot dot2"></div>
+    <div class="dot dot3"></div>
+    <div class="dot dot4"></div>
+    <div class="dot dot5"></div>
+    <div class="dot dot6"></div>
+    <div class="dot dot7"></div>
+    <div class="dot dot8"></div>
+    <div class="dot dot9"></div>
+    <div class="dot dot10"></div>
+    <div class="dot dot11"></div>
+    <div class="dot dot12"></div>
+</div>
+
+<!-- 侧边菜单 -->
+<div class="side-menu" id="sideMenu">
+    <div class="menu-header">
+        <div class="account-area" id="accountArea">
+            <div class="avatar-circle" id="avatarCircle">
+                <svg class="avatar-icon avatar-icon--user" id="avatarIconUser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <svg class="avatar-icon avatar-icon--smile" id="avatarIconSmile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                </svg>
+            </div>
+            <div class="account-info">
+                <span class="account-name" id="accountName">请先登录</span>
+                <span class="account-email" id="accountEmail"></span>
+            </div>
         </div>
-        <div class="status-pill" id="loginStatus">未登录</div>
-    </header>
+    </div>
+    <div class="menu-content">
+        <a class="menu-item menu-item--bright" href="../qa/qa.html">
+            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            <span>问答平台</span>
+        </a>
+        <a class="menu-item menu-item--bright" href="../home/index.html">
+            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>首页</span>
+        </a>
+        <a class="menu-item menu-item--bright" id="adminMenuItem" href="../admin/admin.html">
+            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+            </svg>
+            <span>管理者</span>
+        </a>
+        <a class="menu-item menu-item--bright" href="contribution.html">
+            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span>贡献</span>
+        </a>
+    </div>
+</div>
 
-    <!--核心区域-->
-    <main class="layout">
-        <!--侧边拦-->
-        <aside class="sidebar">
-            <button class="nav-item active" data-panel="submitPanel">提交贡献</button>
-            <button class="nav-item" data-panel="myPanel">我的贡献</button>
-            <button class="nav-item" id="backHomeBut">返回首页</button>
-        </aside>
+<!--核心区域-->
+<main class="layout">
+    <!--侧边拦-->
+    <aside class="sidebar">
+        <span id="loginStatus" style="display: block; padding: 8px 14px; color: rgba(255, 255, 255, 0.5); font-size: 12px; text-align: center;"></span>
+        <button class="nav-item active" data-panel="submitPanel">提交贡献</button>
+        <button class="nav-item" data-panel="myPanel">我的贡献</button>
+        <button class="nav-item" id="backHomeBut">返回首页</button>
+    </aside>
 
-        <!--内容区域-->
-        <section class="content">
-            <!--提交贡献区域-->
-            <section class="panel active" id="submitPanel">
-                <!--标题-->
-                <div class="section-head">
-                    <div>
-                        <p class="eyebrow">Submit</p>
-                        <h2>提交一条校园知识贡献</h2>
-                    </div>
-                    <span class="hint">提交后默认进入审核中</span>
-                </div>
-
-                <!--提交贡献表单-->
-                <form id="contributionForm" class="form-grid">
-                    <!--贡献类型-->
-                    <label>
-                        贡献类型
-                        <select name="contribution_type" required>
-                            <option value="0">新增问题</option>
-                            <option value="1">答案纠错</option>
-                        </select>
-                    </label>
-                    <!--贡献标题-->
-                    <label>
-                        标题
-                        <input name="title" maxlength="128" placeholder="例如：图书馆假期开放时间补充" required>
-                    </label>
-                    <!--贡献内容-->
-                    <label class="wide">
-                        贡献内容
-                        <textarea name="content" rows="8" placeholder="填写新问题描述，或说明已有答案需要纠错的地方" required></textarea>
-                    </label>
-
-                    <!--操作选项栏-->
-                    <div class="actions wide">
-                        <button type="reset" class="secondary">清空</button>
-                        <button type="submit">提交审核</button>
-                    </div>
-                </form>
-            </section>
-
-            <!--我的贡献区域-->
-            <section class="panel" id="myPanel">
-                <div class="section-head">
-                    <div>
-                        <p class="eyebrow">Mine</p>
-                        <h2>我的贡献记录</h2>
-                    </div>
-                    <select id="statusFilter">
-                        <option value="">全部状态</option>
-                        <option value="0">审核中</option>
-                        <option value="1">已通过</option>
-                        <option value="2">已拒绝</option>
-                    </select>
-                </div>
-                <div class="list" id="contributionList">
-                    <div class="empty">点击“我的贡献”后会自动加载记录。</div>
-                </div>
-                <nav class="pagination" aria-label="贡献记录分页">
-                    <button type="button" class="secondary" id="previousPage">上一页</button>
-                    <span class="page-info" id="pageInfo">第 1 / 1 页，共 0 条</span>
-                    <button type="button" class="secondary" id="nextPage">下一页</button>
-                </nav>
-            </section>
-        </section>
-    </main>
-
-    <dialog class="detail-dialog" id="contributionDialog" aria-labelledby="dialogTitle">
-        <div class="dialog-shell">
-            <header class="dialog-head">
+    <!--内容区域-->
+    <section class="content">
+        <!--提交贡献区域-->
+        <section class="panel active" id="submitPanel">
+            <!--标题-->
+            <div class="section-head">
                 <div>
-                    <p class="eyebrow">Contribution</p>
-                    <h2 id="dialogTitle">贡献详情</h2>
+                    <p class="eyebrow">Submit</p>
+                    <h2>提交一条校园知识贡献</h2>
                 </div>
-                <button type="button" class="icon-button" id="closeDialog" aria-label="关闭贡献详情">×</button>
-            </header>
+                <span class="hint">提交后默认进入审核中</span>
+            </div>
 
-            <section id="detailView">
-                <div class="detail-meta">
-                    <span class="badge" id="detailStatus">未知状态</span>
-                    <span id="detailType">未知类型</span>
-                    <span id="detailCreateTime">-</span>
-                </div>
-                <div class="detail-block">
-                    <h3 id="detailTitle">-</h3>
-                    <p id="detailContent">-</p>
-                </div>
-                <div class="review-block" id="reviewBlock" hidden>
-                    <h3>管理员拒绝原因</h3>
-                    <p id="reviewComment">管理员未填写拒绝原因</p>
-                </div>
-                <div class="dialog-actions">
-                    <button type="button" id="editContribution" hidden>修改贡献</button>
-                </div>
-            </section>
-
-            <form class="form-grid" id="editContributionForm" hidden>
+            <!--提交贡献表单-->
+            <form id="contributionForm" class="form-grid">
+                <!--贡献类型-->
                 <label>
                     贡献类型
-                    <select name="contribution_type" id="editContributionType" required>
+                    <select name="contribution_type" required>
                         <option value="0">新增问题</option>
                         <option value="1">答案纠错</option>
                     </select>
                 </label>
+                <!--贡献标题-->
                 <label>
                     标题
-                    <input name="title" id="editTitle" maxlength="128" required>
+                    <input name="title" maxlength="128" placeholder="例如：图书馆假期开放时间补充" required>
                 </label>
+                <!--贡献内容-->
                 <label class="wide">
                     贡献内容
-                    <textarea name="content" id="editContent" rows="8" required></textarea>
+                    <textarea name="content" rows="8" placeholder="填写新问题描述，或说明已有答案需要纠错的地方" required></textarea>
                 </label>
-                <div class="dialog-actions wide">
-                    <button type="button" class="secondary" id="cancelEdit">取消修改</button>
-                    <button type="submit">保存修改</button>
+
+                <!--操作选项栏-->
+                <div class="actions wide">
+                    <button type="reset" class="secondary">清空</button>
+                    <button type="submit">提交审核</button>
                 </div>
             </form>
-        </div>
-    </dialog>
+        </section>
 
-    <div class="toast" id="toast"></div>
-    <script type="module" src="./js/index.js"></script>
+        <!--我的贡献区域-->
+        <section class="panel" id="myPanel">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Mine</p>
+                    <h2>我的贡献记录</h2>
+                </div>
+                <select id="statusFilter">
+                    <option value="">全部状态</option>
+                    <option value="0">审核中</option>
+                    <option value="1">已通过</option>
+                    <option value="2">已拒绝</option>
+                </select>
+            </div>
+            <div class="list" id="contributionList">
+                <div class="empty">点击“我的贡献”后会自动加载记录。</div>
+            </div>
+            <nav class="pagination" aria-label="贡献记录分页">
+                <button type="button" class="secondary" id="previousPage">上一页</button>
+                <span class="page-info" id="pageInfo">第 1 / 1 页，共 0 条</span>
+                <button type="button" class="secondary" id="nextPage">下一页</button>
+            </nav>
+        </section>
+    </section>
+</main>
+
+<dialog class="detail-dialog" id="contributionDialog" aria-labelledby="dialogTitle">
+    <div class="dialog-shell">
+        <header class="dialog-head">
+            <div>
+                <p class="eyebrow">Contribution</p>
+                <h2 id="dialogTitle">贡献详情</h2>
+            </div>
+            <button type="button" class="icon-button" id="closeDialog" aria-label="关闭贡献详情">×</button>
+        </header>
+
+        <section id="detailView">
+            <div class="detail-meta">
+                <span class="badge" id="detailStatus">未知状态</span>
+                <span id="detailType">未知类型</span>
+                <span id="detailCreateTime">-</span>
+            </div>
+            <div class="detail-block">
+                <h3 id="detailTitle">-</h3>
+                <p id="detailContent">-</p>
+            </div>
+            <div class="review-block" id="reviewBlock" hidden>
+                <h3>管理员拒绝原因</h3>
+                <p id="reviewComment">管理员未填写拒绝原因</p>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" id="editContribution" hidden>修改贡献</button>
+            </div>
+        </section>
+
+        <form class="form-grid" id="editContributionForm" hidden>
+            <label>
+                贡献类型
+                <select name="contribution_type" id="editContributionType" required>
+                    <option value="0">新增问题</option>
+                    <option value="1">答案纠错</option>
+                </select>
+            </label>
+            <label>
+                标题
+                <input name="title" id="editTitle" maxlength="128" required>
+            </label>
+            <label class="wide">
+                贡献内容
+                <textarea name="content" id="editContent" rows="8" required></textarea>
+            </label>
+            <div class="dialog-actions wide">
+                <button type="button" class="secondary" id="cancelEdit">取消修改</button>
+                <button type="submit">保存修改</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+<script src="../components/menu.js"></script>
+<script type="module" src="./js/index.js"></script>
 </body>
 </html>
