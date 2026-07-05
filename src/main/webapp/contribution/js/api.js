@@ -1,6 +1,13 @@
 const contextPath = window.location.pathname.split('/contribution/')[0];
 const apiBase = `${window.location.origin}${contextPath}/contribution`;
 
+const statusStringToInt = {
+    'all': '',
+    'pending': 0,
+    'approved': 1,
+    'rejected': 2
+};
+
 async function requestJson(url, options = {}) {
     const response = await fetch(url, {
         credentials: 'include',
@@ -27,8 +34,9 @@ export function fetchContributions(userId, status, page, pageSize) {
     url.searchParams.set('userId', userId);
     url.searchParams.set('page', page);
     url.searchParams.set('pageSize', pageSize);
-    if (status !== '') {
-        url.searchParams.set('status', status);
+    const intStatus = statusStringToInt[status];
+    if (intStatus !== '') {
+        url.searchParams.set('status', intStatus);
     }
     return requestJson(url);
 }

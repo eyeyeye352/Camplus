@@ -81,8 +81,8 @@ async function submitReview(status) {
         return;
     }
 
-    if (!finalQuestion || !finalAnswer) {
-        showToast("问题和答案不能为空！", "warning");
+    if (status === 1 && (!finalQuestion || !finalAnswer)) {
+        showToast("审核通过时问题和答案不能为空！", "warning");
         return;
     }
 

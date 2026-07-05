@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 //用于管理数据库获取到的用户贡献数据
 public class UserContribution {
     private Integer contributionId;
-    private Integer userId;
+    private Long userId;
     private Integer contributionType;
     private String title;
     private String content;
@@ -26,11 +26,11 @@ public class UserContribution {
         this.contributionId = contributionId;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
