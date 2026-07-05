@@ -13,6 +13,8 @@ public interface FaqMapper {
 
     Faq selectById(@Param("faqId") Integer faqId);
 
+    Map<String, Object> selectByIdMap(@Param("faqId") Integer faqId);
+
     int incrementQuestionCount(@Param("faqId") Integer faqId);
 
     int updateHotScore(@Param("faqId") Integer faqId, @Param("hotScore") Integer hotScore);
@@ -20,6 +22,13 @@ public interface FaqMapper {
     List<Faq> selectAllDisplayed();
 
     int insertFaq(Map<String, Object> params);
+
+    int insertFaqWithZeroStats(Map<String, Object> params);
+
+    int updateDisplayStatus(@Param("faqId") Integer faqId, @Param("displayStatus") Integer displayStatus);
+
+    @Select("SELECT * FROM faq_items ORDER BY hot_score DESC")
+    List<Faq> selectAllByHotScore();
 
     @Select("SELECT COUNT(*) FROM faq_items")
     int countAll();

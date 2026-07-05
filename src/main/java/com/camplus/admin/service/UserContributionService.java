@@ -7,6 +7,7 @@ import java.util.List;
 public interface UserContributionService {
     List<UserContribution> getPendingList();
 
-    // 移除了无处安放的 adminId 和 ip 参数
+    List<UserContribution> getAllContributions();
+
     boolean reviewContribution(ReviewRequestDTO dto);
 }

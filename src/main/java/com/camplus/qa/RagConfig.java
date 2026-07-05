@@ -29,6 +29,9 @@ public class RagConfig {
     private static final float DOC_DENSE_WEIGHT = 0.5f;
     private static final float DOC_SPARSE_WEIGHT = 0.5f;
 
+    private static final ThreadLocal<Boolean> faqHitThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Integer> hitFaqIdThreadLocal = new ThreadLocal<>();
+
     @Autowired
     private VectorService vectorService;
 
@@ -49,8 +52,8 @@ public class RagConfig {
 
         ContentRetriever contentRetriever = query -> {
             String question = query.text();
+            faqHitThreadLocal.set(false);
 
-            // 第一步：优先检索 FAQ（阈值 0.6，dense 0.9 + sparse 0.1）
             List<VectorSearchResult> faqResults =
                     vectorService.search("faq_vector_store", question, FAQ_MIN_SCORE, 1,
                             FAQ_DENSE_WEIGHT, FAQ_SPARSE_WEIGHT);
@@ -59,13 +62,16 @@ public class RagConfig {
             List<Content> contents = new ArrayList<>();
 
             if (faqCount > 0) {
+                faqHitThreadLocal.set(true);
+                if (faqResults.get(0).getRecordId() != null) {
+                    hitFaqIdThreadLocal.set(faqResults.get(0).getRecordId().intValue());
+                }
                 log.info("[RAG检索] FAQ命中={}条, 使用FAQ回答 (dense={}, sparse={})",
                         faqCount, FAQ_DENSE_WEIGHT, FAQ_SPARSE_WEIGHT);
                 for (VectorSearchResult res : faqResults) {
                     contents.add(Content.from(res.getContent()));
                 }
             } else {
-                // FAQ 未命中，回退到文档检索（无阈值，Top 1，dense 0.5 + sparse 0.5）
                 log.info("[RAG检索] FAQ未命中, 回退到文档检索 (无阈值,Top1,dense={},sparse={})",
                         DOC_DENSE_WEIGHT, DOC_SPARSE_WEIGHT);
                 List<VectorSearchResult> docResults =
@@ -89,5 +95,19 @@ public class RagConfig {
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
                 .contentRetriever(contentRetriever)
                 .build();
+    }
+
+    public static boolean isFaqHit() {
+        Boolean hit = faqHitThreadLocal.get();
+        return hit != null && hit;
+    }
+
+    public static Integer getHitFaqId() {
+        return hitFaqIdThreadLocal.get();
+    }
+
+    public static void clearFaqHit() {
+        faqHitThreadLocal.remove();
+        hitFaqIdThreadLocal.remove();
     }
 }

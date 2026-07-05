@@ -17,6 +17,7 @@
     function createContribution(formData, userId) {
         const params = new URLSearchParams(formData);
         params.set('userId', userId);
+        params.set('contribution_type', '0');
         return requestJson(`${apiBase}/create`, {
             method: 'POST',
             body: params
@@ -45,6 +46,7 @@
         const params = new URLSearchParams(formData);
         params.set('userId', userId);
         params.set('contribution_id', contributionId);
+        params.set('contribution_type', '0');
         return requestJson(`${apiBase}/update`, {
             method: 'POST',
             body: params
@@ -68,17 +70,15 @@
         elements.closeDialog = document.querySelector('#closeDialog');
         elements.detailView = document.querySelector('#detailView');
         elements.detailStatus = document.querySelector('#detailStatus');
-        elements.detailType = document.querySelector('#detailType');
         elements.detailCreateTime = document.querySelector('#detailCreateTime');
-        elements.detailTitle = document.querySelector('#detailTitle');
-        elements.detailContent = document.querySelector('#detailContent');
+        elements.detailQuestion = document.querySelector('#detailQuestion');
+        elements.detailAnswer = document.querySelector('#detailAnswer');
         elements.reviewBlock = document.querySelector('#reviewBlock');
         elements.reviewComment = document.querySelector('#reviewComment');
         elements.editContribution = document.querySelector('#editContribution');
         elements.editForm = document.querySelector('#editContributionForm');
-        elements.editContributionType = document.querySelector('#editType');
-        elements.editTitle = document.querySelector('#editTitle');
-        elements.editContent = document.querySelector('#editContent');
+        elements.editQuestion = document.querySelector('#editQuestion');
+        elements.editAnswer = document.querySelector('#editAnswer');
         elements.cancelEdit = document.querySelector('#cancelEdit');
     }
 
@@ -95,8 +95,6 @@
         1: ['已通过', 'approved'],
         2: ['已拒绝', 'rejected']
     };
-
-    const contributionTypes = ['新增问题', '答案纠错'];
 
     function renderLoading() {
         if (elements.list) {
@@ -120,16 +118,16 @@
 
         elements.list.innerHTML = items.map((item) => {
             const [statusText, statusClass] = statusMap[item.status] || ['未知', ''];
+            const questionPreview = item.title ? (item.title.length > 50 ? item.title.substring(0, 50) + '...' : item.title) : '无问题';
             return `
                 <button type="button" class="contribution-card" data-contribution-id="${item.contributionId}"
-                        aria-label="查看${escapeHtml(item.title || '未命名贡献')}详情">
-                    <h3>${escapeHtml(item.title || '未命名贡献')}</h3>
+                        aria-label="查看贡献详情">
+                    <h3>${escapeHtml(questionPreview)}</h3>
                     <div class="meta">
                         <span class="badge ${statusClass}">${statusText}</span>
-                        <span>类型：${typeText(item.contributionType)}</span>
                         <span>提交时间：${escapeHtml(item.createTime || '-')}</span>
                     </div>
-                    <p>${escapeHtml(item.content || '暂无内容摘要')}</p>
+                    <p>${escapeHtml(item.content ? (item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content) : '暂无答案')}</p>
                     <span class="card-action">查看详情</span>
                 </button>
             `;
@@ -149,15 +147,14 @@
     }
 
     function renderDetail(item) {
-        if (!elements.detailStatus || !elements.detailType || !elements.detailCreateTime || !elements.detailTitle || !elements.detailContent) return;
+        if (!elements.detailStatus || !elements.detailCreateTime || !elements.detailQuestion || !elements.detailAnswer) return;
         
         const [statusText, statusClass] = statusMap[item.status] || ['未知', ''];
         elements.detailStatus.className = `badge ${statusClass}`;
         elements.detailStatus.textContent = statusText;
-        elements.detailType.textContent = `类型：${typeText(item.contributionType)}`;
         elements.detailCreateTime.textContent = `提交时间：${item.createTime || '-'}`;
-        elements.detailTitle.textContent = item.title || '未命名贡献';
-        elements.detailContent.textContent = item.content || '暂无内容';
+        elements.detailQuestion.textContent = item.title || '无问题';
+        elements.detailAnswer.textContent = item.content || '暂无答案';
 
         const rejected = Number(item.status) === 2;
         if (elements.reviewBlock) elements.reviewBlock.hidden = !rejected;
@@ -168,11 +165,10 @@
     }
 
     function showEditForm(item) {
-        if (!elements.editContributionType || !elements.editTitle || !elements.editContent || !elements.detailView || !elements.editForm) return;
+        if (!elements.editQuestion || !elements.editAnswer || !elements.detailView || !elements.editForm) return;
         
-        elements.editContributionType.value = String(item.contributionType);
-        elements.editTitle.value = item.title || '';
-        elements.editContent.value = item.content || '';
+        elements.editQuestion.value = item.title || '';
+        elements.editAnswer.value = item.content || '';
         elements.detailView.hidden = true;
         elements.editForm.hidden = false;
     }
@@ -198,10 +194,6 @@
         elements.toast.classList.add('show');
         window.clearTimeout(showToast.timer);
         showToast.timer = window.setTimeout(() => elements.toast.classList.remove('show'), 2600);
-    }
-
-    function typeText(type) {
-        return contributionTypes[Number(type)] || '未知类型';
     }
 
     function escapeHtml(value) {
@@ -234,6 +226,10 @@
         if (!userId) {
             pageState.currentUser = null;
             setLoginStatus('未登录');
+            showToast('请先登录');
+            setTimeout(() => {
+                window.location.href = '../login/login.html';
+            }, 1000);
             return;
         }
 
@@ -281,24 +277,29 @@
             event.stopPropagation();
 
             const formData = new FormData(elements.form);
-            const title = formData.get('title')?.trim();
-            const content = formData.get('content')?.trim();
+            const question = formData.get('question')?.trim();
+            const answer = formData.get('answer')?.trim();
 
             if (!pageState.currentUser) {
                 showToast('请先登录后再提交贡献');
                 return;
             }
-            if (!title) {
-                showToast('请填写标题');
+            if (!question) {
+                showToast('请填写问题');
                 return;
             }
-            if (!content) {
-                showToast('请填写贡献内容');
+            if (!answer) {
+                showToast('请填写答案');
                 return;
             }
 
+            const submitData = new FormData();
+            submitData.append('title', question);
+            submitData.append('content', answer);
+            submitData.append('contributionType', '0');
+
             try {
-                await createContribution(formData, pageState.currentUser.userId);
+                await createContribution(submitData, pageState.currentUser.userId);
                 elements.form.reset();
                 showToast('提交成功，已进入审核中');
             } catch (error) {
@@ -375,9 +376,7 @@
             );
             pageState.currentDetail = detail;
             renderDetail(detail);
-            if (elements.dialog) {
-                elements.dialog.showModal();
-            }
+            elements.dialog.showModal();
         } catch (error) {
             showToast(error.message || '详情加载失败');
         }
@@ -392,22 +391,25 @@
         }
 
         const formData = new FormData(elements.editForm);
-        const title = formData.get('title')?.trim();
-        const content = formData.get('content')?.trim();
-        if (!title || !content) {
-            showToast('标题和贡献内容不能为空');
+        const question = formData.get('question')?.trim();
+        const answer = formData.get('answer')?.trim();
+        if (!question || !answer) {
+            showToast('问题和答案不能为空');
             return;
         }
 
+        const submitData = new FormData();
+        submitData.append('title', question);
+        submitData.append('content', answer);
+        submitData.append('contributionType', '0');
+
         try {
             await updateContribution(
-                formData,
+                submitData,
                 pageState.currentUser.userId,
                 pageState.currentDetail.contributionId
             );
-            if (elements.dialog) {
-                elements.dialog.close();
-            }
+            elements.dialog.close();
             showToast('修改成功，贡献已重新进入审核中');
             await loadContributions();
         } catch (error) {
@@ -424,10 +426,6 @@
             }
             if (!pageState.currentUser) {
                 throw new Error('请先登录后查看我的贡献');
-            }
-
-            if (!elements.statusFilter) {
-                throw new Error('无法获取状态筛选器');
             }
 
             const pageData = await fetchContributions(
@@ -465,15 +463,9 @@
         }
     }
 
-    function initApp() {
+    document.addEventListener('DOMContentLoaded', () => {
         initElements();
         initCurrentUser();
         bindEvents();
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initApp);
-    } else {
-        initApp();
-    }
+    });
 })();

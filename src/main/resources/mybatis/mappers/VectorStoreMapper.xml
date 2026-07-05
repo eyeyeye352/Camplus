@@ -5,9 +5,11 @@
 <mapper namespace="com.camplus.vector.mappers.VectorStoreMapper">
 
     <select id="searchFaqVectors" resultType="map">
-        SELECT id, faq_id, question, answer, question_embedding,
-               answer_embedding, combined_embedding, sparse_embedding
-        FROM faq_vector_store
+        SELECT v.id, v.faq_id, v.question, v.answer, v.question_embedding,
+               v.answer_embedding, v.combined_embedding, v.sparse_embedding
+        FROM faq_vector_store v
+        INNER JOIN faq_items f ON v.faq_id = f.faq_id
+        WHERE f.display_status = 1
     </select>
 
     <select id="searchKnowledgeVectors" resultType="map">

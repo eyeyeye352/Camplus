@@ -26,4 +26,9 @@ public interface UserContributionMapper {
 
     @Select("SELECT * FROM user_contributions WHERE contribution_id = #{contributionId}")
     UserContribution selectById(@Param("contributionId") Integer contributionId);
+
+    @Select("SELECT c.*, u.username FROM user_contributions c " +
+            "JOIN users u ON c.user_id = u.user_id " +
+            "ORDER BY c.create_time DESC")
+    List<UserContribution> selectAllContributions();
 }

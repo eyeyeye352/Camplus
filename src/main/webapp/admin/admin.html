@@ -96,6 +96,9 @@
             <div class="admin-menu-item active" onclick="switchView('review')" id="menuReview">
                 📋 贡献审核
             </div>
+            <div class="admin-menu-item" onclick="switchView('faq')" id="menuFaq">
+                📝 FAQ管理
+            </div>
             <div class="admin-menu-item" onclick="switchView('import')" id="menuImport">
                 📚 知识导入
             </div>
@@ -109,8 +112,14 @@
         <div id="panelReview" class="admin-panel">
             <div class="glass-card">
                 <div class="card-header">
-                    <h2>待审核贡献列表</h2>
-                    <button class="refresh-btn" onclick="fetchContributions()">🔄 刷新列表</button>
+                    <h2>贡献审核列表</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select id="reviewStatusFilter" onchange="fetchContributions()">
+                            <option value="pending">待审核</option>
+                            <option value="all">全部</option>
+                        </select>
+                        <button class="refresh-btn" onclick="fetchContributions()">🔄 刷新列表</button>
+                    </div>
                 </div>
                 <div class="table-wrapper">
                     <table>
@@ -118,8 +127,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>提交用户</th>
-                                <th>贡献类型</th>
-                                <th>标题</th>
+                                <th>问题</th>
+                                <th>状态</th>
                                 <th>提交时间</th>
                                 <th>操作</th>
                             </tr>
@@ -132,17 +141,44 @@
             </div>
         </div>
 
+        <div id="panelFaq" class="admin-panel" style="display:none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2>FAQ管理（按热度排序）</h2>
+                    <button class="refresh-btn" onclick="fetchFaqList()">🔄 刷新列表</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>问题</th>
+                                <th>热度分</th>
+                                <th>提问次数</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="faqBody">
+                            <tr><td colspan="6" style="text-align:center; color:rgba(255,255,255,0.4);">正在加载...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div id="panelImport" class="admin-panel" style="display:none;">
             <div class="glass-card">
                 <div class="card-header">
-                    <h2>知识库批量导入</h2>
+                    <h2>知识库文件上传</h2>
                 </div>
                 <div class="import-container">
                     <div class="drop-zone" id="dropZone">
                         <div class="drop-icon">📁</div>
-                        <div class="drop-text">将你的知识库文件拖拽到此处，或 <span>点击选择文件</span></div>
+                        <div class="drop-text">将知识库文件拖拽到此处，或 <span>点击选择文件</span></div>
+                        <div class="drop-hint">支持 .txt, .pdf, .docx 格式</div>
                     </div>
-                    <input type="file" id="fileInput" style="display:none;" />
+                    <input type="file" id="fileInput" style="display:none;" accept=".txt,.pdf,.docx" />
                     <div id="uploadResult" style="display:none;" class="upload-result">
                         <div id="selectedFileInfo"></div>
                         <button id="btnSubmitImport" style="margin-top:15px;" class="refresh-btn">开始导入</button>
@@ -195,36 +231,20 @@
             </div>
             <form id="reviewForm">
                 <input type="hidden" id="currentContributionId" />
-                <input type="hidden" id="currentContributionType" />
                 
-                <div class="form-group" id="questionGroup">
-                    <label>最终问题</label>
-                    <input type="text" class="form-control" id="modalQuestion" placeholder="输入最终问题">
-                </div>
-                
-                <div class="form-group" id="answerGroup">
-                    <label>最终答案</label>
-                    <textarea class="form-control" id="modalAnswer" rows="4" placeholder="输入最终答案"></textarea>
+                <div class="form-group">
+                    <label>问题</label>
+                    <input type="text" class="form-control" id="modalQuestion" placeholder="问题内容" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>内容描述</label>
-                    <textarea class="form-control" id="modalContent" rows="4" placeholder="详细描述内容"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>来源链接</label>
-                    <input type="text" class="form-control" id="modalSourceUrl" placeholder="输入来源链接">
+                    <label>答案</label>
+                    <textarea class="form-control" id="modalAnswer" rows="5" placeholder="答案内容" required></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>审核评语</label>
-                    <textarea class="form-control" id="modalComment" rows="3" placeholder="输入审核评语"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>分类ID</label>
-                    <input type="text" class="form-control" id="modalCategoryId" value="1">
+                    <textarea class="form-control" id="modalComment" rows="2" placeholder="输入审核评语（驳回时必填）"></textarea>
                 </div>
                 
                 <div class="modal-footer">

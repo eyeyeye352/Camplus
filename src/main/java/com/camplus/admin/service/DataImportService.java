@@ -116,7 +116,7 @@ public class DataImportService {
             faqParams.put("question", question);
             faqParams.put("answer", answer);
             faqParams.put("source", "import");
-            faqMapper.insertFaq(faqParams);
+            faqMapper.insertFaqWithZeroStats(faqParams);
             Object faqIdObj = faqParams.get("faqId");
             if (faqIdObj == null) {
                 log.warn("FAQ插入数据库失败，未获取到 faqId: {}", question);
