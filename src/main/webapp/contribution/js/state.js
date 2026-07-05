@@ -49,4 +49,4 @@ export const statusMap = {
     2: ['已拒绝', 'rejected']
 };
 
-export const contributionTypes = ['新增问题', '答案纠错'];
+export const contributionTypes = ['新增问题'];
