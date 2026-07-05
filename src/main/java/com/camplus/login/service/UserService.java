@@ -19,4 +19,10 @@ public interface UserService {
     Integer getRole(Long userId);
 
     boolean isEmailExist(String email);
+
+    boolean deleteUser(Long userId);
+
+    User getUserByEmail(String email);
+
+    boolean resetPassword(String email, String code, String newPassword);
 }

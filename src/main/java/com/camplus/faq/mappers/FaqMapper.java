@@ -34,4 +34,7 @@ public interface FaqMapper {
 
     @Select("SELECT COUNT(*) FROM faq_items")
     int countAll();
+
+    @Select("SELECT * FROM faq_items WHERE question LIKE CONCAT('%', #{keyword}, '%') ORDER BY hot_score DESC")
+    List<Faq> searchByQuestion(@Param("keyword") String keyword);
 }

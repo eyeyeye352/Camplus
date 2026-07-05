@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 @RestController
@@ -47,7 +49,8 @@ public class UserController {
     public Result<String> sendCode(
             @RequestParam(name = "target") String target,
             @RequestParam(name = "type") String type,
-            @RequestParam(name = "smtpPassword", required = false) String smtpPassword) {
+            @RequestParam(name = "smtpPassword", required = false) String smtpPassword,
+            @RequestParam(name = "scene", required = false, defaultValue = "register") String scene) {
 
         if (target == null || target.trim().isEmpty()) {
             return Result.fail("请输入目标账号");
@@ -61,8 +64,14 @@ public class UserController {
             return Result.fail("邮箱格式不正确");
         }
 
-        if (userService.isEmailExist(target)) {
-            return Result.fail("该邮箱已被注册");
+        if ("register".equals(scene)) {
+            if (userService.isEmailExist(target)) {
+                return Result.fail("该邮箱已被注册");
+            }
+        } else if ("reset".equals(scene)) {
+            if (!userService.isEmailExist(target)) {
+                return Result.fail("该邮箱未注册");
+            }
         }
 
         if (smtpPassword == null || smtpPassword.trim().isEmpty()) {
@@ -160,5 +169,47 @@ public class UserController {
             return Result.ok("查询成功", role);
         }
         return Result.fail("用户不存在");
+    }
+
+    @PostMapping("/user/delete")
+    public Result<String> deleteUser(
+            @RequestParam(name = "userId") Long userId) {
+        try {
+            boolean success = userService.deleteUser(userId);
+            if (success) {
+                return Result.ok("账号注销成功！", null);
+            }
+            return Result.fail("账号注销失败");
+        } catch (IllegalArgumentException e) {
+            return Result.fail(e.getMessage());
+        }
+    }
+
+    @PostMapping("/user/checkEmail")
+    public Result<Map<String, Object>> checkEmail(
+            @RequestParam(name = "email") String email) {
+        Map<String, Object> data = new HashMap<>();
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            return Result.fail("邮箱格式不正确");
+        }
+        User user = userService.getUserByEmail(email);
+        if (user == null) {
+            return Result.fail("邮箱不存在");
+        }
+        data.put("isAdmin", "Administrator".equals(user.getUsername()));
+        data.put("userId", user.getUserId());
+        return Result.ok("验证成功", data);
+    }
+
+    @PostMapping("/user/resetPassword")
+    public Result<String> resetPassword(
+            @RequestParam(name = "email") String email,
+            @RequestParam(name = "code") String code,
+            @RequestParam(name = "newPassword") String newPassword) {
+        boolean success = userService.resetPassword(email, code, newPassword);
+        if (success) {
+            return Result.ok("密码重置成功！", null);
+        }
+        return Result.fail("密码重置失败，请检查验证码是否正确");
     }
 }

@@ -19,4 +19,6 @@ public interface UserMapper {
     java.util.List<User> selectByRole(@Param("role") Integer role);
 
     int updateRole(@Param("userId") Long userId, @Param("role") Integer role);
+
+    int deleteUser(@Param("userId") Long userId);
 }
