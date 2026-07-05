@@ -1,8 +1,8 @@
 package com.camplus.admin.service.impl;
 
-import com.camplus.admin.Mappers.UserContributionMapper;
 import com.camplus.admin.pojo.ReviewRequestDTO;
-import com.camplus.admin.pojo.UserContribution;
+import com.camplus.contribution.mappers.ContributionMapper;
+import com.camplus.contribution.pojo.UserContribution;
 import com.camplus.admin.service.UserContributionService;
 import com.camplus.faq.mappers.FaqMapper;
 import com.camplus.vector.mappers.VectorStoreMapper;
@@ -23,12 +23,12 @@ import java.util.Map;
 public class UserContributionServiceImpl implements UserContributionService {
     private static final Logger log = LoggerFactory.getLogger(UserContributionServiceImpl.class);
 
-    private final UserContributionMapper contributionMapper;
+    private final ContributionMapper contributionMapper;
     private final FaqMapper faqMapper;
     private final VectorStoreMapper vectorStoreMapper;
     private final VectorService vectorService;
 
-    public UserContributionServiceImpl(UserContributionMapper contributionMapper, 
+    public UserContributionServiceImpl(ContributionMapper contributionMapper, 
                                        FaqMapper faqMapper,
                                        VectorStoreMapper vectorStoreMapper,
                                        VectorService vectorService) {

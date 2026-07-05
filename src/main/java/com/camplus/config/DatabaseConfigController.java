@@ -11,9 +11,11 @@ import java.util.Map;
 public class DatabaseConfigController {
 
     private final DatabaseConfigService databaseConfigService;
+    private final DynamicDataSourceConfig dataSourceConfig;
 
-    public DatabaseConfigController(DatabaseConfigService databaseConfigService) {
+    public DatabaseConfigController(DatabaseConfigService databaseConfigService, DynamicDataSourceConfig dataSourceConfig) {
         this.databaseConfigService = databaseConfigService;
+        this.dataSourceConfig = dataSourceConfig;
     }
 
     @GetMapping("/status")
@@ -63,8 +65,14 @@ public class DatabaseConfigController {
         }
 
         boolean success = databaseConfigService.updateConnection(username.trim(), password);
-        result.put("success", success);
-        result.put("message", success ? "配置更新成功" : "连接失败，请检查用户名和密码");
+        if (success) {
+            dataSourceConfig.refreshDataSource(databaseConfigService);
+            result.put("success", true);
+            result.put("message", "配置更新成功");
+        } else {
+            result.put("success", false);
+            result.put("message", "连接失败，请检查用户名和密码");
+        }
         return ResponseEntity.ok(result);
     }
 }

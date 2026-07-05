@@ -6,6 +6,10 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+/**
+ * 用户贡献Mapper接口
+ * 提供用户贡献数据的增删改查功能
+ */
 @Mapper
 public interface ContributionMapper {
 
@@ -26,4 +30,14 @@ public interface ContributionMapper {
 
     int deletePending(@Param("contributionId") Integer contributionId,
                       @Param("userId") Integer userId);
+
+    List<UserContribution> selectPendingContributions();
+
+    List<UserContribution> selectAllContributions();
+
+    UserContribution selectById(@Param("contributionId") Integer contributionId);
+
+    int updateReviewData(@Param("contributionId") Integer contributionId,
+                         @Param("status") Integer status,
+                         @Param("reviewComment") String reviewComment);
 }

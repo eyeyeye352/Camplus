@@ -140,6 +140,11 @@ public class VectorServiceImpl implements VectorService {
                         name = (String) vectorMap.get("doc_name");
                     }
                     Long recordId = ((Number) vectorMap.get("id")).longValue();
+                    if (vectorMap.containsKey("faq_id")) {
+                        recordId = ((Number) vectorMap.get("faq_id")).longValue();
+                    } else if (vectorMap.containsKey("doc_id")) {
+                        recordId = ((Number) vectorMap.get("doc_id")).longValue();
+                    }
 
                     if (score > bestScore) {
                         bestScore = score;
@@ -224,6 +229,11 @@ public class VectorServiceImpl implements VectorService {
 
                     if (score >= FIXED_MIN_SCORE) {
                         Long recordId = ((Number) vectorMap.get("id")).longValue();
+                        if (vectorMap.containsKey("faq_id")) {
+                            recordId = ((Number) vectorMap.get("faq_id")).longValue();
+                        } else if (vectorMap.containsKey("doc_id")) {
+                            recordId = ((Number) vectorMap.get("doc_id")).longValue();
+                        }
 
                         String content = "";
                         if (vectorMap.containsKey("question")) {

@@ -2,10 +2,13 @@ package com.camplus.faq.pojo;
 
 import java.time.LocalDateTime;
 
+/**
+ * FAQ实体类
+ * 对应数据库表 faq_items
+ */
 public class Faq {
     private Integer faqId;
     private Integer questionCount;
-    private Integer likeCount;
     private Integer hotScore;
     private Integer displayStatus;
     private LocalDateTime createTime;
@@ -14,10 +17,10 @@ public class Faq {
 
     public Faq() {}
 
-    public Faq(Integer faqId, Integer questionCount, Integer likeCount, Integer hotScore, Integer displayStatus, LocalDateTime createTime, String question, String answer) {
+    public Faq(Integer faqId, Integer questionCount, Integer hotScore, Integer displayStatus, 
+               LocalDateTime createTime, String question, String answer) {
         this.faqId = faqId;
         this.questionCount = questionCount;
-        this.likeCount = likeCount;
         this.hotScore = hotScore;
         this.displayStatus = displayStatus;
         this.createTime = createTime;
@@ -39,14 +42,6 @@ public class Faq {
 
     public void setQuestionCount(Integer questionCount) {
         this.questionCount = questionCount;
-    }
-
-    public Integer getLikeCount() {
-        return likeCount;
-    }
-
-    public void setLikeCount(Integer likeCount) {
-        this.likeCount = likeCount;
     }
 
     public Integer getHotScore() {

@@ -18,6 +18,10 @@ import org.springframework.context.annotation.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * RAG检索配置类
+ * 配置大模型、内容检索器和对话记忆
+ */
 @Configuration
 public class RagConfig {
 
@@ -29,9 +33,6 @@ public class RagConfig {
     private static final float DOC_DENSE_WEIGHT = 0.5f;
     private static final float DOC_SPARSE_WEIGHT = 0.5f;
 
-    private static final ThreadLocal<Boolean> faqHitThreadLocal = new ThreadLocal<>();
-    private static final ThreadLocal<Integer> hitFaqIdThreadLocal = new ThreadLocal<>();
-
     @Autowired
     private VectorService vectorService;
 
@@ -41,6 +42,11 @@ public class RagConfig {
     @Value("${ollama.base-url:http://localhost:11434}")
     private String ollamaBaseUrl;
 
+    /**
+     * 创建CampusAssistant服务实例
+     * 实现两层检索：先检索FAQ，FAQ未命中时回退到文档检索
+     * @return CampusAssistant实例
+     */
     @Bean
     public CampusAssistant campusAssistant() {
 
@@ -52,7 +58,6 @@ public class RagConfig {
 
         ContentRetriever contentRetriever = query -> {
             String question = query.text();
-            faqHitThreadLocal.set(false);
 
             List<VectorSearchResult> faqResults =
                     vectorService.search("faq_vector_store", question, FAQ_MIN_SCORE, 1,
@@ -62,10 +67,6 @@ public class RagConfig {
             List<Content> contents = new ArrayList<>();
 
             if (faqCount > 0) {
-                faqHitThreadLocal.set(true);
-                if (faqResults.get(0).getRecordId() != null) {
-                    hitFaqIdThreadLocal.set(faqResults.get(0).getRecordId().intValue());
-                }
                 log.info("[RAG检索] FAQ命中={}条, 使用FAQ回答 (dense={}, sparse={})",
                         faqCount, FAQ_DENSE_WEIGHT, FAQ_SPARSE_WEIGHT);
                 for (VectorSearchResult res : faqResults) {
@@ -95,19 +96,5 @@ public class RagConfig {
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
                 .contentRetriever(contentRetriever)
                 .build();
-    }
-
-    public static boolean isFaqHit() {
-        Boolean hit = faqHitThreadLocal.get();
-        return hit != null && hit;
-    }
-
-    public static Integer getHitFaqId() {
-        return hitFaqIdThreadLocal.get();
-    }
-
-    public static void clearFaqHit() {
-        faqHitThreadLocal.remove();
-        hitFaqIdThreadLocal.remove();
     }
 }

@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class DatabaseConfigService {
-
-    private static final String DEFAULT_USERNAME = "Camplus_sql";
-    private static final String DEFAULT_PASSWORD = "123456";
+    //数据库连接默认值，方便测试
+    private static final String DEFAULT_USERNAME = " ";
+    private static final String DEFAULT_PASSWORD = " ";
     private static final String URL_TEMPLATE = "jdbc:mysql://localhost:3306/camplus_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true";
 
     // 优先从系统属性读取（用于 --import-only 模式传入凭据），否则使用默认值

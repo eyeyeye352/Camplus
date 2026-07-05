@@ -33,11 +33,10 @@ CREATE TABLE faq_items (
     faq_id INT AUTO_INCREMENT PRIMARY KEY COMMENT '固定问题ID',
     question VARCHAR(500) NOT NULL COMMENT '问题',
     answer TEXT COMMENT '答案',
-    question_count INT DEFAULT 0 COMMENT '提问次数',
-    like_count INT DEFAULT 0 COMMENT '点赞次数',
-    hot_score INT DEFAULT 0 COMMENT '热度分',
+    question_count INT DEFAULT 0 COMMENT '今日查询次数（每日凌晨重置为0）',
+    hot_score INT DEFAULT 0 COMMENT '热度分（每日凌晨减半，今日查询次数*10累加到热度分）',
     display_status TINYINT DEFAULT 0 COMMENT '展示状态（0为下架，1为展示）',
-    source VARCHAR(50) DEFAULT 'manual' COMMENT '数据来源：manual手动, import导入',
+    source VARCHAR(50) DEFAULT 'manual' COMMENT '数据来源：manual手动, import导入, auto自动',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='固定问题表';
 

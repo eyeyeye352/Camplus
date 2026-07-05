@@ -27,6 +27,8 @@ public interface FaqMapper {
 
     int updateDisplayStatus(@Param("faqId") Integer faqId, @Param("displayStatus") Integer displayStatus);
 
+    int resetDailyStats();
+
     @Select("SELECT * FROM faq_items ORDER BY hot_score DESC")
     List<Faq> selectAllByHotScore();
 

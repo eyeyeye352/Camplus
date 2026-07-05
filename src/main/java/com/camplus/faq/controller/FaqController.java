@@ -14,10 +14,11 @@ import java.util.Map;
 @RequestMapping("/api/faq")
 public class FaqController {
 
-    private final FaqService faqService = new FaqServiceImpl();
+    private final FaqService faqService;
     private final FaqMapper faqMapper;
 
-    public FaqController(FaqMapper faqMapper) {
+    public FaqController(FaqService faqService, FaqMapper faqMapper) {
+        this.faqService = faqService;
         this.faqMapper = faqMapper;
     }
 

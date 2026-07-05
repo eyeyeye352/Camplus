@@ -1,7 +1,7 @@
 package com.camplus.admin.service;
 
 import com.camplus.admin.pojo.ReviewRequestDTO;
-import com.camplus.admin.pojo.UserContribution;
+import com.camplus.contribution.pojo.UserContribution;
 import java.util.List;
 
 public interface UserContributionService {

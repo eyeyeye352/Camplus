@@ -1,7 +1,7 @@
 package com.camplus.admin.controller;
 
 import com.camplus.admin.pojo.ReviewRequestDTO;
-import com.camplus.admin.pojo.UserContribution;
+import com.camplus.contribution.pojo.UserContribution;
 import com.camplus.admin.service.UserContributionService;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
