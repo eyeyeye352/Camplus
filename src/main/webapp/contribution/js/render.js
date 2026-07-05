@@ -73,7 +73,10 @@ export function showDetailView() {
 }
 
 export function setLoginStatus(text) {
-    elements.loginStatus.textContent = text;
+    const loginStatus = document.querySelector('#loginStatus');
+    if (loginStatus) {
+        loginStatus.textContent = text;
+    }
 }
 
 export function showToast(message) {

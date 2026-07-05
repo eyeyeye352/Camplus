@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,8 +17,6 @@ namespace Camplus.Desktop
         private readonly string _baseUrl = "http://localhost:8080";
         private readonly HttpClient _httpClient;
         private CancellationTokenSource? _cancellationTokenSource;
-        private string _dbUsername = "";
-        private string _dbPassword = "";
 
         public MainWindow()
         {
@@ -29,18 +28,23 @@ namespace Camplus.Desktop
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateStatus("获取数据库配置...");
-            ShowDbCredentialsDialog();
-            
             UpdateStatus("初始化WebView2...");
             _cancellationTokenSource = new CancellationTokenSource();
             
             try
             {
-                await WebView.EnsureCoreWebView2Async();
+                var userDataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WebView2Cache");
+                if (Directory.Exists(userDataFolder))
+                {
+                    try { Directory.Delete(userDataFolder, true); } catch { }
+                }
+                
+                var env = await CoreWebView2Environment.CreateAsync(null, userDataFolder);
+                await WebView.EnsureCoreWebView2Async(env);
                 WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
                 WebView.CoreWebView2.Settings.AreDevToolsEnabled = true;
                 WebView.CoreWebView2.Settings.IsStatusBarEnabled = false;
+                WebView.CoreWebView2.SetVirtualHostNameToFolderMapping("app", AppDomain.CurrentDomain.BaseDirectory, CoreWebView2HostResourceAccessKind.Allow);
                 UpdateStatus("WebView2初始化完成");
                 
                 await Task.Delay(1000);
@@ -48,8 +52,8 @@ namespace Camplus.Desktop
                 UpdateStatus("检查服务状态...");
                 if (await IsServiceRunning(_cancellationTokenSource.Token))
                 {
-                    UpdateStatus("服务运行中，加载页面...");
-                    WebView.Source = new Uri(_baseUrl);
+                    UpdateStatus("服务运行中，检查数据库连接...");
+                    await CheckAndConfigureDatabase();
                 }
                 else
                 {
@@ -64,15 +68,39 @@ namespace Camplus.Desktop
             }
         }
 
-        private void ShowDbCredentialsDialog()
+        private async Task CheckAndConfigureDatabase()
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<DbStatusResponse>($"{_baseUrl}/api/db/status");
+                if (response != null && response.Connected)
+                {
+                    UpdateStatus($"数据库连接成功: {response.Username}");
+                    WebView.Source = new Uri(_baseUrl);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateStatus($"检查数据库状态失败: {ex.Message}");
+            }
+
+            UpdateStatus("数据库连接失败，需要配置数据库凭据");
+            await ShowDbCredentialsDialogAndUpdate();
+        }
+
+        private async Task ShowDbCredentialsDialogAndUpdate()
         {
             bool isValid = false;
+            string username = "";
+            string password = "";
+
             while (!isValid)
             {
-                var usernameDialog = new InputDialog("MySQL配置", "请输入MySQL用户名:", _dbUsername);
+                var usernameDialog = new InputDialog("MySQL配置", "请输入MySQL用户名:", username);
                 if (usernameDialog.ShowDialog() == true && !string.IsNullOrEmpty(usernameDialog.InputText))
                 {
-                    _dbUsername = usernameDialog.InputText;
+                    username = usernameDialog.InputText;
                 }
                 else
                 {
@@ -83,7 +111,7 @@ namespace Camplus.Desktop
                 var passwordDialog = new PasswordDialog("MySQL配置", "请输入MySQL密码:");
                 if (passwordDialog.ShowDialog() == true)
                 {
-                    _dbPassword = passwordDialog.Password;
+                    password = passwordDialog.Password;
                 }
                 else
                 {
@@ -92,7 +120,7 @@ namespace Camplus.Desktop
                 }
 
                 UpdateStatus("正在验证MySQL连接...");
-                isValid = TestMySqlConnection(_dbUsername, _dbPassword);
+                isValid = await ValidateDatabaseConnection(username, password);
                 if (!isValid)
                 {
                     MessageBox.Show("MySQL连接失败，请检查用户名和密码是否正确", "连接失败", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -100,53 +128,32 @@ namespace Camplus.Desktop
                 else
                 {
                     UpdateStatus("MySQL连接验证成功");
+                    WebView.Source = new Uri(_baseUrl);
                 }
             }
         }
 
-        private bool TestMySqlConnection(string username, string password)
+        private async Task<bool> ValidateDatabaseConnection(string username, string password)
         {
             try
             {
-                var startInfo = new ProcessStartInfo
+                var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/api/db/update", new
                 {
-                    FileName = "mysql",
-                    Arguments = $"-u{username} -p{password} -e \"SELECT 1\"",
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
+                    username = username,
+                    password = password
+                });
 
-                using var process = Process.Start(startInfo);
-                if (process == null) return false;
-                process.WaitForExit(5000);
-                return process.ExitCode == 0;
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<DbResponse>();
+                    return result != null && result.Success;
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                try
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        FileName = "cmd.exe",
-                        Arguments = $"/c mysql -u{username} -p{password} -e \"SELECT 1\"",
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    };
-
-                    using var process = Process.Start(startInfo);
-                    if (process == null) return false;
-                    process.WaitForExit(5000);
-                    return process.ExitCode == 0;
-                }
-                catch
-                {
-                    return false;
-                }
+                UpdateStatus($"验证数据库连接异常: {ex.Message}");
             }
+            return false;
         }
 
         private async Task StartSpringBootApp(CancellationToken cancellationToken)
@@ -162,9 +169,9 @@ namespace Camplus.Desktop
                     return;
                 }
 
-                var warPath = Path.Combine(projectRoot, "target", "Camplus.war");
+                var jarPath = Path.Combine(projectRoot, "target", "Camplus.jar");
                 
-                if (!File.Exists(warPath))
+                if (!File.Exists(jarPath))
                 {
                     UpdateStatus("编译项目...");
                     var mavenResult = await RunMavenBuild(projectRoot, cancellationToken);
@@ -178,7 +185,7 @@ namespace Camplus.Desktop
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = $"/c chcp 65001 >nul && title Camplus后端服务 && set DB_USERNAME={_dbUsername} && set DB_PASSWORD={_dbPassword} && java -Dfile.encoding=UTF-8 -jar \"{warPath}\"",
+                    Arguments = "/k chcp 65001 && java -Dfile.encoding=UTF-8 -jar \"" + jarPath + "\"",
                     WorkingDirectory = projectRoot,
                     UseShellExecute = true,
                     CreateNoWindow = false
@@ -195,9 +202,8 @@ namespace Camplus.Desktop
                 {
                     if (await IsServiceRunning(cancellationToken))
                     {
-                        UpdateStatus("服务启动成功，加载页面...");
-                        await Task.Delay(1000);
-                        WebView.Source = new Uri(_baseUrl);
+                        UpdateStatus("服务启动成功，检查数据库连接...");
+                        await CheckAndConfigureDatabase();
                         return;
                     }
                     await Task.Delay(2000);
@@ -286,6 +292,18 @@ namespace Camplus.Desktop
             }
             _httpClient.Dispose();
             _cancellationTokenSource?.Dispose();
+        }
+
+        private class DbStatusResponse
+        {
+            public bool Connected { get; set; }
+            public string Username { get; set; } = "";
+        }
+
+        private class DbResponse
+        {
+            public bool Success { get; set; }
+            public string Message { get; set; } = "";
         }
     }
 

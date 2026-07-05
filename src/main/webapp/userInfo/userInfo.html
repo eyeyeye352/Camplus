@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户信息</title>
     <link rel="stylesheet" href="userInfo.css">
+    <link rel="stylesheet" href="../components/menu.css">
+    <link rel="stylesheet" href="../components/toast.css">
 </head>
 <body>
-<!-- 固定标题容器 -->
-<div class="fixed-title">
-    <h1>Camplus</h1>
-</div>
-
-<!-- 音乐控制按钮 -->
 <div class="music-button" id="musicButton">
     <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 18V5l12-2v13"></path>
@@ -21,21 +17,15 @@
         <line class="music-slash" x1="4" y1="4" x2="20" y2="20" stroke-width="3" style="display: none;"></line>
     </svg>
 </div>
-
-<!-- 菜单按钮 -->
 <div class="menu-button" id="menuButton">
     <img src="../assets/icons/menuIcon.svg" alt="菜单" class="menu-icon">
 </div>
-
-<!-- 背景音乐 -->
 <audio id="bgMusic" loop>
     <source src="../assets/musics/webbgm.mp3" type="audio/mpeg">
 </audio>
-
-<!-- 侧边菜单 -->
 <div class="side-menu" id="sideMenu">
     <div class="menu-header">
-        <div class="account-area">
+        <div class="account-area" id="accountArea">
             <div class="avatar-circle" id="avatarCircle">
                 <svg class="avatar-icon avatar-icon--user" id="avatarIconUser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -48,7 +38,10 @@
                     <line x1="15" y1="9" x2="15.01" y2="9"></line>
                 </svg>
             </div>
-            <span class="account-name" id="accountName">游客</span>
+            <div class="account-info">
+                <span class="account-name" id="accountName">请先登录</span>
+                <span class="account-email" id="accountEmail"></span>
+            </div>
         </div>
     </div>
     <div class="menu-content">
@@ -58,19 +51,12 @@
             </svg>
             <span>问答平台</span>
         </a>
-        <a class="menu-item" href="../home/index.html">
+        <a class="menu-item menu-item--bright" href="../home/index.html">
             <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
             <span>首页</span>
-        </a>
-        <a class="menu-item menu-item--bright current-page" href="../userInfo/userInfo.html">
-            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <span>用户</span>
         </a>
         <a class="menu-item menu-item--bright" id="adminMenuItem" href="../admin/admin.html">
             <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -80,105 +66,32 @@
             </svg>
             <span>管理者</span>
         </a>
-        <a class="menu-item" href="../problem/index.html">
-            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>常见问题</span>
-        </a>
-        <a class="menu-item" href="../contribution/contribution.html">
+        <a class="menu-item menu-item--bright" href="../contribution/contribution.html">
             <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 20h9"></path>
                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
             </svg>
-            <span>用户贡献</span>
+            <span>贡献</span>
         </a>
     </div>
-    <div class="menu-footer">
-        <span class="menu-login-btn" id="menuLoginBtn">登入/注册</span>
-    </div>
 </div>
-
-<!-- 主内容区 -->
 <div class="main-content">
     <a class="back-link" href="../home/index.html">← 返回首页</a>
-
-    <!-- 基本信息卡片 -->
     <div class="info-card">
         <h2>基本信息</h2>
         <div class="info-row">
-            <span class="info-label">用户名</span>
-            <span class="info-value" id="usernameValue">—</span>
-        </div>
-        <div class="info-row">
             <span class="info-label">邮箱</span>
             <span class="info-value" id="emailValue">—</span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">手机号</span>
-            <span class="info-value" id="phoneValue">—</span>
         </div>
         <div class="info-row">
             <span class="info-label">身份</span>
             <span class="info-value highlight" id="roleValue">—</span>
         </div>
     </div>
-
-    <!-- 修改用户名 -->
-    <div class="edit-card">
-        <h2>修改用户名</h2>
-        <form class="edit-form" id="editUsernameForm">
-            <div class="form-row">
-                <label class="form-label">新用户名</label>
-                <input class="form-input" type="text" id="newUsername" placeholder="请输入新用户名" required>
-            </div>
-            <button class="submit-btn" type="submit">保存</button>
-        </form>
-    </div>
-
-    <!-- 修改密码 -->
-    <div class="edit-card">
-        <h2>修改密码</h2>
-        <form class="edit-form" id="editPasswordForm">
-            <div class="form-row">
-                <label class="form-label">原密码</label>
-                <input class="form-input" type="password" id="oldPassword" placeholder="请输入原密码" required>
-            </div>
-            <div class="form-row">
-                <label class="form-label">新密码</label>
-                <input class="form-input" type="password" id="newPassword" placeholder="请输入新密码" required>
-            </div>
-            <button class="submit-btn" type="submit">保存</button>
-        </form>
-    </div>
-
-    <!-- 修改邮箱 -->
-    <div class="edit-card">
-        <h2>修改邮箱</h2>
-        <form class="edit-form" id="editEmailForm">
-            <div class="form-row">
-                <label class="form-label">新邮箱</label>
-                <input class="form-input" type="email" id="newEmail" placeholder="请输入新邮箱" required>
-            </div>
-            <button class="submit-btn" type="submit">保存</button>
-        </form>
-    </div>
-
-    <!-- 修改手机号 -->
-    <div class="edit-card">
-        <h2>修改手机号</h2>
-        <form class="edit-form" id="editPhoneForm">
-            <div class="form-row">
-                <label class="form-label">新手机号</label>
-                <input class="form-input" type="tel" id="newPhone" placeholder="请输入新手机号" required>
-            </div>
-            <button class="submit-btn" type="submit">保存</button>
-        </form>
-    </div>
+    <button class="logout-btn" id="logoutBtn">登出</button>
 </div>
-
+<script src="../components/toast.js"></script>
+<script src="../components/menu.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="userInfo.js"></script>
 </body>

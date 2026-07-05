@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camplus.login.mappers.VerificationCodeMapper">
+
+    <resultMap id="VerificationCodeResultMap" type="com.camplus.login.entity.VerificationCode">
+        <id column="id" property="id"/>
+        <result column="target" property="target"/>
+        <result column="code" property="code"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="error_count" property="errorCount"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insertCode" parameterType="com.camplus.login.entity.VerificationCode">
+        INSERT INTO verification_codes (
+        target, code, type, status, error_count, expire_time, create_time, update_time
+        ) VALUES (
+        #{target}, #{code}, #{type}, #{status}, #{errorCount}, #{expireTime}, NOW(), NOW()
+        )
+    </insert>
+
+    <select id="selectByTargetAndType" resultMap="VerificationCodeResultMap">
+        SELECT * FROM verification_codes 
+        WHERE target = #{target} AND type = #{type} 
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <update id="updateCode">
+        UPDATE verification_codes
+        SET code = #{code}, expire_time = #{expireTime}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE verification_codes
+        SET status = #{status}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateErrorCount">
+        UPDATE verification_codes
+        SET error_count = #{errorCount}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteExpiredCodes">
+        DELETE FROM verification_codes WHERE expire_time &lt; #{now}
+    </delete>
+
+</mapper>

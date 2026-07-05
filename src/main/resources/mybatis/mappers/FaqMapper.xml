@@ -6,7 +6,6 @@
     <resultMap id="FaqResultMap" type="com.camplus.faq.pojo.Faq">
         <id column="faq_id" property="faqId"/>
         <result column="question_count" property="questionCount"/>
-        <result column="like_count" property="likeCount"/>
         <result column="hot_score" property="hotScore"/>
         <result column="display_status" property="displayStatus"/>
         <result column="create_time" property="createTime"/>
@@ -15,11 +14,15 @@
     </resultMap>
 
     <select id="selectHotFaqs" resultMap="FaqResultMap">
-        SELECT * FROM faq_items ORDER BY hot_score DESC LIMIT #{limit}
+        SELECT * FROM faq_items WHERE hot_score > 0 AND display_status = 1 ORDER BY hot_score DESC LIMIT #{limit}
     </select>
 
     <select id="selectById" resultMap="FaqResultMap">
         SELECT * FROM faq_items WHERE faq_id = #{faqId}
+    </select>
+
+    <select id="selectByIdMap" resultType="map">
+        SELECT question_count FROM faq_items WHERE faq_id = #{faqId}
     </select>
 
     <update id="incrementQuestionCount">
@@ -33,5 +36,23 @@
     <select id="selectAllDisplayed" resultMap="FaqResultMap">
         SELECT * FROM faq_items WHERE display_status = 1
     </select>
+
+    <insert id="insertFaq" parameterType="map" useGeneratedKeys="true" keyProperty="faqId" keyColumn="faq_id">
+        INSERT INTO faq_items (question, answer, display_status, question_count, hot_score, source)
+        VALUES (#{question}, #{answer}, 1, 1, 1, #{source})
+    </insert>
+
+    <insert id="insertFaqWithZeroStats" parameterType="map" useGeneratedKeys="true" keyProperty="faqId" keyColumn="faq_id">
+        INSERT INTO faq_items (question, answer, display_status, question_count, hot_score, source)
+        VALUES (#{question}, #{answer}, 1, 0, 0, #{source})
+    </insert>
+
+    <update id="updateDisplayStatus">
+        UPDATE faq_items SET display_status = #{displayStatus} WHERE faq_id = #{faqId}
+    </update>
+
+    <update id="resetDailyStats">
+        UPDATE faq_items SET question_count = 0, hot_score = hot_score / 2 WHERE hot_score > 0
+    </update>
 
 </mapper>

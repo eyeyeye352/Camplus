@@ -10,6 +10,7 @@
 <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
 <!-- Iconify -->
 <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+<link rel="stylesheet" href="components/toast.css">
 <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
@@ -284,7 +285,7 @@
         function handleSearch() {
             const query = searchInput.value;
             if (query.trim()) {
-                alert('正在为您识别意图并检索知识库：' + query);
+                showToast('正在为您识别意图并检索知识库：' + query, 'info');
             }
         }
 
@@ -347,7 +348,7 @@
                 const result = await forwardResponse.json();
                 
                 if (result.success && result.data) {
-                    alert('问答系统回复：' + result.data.qaResult);
+                    showToast('问答系统回复：' + result.data.qaResult, 'info');
                 }
             } catch (error) {
                 console.error('处理点击失败:', error);
@@ -362,5 +363,6 @@
 
         document.addEventListener('DOMContentLoaded', loadHotFaqs);
     </script>
+    <script src="components/toast.js"></script>
 </body>
 </html>

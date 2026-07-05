@@ -25,10 +25,12 @@ export function bindEvents() {
     bindPagination();
     bindBackHomeButton();
 
-    elements.statusFilter.addEventListener('change', () => {
-        pageState.currentPage = 1;
-        loadContributions();
-    });
+    if (elements.statusFilter) {
+        elements.statusFilter.addEventListener('change', () => {
+            pageState.currentPage = 1;
+            loadContributions();
+        });
+    }
 }
 
 export function initCurrentUser() {
@@ -42,21 +44,29 @@ export function initCurrentUser() {
     pageState.currentUser = {
         userId: Number(userId),
         username: sessionStorage.getItem('username'),
-        nickname: sessionStorage.getItem('nickname'),
-        email: sessionStorage.getItem('email'),
-        phone: sessionStorage.getItem('phone')
+        email: sessionStorage.getItem('email')
     };
     setLoginStatus(displayName(pageState.currentUser));
 }
 
 function bindNavigation() {
     elements.navItems.forEach((item) => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (event) => {
+            if (!item.dataset.panel) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
             elements.navItems.forEach((nav) => nav.classList.remove('active'));
             elements.panels.forEach((panel) => panel.classList.remove('active'));
 
             item.classList.add('active');
-            document.querySelector(`#${item.dataset.panel}`)?.classList.add('active');
+            const targetPanel = document.querySelector(`#${item.dataset.panel}`);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
 
             if (item.dataset.panel === 'myPanel') {
                 loadContributions();
@@ -66,6 +76,8 @@ function bindNavigation() {
 }
 
 function bindSubmitForm() {
+    if (!elements.form) return;
+    
     elements.form.addEventListener('submit', async (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -98,6 +110,8 @@ function bindSubmitForm() {
 }
 
 function bindListEvents() {
+    if (!elements.list) return;
+    
     elements.list.addEventListener('click', (event) => {
         const card = event.target.closest('[data-contribution-id]');
         if (card) {
@@ -107,6 +121,8 @@ function bindListEvents() {
 }
 
 function bindDialogEvents() {
+    if (!elements.closeDialog || !elements.dialog || !elements.editContribution || !elements.cancelEdit || !elements.editForm) return;
+    
     elements.closeDialog.addEventListener('click', () => elements.dialog.close());
 
     elements.dialog.addEventListener('click', (event) => {
@@ -131,6 +147,8 @@ function bindDialogEvents() {
 }
 
 function bindPagination() {
+    if (!elements.previousPage || !elements.nextPage) return;
+    
     elements.previousPage.addEventListener('click', () => {
         if (pageState.currentPage > 1) {
             pageState.currentPage -= 1;
@@ -227,14 +245,16 @@ async function loadContributions() {
 }
 
 function displayName(user) {
-    return user?.nickname || user?.username || user?.email || user?.phone || '用户';
+    return user?.username || user?.email || '用户';
 }
 
 function bindBackHomeButton() {
     const backButton = document.querySelector('#backHomeBut');
-    backButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        window.location.href = '/home/index.html';
-    });
+    if (backButton) {
+        backButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            window.location.href = '/home/index.html';
+        });
+    }
 }

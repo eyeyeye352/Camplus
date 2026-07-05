@@ -1,5 +1,6 @@
 package com.camplus.faq.controller;
 
+import com.camplus.faq.mappers.FaqMapper;
 import com.camplus.faq.pojo.Faq;
 import com.camplus.faq.service.FaqService;
 import com.camplus.faq.service.serviceImpl.FaqServiceImpl;
@@ -13,7 +14,13 @@ import java.util.Map;
 @RequestMapping("/api/faq")
 public class FaqController {
 
-    private final FaqService faqService = new FaqServiceImpl();
+    private final FaqService faqService;
+    private final FaqMapper faqMapper;
+
+    public FaqController(FaqService faqService, FaqMapper faqMapper) {
+        this.faqService = faqService;
+        this.faqMapper = faqMapper;
+    }
 
     @GetMapping("/hot")
     public Map<String, Object> getHotFaqs(@RequestParam(defaultValue = "10") Integer limit) {
@@ -22,6 +29,41 @@ public class FaqController {
             List<Faq> faqs = faqService.getHotFaqs(limit);
             result.put("success", true);
             result.put("data", faqs);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("msg", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/list")
+    public Map<String, Object> getAllFaqs() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Faq> faqs = faqMapper.selectAllByHotScore();
+            result.put("success", true);
+            result.put("data", faqs);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("msg", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/status")
+    public Map<String, Object> updateStatus(@RequestBody Map<String, Integer> request) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Integer faqId = request.get("faqId");
+            Integer displayStatus = request.get("displayStatus");
+            if (faqId == null || displayStatus == null) {
+                result.put("success", false);
+                result.put("msg", "参数不完整");
+                return result;
+            }
+            faqMapper.updateDisplayStatus(faqId, displayStatus);
+            result.put("success", true);
+            result.put("msg", "操作成功");
         } catch (Exception e) {
             result.put("success", false);
             result.put("msg", e.getMessage());
@@ -61,9 +103,6 @@ public class FaqController {
         Map<String, Object> result = new HashMap<>();
         try {
             faqService.recordClick(faqId);
-
-            // TODO: 这里调用外部问答系统接口
-            // 暂时返回模拟数据
             result.put("success", true);
             result.put("data", Map.of(
                 "qaResult", "问答系统返回的回答：" + question,

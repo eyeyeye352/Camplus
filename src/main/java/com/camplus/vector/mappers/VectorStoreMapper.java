@@ -19,13 +19,15 @@ public interface VectorStoreMapper {
                         @Param("answer") String answer,
                         @Param("questionEmbedding") byte[] questionEmbedding,
                         @Param("answerEmbedding") byte[] answerEmbedding,
-                        @Param("combinedEmbedding") byte[] combinedEmbedding);
+                        @Param("combinedEmbedding") byte[] combinedEmbedding,
+                        @Param("sparseEmbedding") String sparseEmbedding);
 
     int insertKnowledgeVector(@Param("docId") Integer docId,
                               @Param("chunkIndex") Integer chunkIndex,
                               @Param("chunkContent") String chunkContent,
                               @Param("chunkEmbedding") byte[] chunkEmbedding,
-                              @Param("chunkMetadata") String chunkMetadata);
+                              @Param("chunkMetadata") String chunkMetadata,
+                              @Param("sparseEmbedding") String sparseEmbedding);
 
     int deleteFaqVector(@Param("faqId") Integer faqId);
 

@@ -3,171 +3,113 @@ if (sessionStorage.getItem('username')) {
     window.location.href = '/home/index.html';
 }
 
-const menuButton = document.getElementById('menuButton');
-const sideMenu = document.getElementById('sideMenu');
-const musicButton = document.getElementById('musicButton');
-const bgMusic = document.getElementById('bgMusic');
-const avatarCircle = document.getElementById('avatarCircle');
-const accountName = document.getElementById('accountName');
-const menuLoginBtn = document.getElementById('menuLoginBtn');
-const adminMenuItem = document.getElementById('adminMenuItem');
-
-// 跳转到登录页面（当前页就是登录页，空操作）
-function goToLogin() {
-    // 已在登录页
-}
-
-// 根据登录态更新UI
-function updateLoginUI() {
-    const username = sessionStorage.getItem('username');
-    if (username) {
-        accountName.textContent = username;
-        avatarCircle.classList.add('logged-in');
-        menuLoginBtn.textContent = '登出';
-        menuLoginBtn.classList.add('logged-in');
-    } else {
-        accountName.textContent = '游客';
-        avatarCircle.classList.remove('logged-in');
-        menuLoginBtn.textContent = '登入/注册';
-        menuLoginBtn.classList.remove('logged-in');
-    }
-}
-
-// 注册相关元素
 const loginContent = document.getElementById('loginContent');
-const registerSelectContent = document.getElementById('registerSelectContent');
 const registerFormContent = document.getElementById('registerFormContent');
 const registerLink = document.getElementById('registerLink');
-const backToLoginFromSelect = document.getElementById('backToLoginFromSelect');
 const backToLoginFromForm = document.getElementById('backToLoginFromForm');
-const backToSelect = document.getElementById('backToSelect');
-const emailRegisterBtn = document.getElementById('emailRegisterBtn');
-const phoneRegisterBtn = document.getElementById('phoneRegisterBtn');
-const usernameRegisterBtn = document.getElementById('usernameRegisterBtn');
 const registerForm = document.getElementById('registerForm');
 const registerInput = document.getElementById('registerInput');
-const registerTitle = document.getElementById('registerTitle');
+const verificationCodeGroup = document.getElementById('verificationCodeGroup');
+const verificationCode = document.getElementById('verificationCode');
+const sendCodeBtn = document.getElementById('sendCodeBtn');
+const smtpPassword = document.getElementById('smtpPassword');
 
-// 当前注册类型
-let currentRegisterType = '';
+let countdownTimer = null;
 
-// 显示登录界面
 function showLogin() {
     loginContent.style.display = 'block';
-    registerSelectContent.style.display = 'none';
     registerFormContent.style.display = 'none';
+    clearCountdown();
 }
 
-// 显示注册选择界面
-function showRegisterSelect() {
-    loginContent.style.display = 'none';
-    registerSelectContent.style.display = 'block';
-    registerFormContent.style.display = 'none';
-}
-
-// 显示注册表单界面
-function showRegisterForm(type, placeholder, title) {
-    currentRegisterType = type;
-    registerInput.placeholder = placeholder;
-    registerTitle.textContent = title;
+function showRegisterForm() {
     registerInput.value = '';
+    verificationCode.value = '';
+    smtpPassword.value = '';
     document.getElementById('registerPassword').value = '';
+    
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.classList.add('disabled');
+    sendCodeBtn.textContent = '获取验证码';
+    
+    clearCountdown();
+    
     loginContent.style.display = 'none';
-    registerSelectContent.style.display = 'none';
     registerFormContent.style.display = 'block';
 }
 
-// 音乐控制
-let isMusicPlaying = true;
-const musicSlash = document.querySelector('.music-slash');
-
-function toggleMusic() {
-    if (isMusicPlaying) {
-        bgMusic.pause();
-        musicSlash.style.display = '';
-        musicButton.style.opacity = '0.5';
-    } else {
-        bgMusic.play().then(() => {
-            musicSlash.style.display = 'none';
-            musicButton.style.opacity = '1';
-        }).catch(err => {
-            console.log('需要用户交互才能播放音乐', err);
-        });
+function clearCountdown() {
+    if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
     }
-    isMusicPlaying = !isMusicPlaying;
 }
 
-document.body.addEventListener('click', function playMusicOnFirstClick() {
-    if (!isMusicPlaying) {
-        bgMusic.play().then(() => {
-            musicSlash.style.display = 'none';
-            musicButton.style.opacity = '1';
-            isMusicPlaying = true;
-        }).catch(err => {
-            console.log('需要用户交互', err);
-        });
-    }
-    document.body.removeEventListener('click', playMusicOnFirstClick);
-}, { once: true });
-
-bgMusic.play().catch(err => {
-    console.log('等待用户交互后播放', err);
-    isMusicPlaying = false;
-    musicSlash.style.display = '';
-    musicButton.style.opacity = '0.5';
-});
-
-musicButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleMusic();
-});
-
-menuButton.addEventListener('click', () => {
-    sideMenu.classList.toggle('active');
-});
-
-menuLoginBtn.addEventListener('click', () => {
-    if (sessionStorage.getItem('username')) {
-        sessionStorage.clear();
-        location.reload();
-    }
-});
-
-adminMenuItem.addEventListener('click', async (e) => {
-    e.preventDefault();
-    alert('请先登录');
-});
-
-updateLoginUI();
+function startCountdown() {
+    let seconds = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.classList.add('disabled');
+    
+    countdownTimer = setInterval(() => {
+        seconds--;
+        sendCodeBtn.textContent = `${seconds}秒后重新获取`;
+        
+        if (seconds <= 0) {
+            clearCountdown();
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.classList.remove('disabled');
+            sendCodeBtn.textContent = '获取验证码';
+        }
+    }, 1000);
+}
 
 
 
-// 注册链接点击事件
 registerLink.addEventListener('click', (e) => {
     e.preventDefault();
-    showRegisterSelect();
+    showRegisterForm();
 });
 
-// 返回登录点击事件
-backToLoginFromSelect.addEventListener('click', showLogin);
 backToLoginFromForm.addEventListener('click', showLogin);
-backToSelect.addEventListener('click', showRegisterSelect);
 
-// 注册类型选择
-emailRegisterBtn.addEventListener('click', () => {
-    showRegisterForm('email', '请输入邮箱', '邮箱注册');
+registerInput.addEventListener('input', () => {
+    const value = registerInput.value.trim();
+    const isValid = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(value);
+    if (isValid) {
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.classList.remove('disabled');
+    } else {
+        sendCodeBtn.disabled = true;
+        sendCodeBtn.classList.add('disabled');
+    }
 });
 
-phoneRegisterBtn.addEventListener('click', () => {
-    showRegisterForm('phone', '请输入手机号', '手机号注册');
+sendCodeBtn.addEventListener('click', async () => {
+    const target = registerInput.value.trim();
+    const smtpPass = smtpPassword.value.trim();
+    
+    if (!smtpPass) {
+        showToast('请先填写SMTP授权码', 'warning');
+        return;
+    }
+    
+    try {
+        const { data: result } = await axios.post('/sendCode',
+            new URLSearchParams({ target, type: 'email', smtpPassword: smtpPass }),
+            { withCredentials: true });
+        
+        if (result.success) {
+            showToast('验证码已发送', 'success');
+            startCountdown();
+        } else {
+            showToast(result.msg, 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('请求异常，请稍后重试', 'error');
+    }
 });
 
-usernameRegisterBtn.addEventListener('click', () => {
-    showRegisterForm('username', '请输入用户名', '用户名注册');
-});
-
-
-// ========== 登录表单提交 ==========
 const loginForm = document.getElementById('loginForm');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -176,7 +118,7 @@ loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password').value.trim();
 
     if (!loginAccount || !password) {
-        alert('请填写账号和密码');
+        showToast('请填写账号和密码', 'warning');
         return;
     }
 
@@ -190,38 +132,42 @@ loginForm.addEventListener('submit', async (e) => {
             sessionStorage.setItem('userId', user.userId);
             sessionStorage.setItem('username', user.username);
             sessionStorage.setItem('email', user.email || '');
-            sessionStorage.setItem('phone', user.phone || '');
-            sessionStorage.setItem('nickname', user.nickname || '');
-            sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
             sessionStorage.setItem('role', user.role || '0');
-            sessionStorage.setItem('status', user.status || '1');
-            alert(result.msg);
-            window.location.href = '/home/index.html';
+            showToast(result.msg, 'success');
+            setTimeout(() => {
+                window.location.href = '/home/index.html';
+            }, 500);
         } else {
-            alert(result.msg);
+            showToast(result.msg, 'error');
         }
     } catch (err) {
         console.error(err);
-        alert('请求异常，请稍后重试');
+        showToast('请求异常，请稍后重试', 'error');
     }
 });
 
-// ========== 注册表单提交 ==========
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const inputValue = registerInput.value.trim();
     const password = document.getElementById('registerPassword').value.trim();
+    const code = verificationCode.value.trim();
+    const smtpPass = smtpPassword.value.trim();
 
     if (!inputValue || !password) {
-        alert('请填写完整信息');
+        showToast('请填写完整信息', 'warning');
+        return;
+    }
+    if (!code) {
+        showToast('请输入验证码', 'warning');
+        return;
+    }
+    if (!smtpPass) {
+        showToast('请填写SMTP授权码', 'warning');
         return;
     }
 
-    const params = new URLSearchParams({ password });
-    if (currentRegisterType === 'email') params.set('email', inputValue);
-    else if (currentRegisterType === 'phone') params.set('phone', inputValue);
-    else if (currentRegisterType === 'username') params.set('username', inputValue);
+    const params = new URLSearchParams({ email: inputValue, password, code, smtpPassword: smtpPass });
 
     try {
         const { data: result } = await axios.post('/register', params, { withCredentials: true });
@@ -231,18 +177,16 @@ registerForm.addEventListener('submit', async (e) => {
             sessionStorage.setItem('userId', user.userId);
             sessionStorage.setItem('username', user.username);
             sessionStorage.setItem('email', user.email || '');
-            sessionStorage.setItem('phone', user.phone || '');
-            sessionStorage.setItem('nickname', user.nickname || '');
-            sessionStorage.setItem('avatarUrl', user.avatarUrl || '');
             sessionStorage.setItem('role', user.role || '0');
-            sessionStorage.setItem('status', user.status || '1');
-            alert(result.msg);
-            window.location.href = '/home/index.html';
+            showToast(result.msg, 'success');
+            setTimeout(() => {
+                window.location.href = '/home/index.html';
+            }, 500);
         } else {
-            alert(result.msg);
+            showToast(result.msg, 'error');
         }
     } catch (err) {
         console.error(err);
-        alert('请求异常，请稍后重试');
+        showToast('请求异常，请稍后重试', 'error');
     }
 });

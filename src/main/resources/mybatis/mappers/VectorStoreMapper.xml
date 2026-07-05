@@ -1,19 +1,23 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.camplus.vector.mappers.VectorStoreMapper">
 
     <select id="searchFaqVectors" resultType="map">
-        SELECT id, faq_id, question, answer, question_embedding, 
-               answer_embedding, combined_embedding
-        FROM faq_vector_store
+        SELECT v.id, v.faq_id, v.question, v.answer, v.question_embedding,
+               v.answer_embedding, v.combined_embedding, v.sparse_embedding
+        FROM faq_vector_store v
+        INNER JOIN faq_items f ON v.faq_id = f.faq_id
+        WHERE f.display_status = 1
     </select>
 
     <select id="searchKnowledgeVectors" resultType="map">
-        SELECT id, doc_id, chunk_index, chunk_content, 
-               chunk_embedding, chunk_metadata
-        FROM knowledge_vector_store
+        SELECT v.id, v.doc_id, v.chunk_index, v.chunk_content,
+               v.chunk_embedding, v.chunk_metadata, v.sparse_embedding,
+               d.doc_name
+        FROM knowledge_vector_store v
+        LEFT JOIN knowledge_docs d ON v.doc_id = d.doc_id
     </select>
 
     <select id="getAllVectorsFromTable" resultType="map">
@@ -21,17 +25,17 @@
     </select>
 
     <insert id="insertFaqVector">
-        INSERT INTO faq_vector_store (faq_id, question, answer, 
-                                     question_embedding, answer_embedding, combined_embedding)
-        VALUES (#{faqId}, #{question}, #{answer}, 
-                #{questionEmbedding}, #{answerEmbedding}, #{combinedEmbedding})
+        INSERT INTO faq_vector_store (faq_id, question, answer,
+                                     question_embedding, answer_embedding, combined_embedding, sparse_embedding)
+        VALUES (#{faqId}, #{question}, #{answer},
+                #{questionEmbedding}, #{answerEmbedding}, #{combinedEmbedding}, #{sparseEmbedding})
     </insert>
 
     <insert id="insertKnowledgeVector">
-        INSERT INTO knowledge_vector_store (doc_id, chunk_index, chunk_content, 
-                                           chunk_embedding, chunk_metadata)
-        VALUES (#{docId}, #{chunkIndex}, #{chunkContent}, 
-                #{chunkEmbedding}, #{chunkMetadata})
+        INSERT INTO knowledge_vector_store (doc_id, chunk_index, chunk_content,
+                                           chunk_embedding, chunk_metadata, sparse_embedding)
+        VALUES (#{docId}, #{chunkIndex}, #{chunkContent},
+                #{chunkEmbedding}, #{chunkMetadata}, #{sparseEmbedding})
     </insert>
 
     <delete id="deleteFaqVector">

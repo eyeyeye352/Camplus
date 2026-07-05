@@ -3,20 +3,30 @@ package com.camplus.login.controller;
 import com.camplus.common.Result;
 import com.camplus.login.entity.User;
 import com.camplus.login.service.UserService;
+import com.camplus.login.service.VerificationCodeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.regex.Pattern;
 
 @RestController
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$");
+
     private final UserService userService;
+    private final VerificationCodeService verificationCodeService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, VerificationCodeService verificationCodeService) {
         this.userService = userService;
+        this.verificationCodeService = verificationCodeService;
     }
 
     @PostMapping("/login")
@@ -30,28 +40,75 @@ public class UserController {
         if (user != null) {
             return Result.ok("登录成功！", user);
         }
-        return Result.fail("账号或密码错误，或账号已被锁定/禁用");
+        return Result.fail("账号或密码错误");
+    }
+
+    @PostMapping("/sendCode")
+    public Result<String> sendCode(
+            @RequestParam(name = "target") String target,
+            @RequestParam(name = "type") String type,
+            @RequestParam(name = "smtpPassword", required = false) String smtpPassword) {
+
+        if (target == null || target.trim().isEmpty()) {
+            return Result.fail("请输入目标账号");
+        }
+
+        if (!"email".equals(type)) {
+            return Result.fail("验证码类型错误");
+        }
+
+        if (!EMAIL_PATTERN.matcher(target).matches()) {
+            return Result.fail("邮箱格式不正确");
+        }
+
+        if (userService.isEmailExist(target)) {
+            return Result.fail("该邮箱已被注册");
+        }
+
+        if (smtpPassword == null || smtpPassword.trim().isEmpty()) {
+            return Result.fail("请输入SMTP授权码");
+        }
+
+        String code = verificationCodeService.sendCode(target, type, smtpPassword);
+        if (code != null) {
+            return Result.ok("验证码发送成功", code);
+        }
+        return Result.fail("验证码发送失败，请检查SMTP配置是否正确");
     }
 
     @PostMapping("/register")
     public Result<User> register(
-            @RequestParam(name = "username", required = false) String username,
             @RequestParam(name = "email", required = false) String email,
-            @RequestParam(name = "phone", required = false) String phone,
-            @RequestParam(name = "password") String password) {
+            @RequestParam(name = "password") String password,
+            @RequestParam(name = "code", required = false) String code) {
+
+        boolean needVerify = false;
+        String verifyTarget = null;
+
+        if (email != null && !email.isEmpty()) {
+            if (!EMAIL_PATTERN.matcher(email).matches()) {
+                return Result.fail("邮箱格式不正确");
+            }
+            needVerify = true;
+            verifyTarget = email;
+        } else {
+            return Result.fail("请输入邮箱");
+        }
+
+        if (needVerify && (code == null || code.trim().isEmpty())) {
+            return Result.fail("请输入验证码");
+        }
+
+        if (needVerify) {
+            boolean verifySuccess = verificationCodeService.verifyCode(verifyTarget, "email", code);
+            if (!verifySuccess) {
+                return Result.fail("验证码错误或已过期");
+            }
+        }
 
         User user = new User();
         user.setPasswordHash(password);
-
-        if (username != null && !username.isEmpty()) {
-            user.setUsername(username);
-        }
-        if (email != null && !email.isEmpty()) {
-            user.setEmail(email);
-        }
-        if (phone != null && !phone.isEmpty()) {
-            user.setPhone(phone);
-        }
+        user.setEmail(email);
 
         User registeredUser = userService.registerAndReturnUser(user);
 
@@ -81,17 +138,6 @@ public class UserController {
             return Result.ok("邮箱修改成功！", user);
         }
         return Result.fail("邮箱已存在，修改失败");
-    }
-
-    @PostMapping("/user/updatePhone")
-    public Result<User> updatePhone(
-            @RequestParam(name = "userId") Long userId,
-            @RequestParam(name = "newPhone") String newPhone) {
-        User user = userService.updatePhone(userId, newPhone);
-        if (user != null) {
-            return Result.ok("手机号修改成功！", user);
-        }
-        return Result.fail("手机号已存在，修改失败");
     }
 
     @PostMapping("/user/updatePassword")

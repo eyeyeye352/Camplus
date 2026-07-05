@@ -1,16 +1,15 @@
 @echo off
-chcp 65001
 cd /d "%~dp0"
 
 echo ========================================
-echo      Camplus - 一键建库脚本
+echo      Camplus - Database Setup
 echo ========================================
 echo.
 
-echo 当前目录: %cd%
+echo Current directory: %cd%
 echo.
 
-set "mysql_path=D:\MySQL\MySQL Server 8.0\bin"
+set "mysql_path=C:\Program Files\MySQL\MySQL Server 8.0\bin"
 set "mysql_cmd=%mysql_path%\mysql.exe"
 
 if not exist "%mysql_cmd%" (
@@ -19,68 +18,120 @@ if not exist "%mysql_cmd%" (
 )
 
 if not exist "%mysql_cmd%" (
-    echo 错误: 未找到 MySQL 客户端
-    echo 请确保 MySQL 已安装
-    echo 按任意键退出...
+    echo ERROR: MySQL client not found
+    echo Please make sure MySQL is installed
+    echo Press any key to exit...
     pause
     exit /b 1
 )
 
-echo MySQL客户端: %mysql_cmd%
+echo MySQL client: %mysql_cmd%
 echo.
 
 set "user="
-set /p "user=请输入MySQL用户名: "
+set /p "user=Enter MySQL username: "
 if "%user%"=="" set "user=root"
 
 set "pass="
-set /p "pass=请输入MySQL密码: "
+set /p "pass=Enter MySQL password: "
 
 echo.
 echo ========================================
-echo 开始初始化数据库...
+echo Initializing database...
 echo ========================================
 echo.
 
-echo 步骤1: 删除并创建数据库 camplus_db...
-"%mysql_cmd%" -u%user% -p%pass% -e "DROP DATABASE IF EXISTS camplus_db; CREATE DATABASE camplus_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+echo Step 1: Executing init.sql...
+"%mysql_cmd%" -u%user% -p%pass% < init.sql
 if errorlevel 1 (
     echo.
-    echo 错误: 创建数据库失败！
-    echo 请检查用户名和密码是否正确
+    echo ERROR: Database creation failed!
+    echo Please check username and password
     pause
     exit /b 1
 )
-echo 成功创建数据库
+echo init.sql executed successfully
 echo.
 
-echo 步骤2: 执行SQL文件...
+echo Step 2: Executing data.sql...
+"%mysql_cmd%" -u%user% -p%pass% < data.sql
+if errorlevel 1 (
+    echo WARNING: data.sql may have issues
+) else (
+    echo data.sql executed successfully
+)
+echo.
 
-for %%f in (*.sql) do (
+echo.
+echo ========================================
+echo Database created!
+echo ========================================
+echo.
+echo Database: camplus_db
+echo Username: %user%
+echo.
+
+echo ========================================
+echo Step 3: Data Import
+echo ========================================
+echo.
+
+cd /d "%~dp0\.."
+
+set "jar_path=target\Camplus.jar"
+
+echo Compiling and packaging project...
+call mvn clean package -q -DskipTests
+if errorlevel 1 (
     echo.
-    echo 正在执行: %%f
-    
-    echo USE camplus_db; > temp_sql.sql
-    type "%%f" >> temp_sql.sql
-    
-    "%mysql_cmd%" -u%user% -p%pass% < temp_sql.sql
-    
-    if errorlevel 1 (
-        echo 警告: %%f 执行可能有问题
-    ) else (
-        echo %%f 执行成功
+    echo ERROR: Compilation failed!
+    echo Please run "mvn clean package -DskipTests" manually and retry
+    echo.
+    echo Press any key to exit...
+    pause
+    exit /b 1
+)
+echo Compilation completed
+
+set "has_file=0"
+if exist "RawData" (
+    for %%f in (RawData\*) do (
+        if not "%%~xf"==".gitkeep" if not "%%~xf"==".bat" set "has_file=1"
     )
-    
-    del temp_sql.sql
+)
+
+if "%has_file%"=="0" (
+    echo No valid files in RawData directory, skipping import
+    echo.
+    echo Done! Press any key to exit...
+    pause
+    exit /b 0
+)
+
+echo Found RawData files, starting import...
+echo This will parse files, load vector model and import data. May take a few minutes.
+echo.
+
+java -jar "%jar_path%" --import-only --spring.profiles.active=import-only --db-user "%user%" --db-pass "%pass%"
+
+if errorlevel 1 (
+    echo.
+    echo ========================================
+    echo WARNING: Data import completed with errors
+    echo ========================================
+    echo Possible causes:
+    echo   1. BGE-M3 model files not found
+    echo   2. Database connection failed
+    echo   3. File parsing failed
+    echo.
+    echo You can also start Camplus app, the system will retry auto-import
+) else (
+    echo.
+    echo ========================================
+    echo Database + import completed!
+    echo ========================================
 )
 
 echo.
-echo ========================================
-echo 建库完成！
-echo ========================================
-echo.
-echo 数据库: camplus_db
-echo 用户名: %user%
-echo.
-echo 按任意键退出...
+echo Press any key to exit...
 pause

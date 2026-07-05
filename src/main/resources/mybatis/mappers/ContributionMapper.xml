@@ -68,4 +68,21 @@
           AND user_id = #{userId}
           AND status = 0
     </delete>
+
+    <select id="selectPendingContributions" resultMap="ContributionResultMap">
+        SELECT * FROM user_contributions WHERE status = 0 ORDER BY create_time DESC
+    </select>
+
+    <select id="selectAllContributions" resultMap="ContributionResultMap">
+        SELECT * FROM user_contributions ORDER BY create_time DESC
+    </select>
+
+    <select id="selectById" resultMap="ContributionResultMap">
+        SELECT * FROM user_contributions WHERE contribution_id = #{contributionId}
+    </select>
+
+    <update id="updateReviewData">
+        UPDATE user_contributions SET status = #{status}, review_comment = #{reviewComment}, update_time = NOW()
+        WHERE contribution_id = #{contributionId}
+    </update>
 </mapper>

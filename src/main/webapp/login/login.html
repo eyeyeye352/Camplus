@@ -5,25 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="../components/menu.css">
+    <link rel="stylesheet" href="../components/toast.css">
 </head>
 <body>
-<!-- 动态背景 -->
-<div class="background-container">
-    <!-- 12个浮动圆点 -->
-    <div class="dot dot1"></div>
-    <div class="dot dot2"></div>
-    <div class="dot dot3"></div>
-    <div class="dot dot4"></div>
-    <div class="dot dot5"></div>
-    <div class="dot dot6"></div>
-    <div class="dot dot7"></div>
-    <div class="dot dot8"></div>
-    <div class="dot dot9"></div>
-    <div class="dot dot10"></div>
-    <div class="dot dot11"></div>
-    <div class="dot dot12"></div>
-</div>
-
 <!-- 音乐控制按钮 -->
 <div class="music-button" id="musicButton">
     <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -47,7 +32,7 @@
 <!-- 侧边菜单 -->
 <div class="side-menu" id="sideMenu">
     <div class="menu-header">
-        <div class="account-area">
+        <div class="account-area" id="accountArea">
             <div class="avatar-circle" id="avatarCircle">
                 <svg class="avatar-icon avatar-icon--user" id="avatarIconUser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -60,7 +45,10 @@
                     <line x1="15" y1="9" x2="15.01" y2="9"></line>
                 </svg>
             </div>
-            <span class="account-name" id="accountName">游客</span>
+            <div class="account-info">
+                <span class="account-name" id="accountName">请先登录</span>
+                <span class="account-email" id="accountEmail"></span>
+            </div>
         </div>
     </div>
     <div class="menu-content">
@@ -70,19 +58,12 @@
             </svg>
             <span>问答平台</span>
         </a>
-        <a class="menu-item" href="../home/index.html">
+        <a class="menu-item menu-item--bright" href="../home/index.html">
             <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
             <span>首页</span>
-        </a>
-        <a class="menu-item" href="../userInfo/userInfo.html">
-            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <span>用户</span>
         </a>
         <a class="menu-item menu-item--bright" id="adminMenuItem" href="../admin/admin.html">
             <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -92,36 +73,38 @@
             </svg>
             <span>管理者</span>
         </a>
-        <a class="menu-item" href="../problem/index.html">
-            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>常见问题</span>
-        </a>
-        <a class="menu-item" href="../contribution/contribution.html">
+        <a class="menu-item menu-item--bright" href="../contribution/contribution.html">
             <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121  0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
             </svg>
-            <span>用户贡献</span>
+            <span>贡献</span>
         </a>
-    </div>
-    <div class="menu-footer">
-        <span class="menu-login-btn" id="menuLoginBtn">登入/注册</span>
     </div>
 </div>
 
-<!-- 登录弹窗 -->
+<div class="background-container">
+    <div class="dot dot1"></div>
+    <div class="dot dot2"></div>
+    <div class="dot dot3"></div>
+    <div class="dot dot4"></div>
+    <div class="dot dot5"></div>
+    <div class="dot dot6"></div>
+    <div class="dot dot7"></div>
+    <div class="dot dot8"></div>
+    <div class="dot dot9"></div>
+    <div class="dot dot10"></div>
+    <div class="dot dot11"></div>
+    <div class="dot dot12"></div>
+</div>
+
 <div class="login-modal">
-    <!-- 登录内容 -->
     <div class="login-content" id="loginContent">
         <h1>Camplus</h1>
 
         <form id="loginForm">
             <div class="input-group">
-                <input type="text" id="loginAccount" placeholder="邮箱/用户名/手机号" required>
+                <input type="text" id="loginAccount" placeholder="邮箱/用户名" required>
             </div>
 
             <div class="input-group">
@@ -131,53 +114,26 @@
             <button type="submit" class="login-btn">登入！</button>
         </form>
 
-
         <p class="register-tip">
             没有账号？<a href="#" id="registerLink">注册</a>
         </p>
     </div>
 
-    <!-- 注册选择内容 -->
-    <div class="register-select-content" id="registerSelectContent" style="display: none;">
-        <h1>注册</h1>
-        
-        <div class="register-buttons">
-            <button class="register-type-btn" id="emailRegisterBtn">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-                邮箱注册
-            </button>
-            
-            <button class="register-type-btn" id="phoneRegisterBtn">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-                手机号注册
-            </button>
-            
-            <button class="register-type-btn" id="usernameRegisterBtn">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                用户名注册
-            </button>
-        </div>
-        
-        <div class="back-buttons">
-            <p class="back-to-login" id="backToLoginFromSelect">← 返回登录</p>
-        </div>
-    </div>
-
-    <!-- 注册表单内容 -->
     <div class="register-form-content" id="registerFormContent" style="display: none;">
-        <h1 id="registerTitle">注册</h1>
+        <h1>邮箱注册</h1>
         
         <form id="registerForm">
             <div class="input-group">
-                <input type="text" id="registerInput" placeholder="" required>
+                <input type="text" id="registerInput" placeholder="请输入邮箱" required>
+            </div>
+
+            <div class="input-group" id="verificationCodeGroup">
+                <input type="text" id="verificationCode" placeholder="验证码" maxlength="6">
+                <button type="button" class="send-code-btn" id="sendCodeBtn">获取验证码</button>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="smtpPassword" placeholder="SMTP授权码">
             </div>
 
             <div class="input-group">
@@ -189,11 +145,12 @@
         
         <div class="back-buttons">
             <p class="back-to-login" id="backToLoginFromForm">← 返回登录</p>
-            <p class="back-to-select" id="backToSelect">← 选择注册方式</p>
         </div>
     </div>
 </div>
 
+<script src="../components/toast.js"></script>
+<script src="../components/menu.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="login.js"></script>
 </body>
