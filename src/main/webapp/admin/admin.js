@@ -155,7 +155,7 @@ function renderFaqTable(list) {
 
         tr.innerHTML = `
             <td>${item.faqId}</td>
-            <td>${questionPreview}</td>
+            <td style="cursor: pointer; text-decoration: underline;" onclick="openFaqDetail(${item.faqId})">${questionPreview}</td>
             <td>${item.hotScore || 0}</td>
             <td>${item.questionCount || 0}</td>
             <td style="color: ${statusColor};">${statusText}</td>
@@ -193,6 +193,42 @@ async function toggleFaqStatus(faqId, currentStatus) {
         console.error("操作失败:", err);
         showToast("网络请求失败", "error");
     }
+}
+
+async function handleFaqSearch(event) {
+    const keyword = event.target.value.trim();
+    if (!keyword) {
+        fetchFaqList();
+        return;
+    }
+    if (event.key === 'Enter' || keyword.length >= 2) {
+        try {
+            const response = await fetch(`/api/faq/search?keyword=${encodeURIComponent(keyword)}`);
+            const data = await response.json();
+            if (data.success) {
+                renderFaqTable(data.data);
+            }
+        } catch (err) {
+            console.error("FAQ搜索失败:", err);
+        }
+    }
+}
+
+function openFaqDetail(faqId) {
+    const faq = window.cachedFaqs.find(item => item.faqId === faqId);
+    if (!faq) return;
+    
+    document.getElementById('faqDetailId').textContent = faq.faqId;
+    document.getElementById('faqDetailQuestion').value = faq.question || '';
+    document.getElementById('faqDetailAnswer').value = faq.answer || '';
+    document.getElementById('faqDetailHotScore').value = faq.hotScore || 0;
+    document.getElementById('faqDetailQuestionCount').value = faq.questionCount || 0;
+    
+    document.getElementById('faqDetailModal').classList.add('active');
+}
+
+function closeFaqDetailModal() {
+    document.getElementById('faqDetailModal').classList.remove('active');
 }
 
 window.switchView = function(viewName) {

@@ -233,6 +233,24 @@ body {
     color: #7dd3f5;
 }
 
+.forgot-password {
+    margin-top: 15px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.forgot-password a {
+    color: #46b4dc;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.forgot-password a:hover {
+    color: #7dd3f5;
+}
+
 
 
 .register-form-content {

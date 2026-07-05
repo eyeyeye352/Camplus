@@ -3,6 +3,7 @@ package com.camplus.login.service.impl;
 import com.camplus.login.mappers.UserMapper;
 import com.camplus.login.entity.User;
 import com.camplus.login.service.UserService;
+import com.camplus.login.service.VerificationCodeService;
 import com.camplus.login.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private VerificationCodeService verificationCodeService;
 
     @Override
     @Transactional
@@ -125,5 +129,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isEmailExist(String email) {
         return userMapper.selectByEmail(email) != null;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteUser(Long userId) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            return false;
+        }
+        if ("Administrator".equals(user.getUsername())) {
+            throw new IllegalArgumentException("初始管理员账号禁止注销");
+        }
+        int rows = userMapper.deleteUser(userId);
+        return rows > 0;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userMapper.selectByEmail(email);
+    }
+
+    @Override
+    @Transactional
+    public boolean resetPassword(String email, String code, String newPassword) {
+        boolean codeValid = verificationCodeService.verifyCode(email, "email", code);
+        if (!codeValid) {
+            return false;
+        }
+        User user = userMapper.selectByEmail(email);
+        if (user == null) {
+            return false;
+        }
+        if ("Administrator".equals(user.getUsername())) {
+            throw new IllegalArgumentException("初始管理员账号禁止重置密码");
+        }
+        String encryptedPassword = MD5Util.md5Encrypt(newPassword);
+        userMapper.updatePassword(user.getUserId(), encryptedPassword);
+        return true;
     }
 }

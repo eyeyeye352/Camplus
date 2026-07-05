@@ -145,7 +145,10 @@
             <div class="glass-card">
                 <div class="card-header">
                     <h2>FAQ管理（按热度排序）</h2>
-                    <button class="refresh-btn" onclick="fetchFaqList()">🔄 刷新列表</button>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="faqSearchInput" placeholder="搜索问题..." onkeyup="handleFaqSearch(event)">
+                        <button class="refresh-btn" onclick="fetchFaqList()">🔄 刷新列表</button>
+                    </div>
                 </div>
                 <div class="table-wrapper">
                     <table>
@@ -252,6 +255,34 @@
                     <button type="button" class="btn-approve" onclick="submitReview(1)">✅ 通过</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="faqDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>FAQ详情 #<span id="faqDetailId">0</span></h3>
+                <button class="close-btn" onclick="closeFaqDetailModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>问题</label>
+                <input type="text" class="form-control" id="faqDetailQuestion" readonly>
+            </div>
+            <div class="form-group">
+                <label>答案</label>
+                <textarea class="form-control" id="faqDetailAnswer" rows="8" readonly></textarea>
+            </div>
+            <div class="form-group">
+                <label>热度分</label>
+                <input type="text" class="form-control" id="faqDetailHotScore" readonly>
+            </div>
+            <div class="form-group">
+                <label>今日查询次数</label>
+                <input type="text" class="form-control" id="faqDetailQuestionCount" readonly>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="refresh-btn" onclick="closeFaqDetailModal()">关闭</button>
+            </div>
         </div>
     </div>
 

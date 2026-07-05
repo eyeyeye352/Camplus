@@ -50,6 +50,20 @@ public class FaqController {
         return result;
     }
 
+    @GetMapping("/search")
+    public Map<String, Object> searchFaqs(@RequestParam String keyword) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Faq> faqs = faqMapper.searchByQuestion(keyword);
+            result.put("success", true);
+            result.put("data", faqs);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("msg", e.getMessage());
+        }
+        return result;
+    }
+
     @PostMapping("/status")
     public Map<String, Object> updateStatus(@RequestBody Map<String, Integer> request) {
         Map<String, Object> result = new HashMap<>();
