@@ -29,8 +29,9 @@
         url.searchParams.set('userId', userId);
         url.searchParams.set('page', page);
         url.searchParams.set('pageSize', pageSize);
-        if (status !== '') {
-            url.searchParams.set('status', status);
+        const intStatus = statusStringToInt[status];
+        if (intStatus !== '') {
+            url.searchParams.set('status', intStatus);
         }
         return requestJson(url);
     }
@@ -94,6 +95,13 @@
         0: ['审核中', 'pending'],
         1: ['已通过', 'approved'],
         2: ['已拒绝', 'rejected']
+    };
+
+    const statusStringToInt = {
+        'all': '',
+        'pending': 0,
+        'approved': 1,
+        'rejected': 2
     };
 
     function renderLoading() {

@@ -28,7 +28,7 @@ public class ContributionController {
 
     @PostMapping("/create")
     public Map<String, Object> create(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Long userId,
             @RequestParam(name = "contribution_type", required = false) Integer contributionType,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content) throws SQLException {
@@ -39,7 +39,7 @@ public class ContributionController {
 
     @GetMapping("/list")
     public Map<String, Object> list(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Integer status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) throws SQLException {
@@ -49,7 +49,7 @@ public class ContributionController {
 
     @GetMapping("/detail")
     public Map<String, Object> detail(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Long userId,
             @RequestParam(name = "contribution_id", required = false) Integer contributionId) throws SQLException {
         UserContribution contribution = contributionService.detail(contributionId, userId);
         return success("查询成功", contribution);
@@ -57,7 +57,7 @@ public class ContributionController {
 
     @PostMapping("/update")
     public Map<String, Object> update(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Long userId,
             @RequestParam(name = "contribution_id", required = false) Integer contributionId,
             @RequestParam(name = "contribution_type", required = false) Integer contributionType,
             @RequestParam(required = false) String title,
@@ -70,7 +70,7 @@ public class ContributionController {
 
     @PostMapping("/delete")
     public Map<String, Object> delete(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Long userId,
             @RequestParam(name = "contribution_id", required = false) Integer contributionId) throws SQLException {
         contributionService.delete(contributionId, userId);
         return success("撤回成功", null);

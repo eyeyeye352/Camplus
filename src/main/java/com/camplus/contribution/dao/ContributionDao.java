@@ -20,16 +20,16 @@ public class ContributionDao {
         return contribution.getContributionId() == null ? 0 : contribution.getContributionId();
     }
 
-    public List<UserContribution> findByUserId(Integer userId, Integer status, int offset, int size)
+    public List<UserContribution> findByUserId(Long userId, Integer status, int offset, int size)
             throws SQLException {
         return contributionMapper.findByUserId(userId, status, offset, size);
     }
 
-    public int countByUserId(Integer userId, Integer status) throws SQLException {
+    public int countByUserId(Long userId, Integer status) throws SQLException {
         return contributionMapper.countByUserId(userId, status);
     }
 
-    public UserContribution findByIdAndUserId(Integer contributionId, Integer userId) throws SQLException {
+    public UserContribution findByIdAndUserId(Integer contributionId, Long userId) throws SQLException {
         return contributionMapper.findByIdAndUserId(contributionId, userId);
     }
 
@@ -37,7 +37,7 @@ public class ContributionDao {
         return contributionMapper.updatePending(contribution) > 0;
     }
 
-    public boolean deletePending(Integer contributionId, Integer userId) throws SQLException {
+    public boolean deletePending(Integer contributionId, Long userId) throws SQLException {
         return contributionMapper.deletePending(contributionId, userId) > 0;
     }
 }

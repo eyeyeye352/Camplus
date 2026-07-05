@@ -109,7 +109,7 @@ CREATE TABLE vector_search_temp (
 -- ============================================================
 CREATE TABLE user_contributions (
     contribution_id INT AUTO_INCREMENT PRIMARY KEY COMMENT '贡献ID',
-    user_id INT NOT NULL COMMENT '提交用户ID，关联 users.user_id',
+    user_id BIGINT UNSIGNED NOT NULL COMMENT '提交用户ID，关联 users.user_id',
     contribution_type TINYINT NOT NULL COMMENT '贡献类型：0新增问题，1答案纠错',
     title VARCHAR(128) NOT NULL COMMENT '贡献标题',
     content TEXT NOT NULL COMMENT '贡献内容',

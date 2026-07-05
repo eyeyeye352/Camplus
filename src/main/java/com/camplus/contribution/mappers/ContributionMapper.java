@@ -15,21 +15,21 @@ public interface ContributionMapper {
 
     int insert(UserContribution contribution);
 
-    List<UserContribution> findByUserId(@Param("userId") Integer userId,
+    List<UserContribution> findByUserId(@Param("userId") Long userId,
                                         @Param("status") Integer status,
                                         @Param("offset") int offset,
                                         @Param("size") int size);
 
-    int countByUserId(@Param("userId") Integer userId,
+    int countByUserId(@Param("userId") Long userId,
                       @Param("status") Integer status);
 
     UserContribution findByIdAndUserId(@Param("contributionId") Integer contributionId,
-                                       @Param("userId") Integer userId);
+                                       @Param("userId") Long userId);
 
     int updatePending(UserContribution contribution);
 
     int deletePending(@Param("contributionId") Integer contributionId,
-                      @Param("userId") Integer userId);
+                      @Param("userId") Long userId);
 
     List<UserContribution> selectPendingContributions();
 

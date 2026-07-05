@@ -17,7 +17,7 @@ public class ContributionService {
         this.contributionDao = contributionDao;
     }
 
-    public int create(UserContribution contribution, Integer userId) throws SQLException {
+    public int create(UserContribution contribution, Long userId) throws SQLException {
         ensureUserId(userId);
         contribution.setUserId(userId);
         contribution.setStatus(STATUS_PENDING);
@@ -25,7 +25,7 @@ public class ContributionService {
         return contributionDao.insert(contribution);
     }
 
-    public ContributionPage listMine(Integer userId, Integer status, int page, int pageSize)
+    public ContributionPage listMine(Long userId, Integer status, int page, int pageSize)
             throws SQLException {
         ensureUserId(userId);
         if (status != null && (status < 0 || status > 2)) {
@@ -40,7 +40,7 @@ public class ContributionService {
         return new ContributionPage(items, safePage, safeSize, total, totalPages);
     }
 
-    public UserContribution detail(Integer contributionId, Integer userId) throws SQLException {
+    public UserContribution detail(Integer contributionId, Long userId) throws SQLException {
         ensureUserId(userId);
         requireId(contributionId, "贡献ID不能为空");
         UserContribution contribution = contributionDao.findByIdAndUserId(contributionId, userId);
@@ -50,7 +50,7 @@ public class ContributionService {
         return contribution;
     }
 
-    public void update(UserContribution contribution, Integer userId) throws SQLException {
+    public void update(UserContribution contribution, Long userId) throws SQLException {
         ensureUserId(userId);
         requireId(contribution.getContributionId(), "贡献ID不能为空");
         contribution.setUserId(userId);
@@ -60,7 +60,7 @@ public class ContributionService {
         }
     }
 
-    public void delete(Integer contributionId, Integer userId) throws SQLException {
+    public void delete(Integer contributionId, Long userId) throws SQLException {
         ensureUserId(userId);
         requireId(contributionId, "贡献ID不能为空");
         if (!contributionDao.deletePending(contributionId, userId)) {
@@ -84,7 +84,7 @@ public class ContributionService {
         }
     }
 
-    private void ensureUserId(Integer userId) {
+    private void ensureUserId(Long userId) {
         if (userId == null || userId <= 0) {
             throw new SecurityException("请提供用户ID");
         }
